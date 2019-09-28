@@ -1,5 +1,6 @@
 use crate::proto::abci::{RequestInfo, ResponseInfo};
 
+#[derive(Debug, Default)]
 pub struct InfoRequest {
     /// Tendermint software semantic version
     pub version: String,
@@ -19,6 +20,7 @@ impl From<InfoRequest> for RequestInfo {
     }
 }
 
+#[derive(Debug, Default)]
 pub struct InfoResponse {
     /// Some arbitrary information
     pub data: String,
