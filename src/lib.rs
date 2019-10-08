@@ -3,8 +3,10 @@
 mod application;
 mod error;
 mod proto;
+mod server;
 
 pub mod types;
 
-pub use application::{Consensus, Info, Mempool};
-pub use error::{Error, Result};
+pub use self::application::{Consensus, Info, Mempool};
+pub use self::error::{Error, Result};
+pub use self::server::Server;
