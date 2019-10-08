@@ -9,9 +9,23 @@ pub trait Info: Send + Sync {
     }
 
     /// Return information about the application state.
-    fn info(&self, _info_request: InfoRequest) -> InfoResponse {
-        Default::default()
-    }
+    ///
+    /// # Crash Recovery
+    ///
+    /// On startup, Tendermint calls the [`info`] method to get the **latest committed state** of the app. The app
+    /// **MUST** return information consistent with the last block it successfully completed [`commit`] for.
+    ///
+    /// If the app succesfully committed block `H` but not `H+1`, then
+    /// - `last_block_height = H`
+    /// - `last_block_app_hash = <hash returned by Commit for block H>`
+    ///
+    /// If the app failed during the [`commit`] of block `H`, then
+    /// - `last_block_height = H-1`
+    /// - `last_block_app_hash = <hash returned by Commit for block H-1, which is the hash in the header of block H>`
+    ///
+    /// [`info`]: trait.Info.html#tymethod.info
+    /// [`commit`]: trait.Consensus.html#tymethod.commit
+    fn info(&self, info_request: InfoRequest) -> InfoResponse;
 
     /// Set non-consensus critical application specific options.
     fn set_option(&self, _set_option_request: SetOptionRequest) -> Result<SetOptionResponse> {
