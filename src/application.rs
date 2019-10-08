@@ -9,17 +9,17 @@ pub trait Info: Send + Sync {
     }
 
     /// Return information about the application state.
-    fn info(&self, info_request: InfoRequest) -> InfoResponse {
+    fn info(&self, _info_request: InfoRequest) -> InfoResponse {
         Default::default()
     }
 
     /// Set non-consensus critical application specific options.
-    fn set_option(&self, set_option_request: SetOptionRequest) -> Result<SetOptionResponse> {
+    fn set_option(&self, _set_option_request: SetOptionRequest) -> Result<SetOptionResponse> {
         Ok(Default::default())
     }
 
     /// Query for data from the application at current or past height.
-    fn query(&self, query_request: QueryRequest) -> Result<QueryResponse> {
+    fn query(&self, _query_request: QueryRequest) -> Result<QueryResponse> {
         Ok(Default::default())
     }
 }
@@ -111,7 +111,7 @@ pub trait Consensus: Send + Sync {
 pub trait Mempool: Send + Sync {
     /// Guardian of the mempool: every node runs CheckTx before letting a transaction into its local mempool.
     /// Technically optional - not involved in processing blocks
-    fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse> {
+    fn check_tx(&self, _check_tx_request: CheckTxRequest) -> Result<CheckTxResponse> {
         Ok(Default::default())
     }
 }

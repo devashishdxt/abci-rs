@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+//! Types used in ABCI
 mod begin_block;
 mod check_tx;
 mod commit;

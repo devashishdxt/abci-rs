@@ -10,4 +10,5 @@ pub struct Error {
     pub info: String,
 }
 
+/// ABCI Result
 pub type Result<T> = std::result::Result<T, Error>;
