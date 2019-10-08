@@ -4,5 +4,5 @@ mod proto;
 
 pub mod types;
 
-pub use application::Application;
+pub use application::{Consensus, Info, Mempool};
 pub use error::{Error, Result};
