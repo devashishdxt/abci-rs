@@ -25,14 +25,14 @@ pub struct QueryRequest {
     pub prove: bool,
 }
 
-impl From<QueryRequest> for RequestQuery {
-    fn from(query_request: QueryRequest) -> RequestQuery {
-        let mut request_query = RequestQuery::new();
-        request_query.data = query_request.data;
-        request_query.path = query_request.path;
-        request_query.height = query_request.height;
-        request_query.prove = query_request.prove;
-        request_query
+impl From<RequestQuery> for QueryRequest {
+    fn from(request_query: RequestQuery) -> QueryRequest {
+        QueryRequest {
+            data: request_query.data,
+            path: request_query.path,
+            height: request_query.height,
+            prove: request_query.prove,
+        }
     }
 }
 

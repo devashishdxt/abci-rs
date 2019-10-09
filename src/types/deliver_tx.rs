@@ -8,11 +8,11 @@ pub struct DeliverTxRequest {
     pub tx: Vec<u8>,
 }
 
-impl From<DeliverTxRequest> for RequestDeliverTx {
-    fn from(deliver_tx_request: DeliverTxRequest) -> RequestDeliverTx {
-        let mut request_deliver_tx = RequestDeliverTx::new();
-        request_deliver_tx.tx = deliver_tx_request.tx;
-        request_deliver_tx
+impl From<RequestDeliverTx> for DeliverTxRequest {
+    fn from(request_deliver_tx: RequestDeliverTx) -> DeliverTxRequest {
+        DeliverTxRequest {
+            tx: request_deliver_tx.tx,
+        }
     }
 }
 

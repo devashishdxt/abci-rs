@@ -21,29 +21,25 @@ pub struct InitChainRequest {
     pub app_state_bytes: Vec<u8>,
 }
 
-impl From<InitChainRequest> for RequestInitChain {
-    fn from(init_chain_request: InitChainRequest) -> RequestInitChain {
-        let mut request_init_chain = RequestInitChain::new();
-        request_init_chain.time = init_chain_request
-            .time
-            .map(|time| {
-                let mut timestamp = Timestamp::new();
-                timestamp.seconds = time.as_secs() as i64;
-                timestamp.nanos = time.subsec_nanos() as i32;
-                timestamp
-            })
-            .into();
-        request_init_chain.chain_id = init_chain_request.chain_id;
-        request_init_chain.consensus_params =
-            init_chain_request.consensus_params.map(Into::into).into();
-        request_init_chain.validators = init_chain_request
-            .validators
-            .into_iter()
-            .map(Into::into)
-            .collect::<Vec<ProtoValidatorUpdate>>()
-            .into();
-
-        request_init_chain
+impl From<RequestInitChain> for InitChainRequest {
+    fn from(request_init_chain: RequestInitChain) -> InitChainRequest {
+        InitChainRequest {
+            time: request_init_chain
+                .time
+                .into_option()
+                .map(|timestamp| Duration::new(timestamp.seconds as u64, timestamp.nanos as u32)),
+            chain_id: request_init_chain.chain_id,
+            consensus_params: request_init_chain
+                .consensus_params
+                .into_option()
+                .map(Into::into),
+            validators: request_init_chain
+                .validators
+                .into_iter()
+                .map(Into::into)
+                .collect(),
+            app_state_bytes: request_init_chain.app_state_bytes,
+        }
     }
 }
 

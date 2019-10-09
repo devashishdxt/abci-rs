@@ -9,11 +9,11 @@ pub struct EndBlockRequest {
     pub height: i64,
 }
 
-impl From<EndBlockRequest> for RequestEndBlock {
-    fn from(end_block_request: EndBlockRequest) -> RequestEndBlock {
-        let mut request_end_block = RequestEndBlock::new();
-        request_end_block.height = end_block_request.height;
-        request_end_block
+impl From<RequestEndBlock> for EndBlockRequest {
+    fn from(request_end_block: RequestEndBlock) -> EndBlockRequest {
+        EndBlockRequest {
+            height: request_end_block.height,
+        }
     }
 }
 

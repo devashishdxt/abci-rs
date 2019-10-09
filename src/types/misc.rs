@@ -33,6 +33,22 @@ impl From<ConsensusParams> for ProtoConsensusParams {
     }
 }
 
+impl From<ProtoConsensusParams> for ConsensusParams {
+    fn from(proto_consensus_params: ProtoConsensusParams) -> ConsensusParams {
+        ConsensusParams {
+            block: proto_consensus_params.block.into_option().map(Into::into),
+            evidence: proto_consensus_params
+                .evidence
+                .into_option()
+                .map(Into::into),
+            validator: proto_consensus_params
+                .validator
+                .into_option()
+                .map(Into::into),
+        }
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct BlockParams {
     /// Max size of a block, in bytes
@@ -52,6 +68,15 @@ impl From<BlockParams> for ProtoBlockParams {
         proto_block_params.max_bytes = block_params.max_bytes;
         proto_block_params.max_gas = block_params.max_gas;
         proto_block_params
+    }
+}
+
+impl From<ProtoBlockParams> for BlockParams {
+    fn from(proto_block_params: ProtoBlockParams) -> BlockParams {
+        BlockParams {
+            max_bytes: proto_block_params.max_bytes,
+            max_gas: proto_block_params.max_gas,
+        }
     }
 }
 
@@ -75,6 +100,14 @@ impl From<EvidenceParams> for ProtoEvidenceParams {
     }
 }
 
+impl From<ProtoEvidenceParams> for EvidenceParams {
+    fn from(proto_evidence_params: ProtoEvidenceParams) -> EvidenceParams {
+        EvidenceParams {
+            max_age: proto_evidence_params.max_age,
+        }
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct ValidatorParams {
     /// List of accepted public key types (uses same naming as `PublicKey.public_key_type`)
@@ -86,6 +119,14 @@ impl From<ValidatorParams> for ProtoValidatorParams {
         let mut proto_validator_params = ProtoValidatorParams::new();
         proto_validator_params.pub_key_types = validator_params.public_key_types.into();
         proto_validator_params
+    }
+}
+
+impl From<ProtoValidatorParams> for ValidatorParams {
+    fn from(proto_validator_params: ProtoValidatorParams) -> ValidatorParams {
+        ValidatorParams {
+            public_key_types: proto_validator_params.pub_key_types.into_vec(),
+        }
     }
 }
 
@@ -106,6 +147,15 @@ impl From<ValidatorUpdate> for ProtoValidatorUpdate {
     }
 }
 
+impl From<ProtoValidatorUpdate> for ValidatorUpdate {
+    fn from(proto_validator_update: ProtoValidatorUpdate) -> ValidatorUpdate {
+        ValidatorUpdate {
+            public_key: proto_validator_update.pub_key.into_option().map(Into::into),
+            power: proto_validator_update.power,
+        }
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct PublicKey {
     /// Type of the public key. A simple string like "ed25519" (in the future, may indicate a serialization algorithm to
@@ -122,6 +172,15 @@ impl From<PublicKey> for ProtoPublicKey {
         proto_public_key.field_type = public_key.public_key_type;
         proto_public_key.data = public_key.data;
         proto_public_key
+    }
+}
+
+impl From<ProtoPublicKey> for PublicKey {
+    fn from(proto_public_key: ProtoPublicKey) -> PublicKey {
+        PublicKey {
+            public_key_type: proto_public_key.field_type,
+            data: proto_public_key.data,
+        }
     }
 }
 
@@ -177,12 +236,12 @@ pub struct Version {
     pub app: u64,
 }
 
-impl From<Version> for ProtoVersion {
-    fn from(version: Version) -> ProtoVersion {
-        let mut proto_version = ProtoVersion::new();
-        proto_version.Block = version.block;
-        proto_version.App = version.app;
-        proto_version
+impl From<ProtoVersion> for Version {
+    fn from(proto_version: ProtoVersion) -> Version {
+        Version {
+            block: proto_version.Block,
+            app: proto_version.App,
+        }
     }
 }
 
@@ -192,12 +251,12 @@ pub struct PartSetHeader {
     pub hash: Vec<u8>,
 }
 
-impl From<PartSetHeader> for ProtoPartSetHeader {
-    fn from(part_set_header: PartSetHeader) -> ProtoPartSetHeader {
-        let mut proto_part_set_header = ProtoPartSetHeader::new();
-        proto_part_set_header.total = part_set_header.total;
-        proto_part_set_header.hash = part_set_header.hash;
-        proto_part_set_header
+impl From<ProtoPartSetHeader> for PartSetHeader {
+    fn from(proto_part_set_header: ProtoPartSetHeader) -> PartSetHeader {
+        PartSetHeader {
+            total: proto_part_set_header.total,
+            hash: proto_part_set_header.hash,
+        }
     }
 }
 
@@ -207,12 +266,12 @@ pub struct BlockId {
     pub parts_header: Option<PartSetHeader>,
 }
 
-impl From<BlockId> for ProtoBlockId {
-    fn from(block_id: BlockId) -> ProtoBlockId {
-        let mut proto_block_id = ProtoBlockId::new();
-        proto_block_id.hash = block_id.hash;
-        proto_block_id.parts_header = block_id.parts_header.map(Into::into).into();
-        proto_block_id
+impl From<ProtoBlockId> for BlockId {
+    fn from(proto_block_id: ProtoBlockId) -> BlockId {
+        BlockId {
+            hash: proto_block_id.hash,
+            parts_header: proto_block_id.parts_header.into_option().map(Into::into),
+        }
     }
 }
 
@@ -254,34 +313,29 @@ pub struct Header {
     pub proposer_address: Vec<u8>,
 }
 
-impl From<Header> for ProtoHeader {
-    fn from(header: Header) -> ProtoHeader {
-        let mut proto_header = ProtoHeader::new();
-        proto_header.version = header.version.map(Into::into).into();
-        proto_header.chain_id = header.chain_id;
-        proto_header.height = header.height;
-        proto_header.time = header
-            .time
-            .map(|time| {
-                let mut timestamp = Timestamp::new();
-                timestamp.seconds = time.as_secs() as i64;
-                timestamp.nanos = time.subsec_nanos() as i32;
-                timestamp
-            })
-            .into();
-        proto_header.num_txs = header.num_txs;
-        proto_header.total_txs = header.total_txs;
-        proto_header.last_block_id = header.last_block_id.map(Into::into).into();
-        proto_header.last_commit_hash = header.last_commit_hash;
-        proto_header.data_hash = header.data_hash;
-        proto_header.validators_hash = header.validators_hash;
-        proto_header.next_validators_hash = header.next_validators_hash;
-        proto_header.consensus_hash = header.consensus_hash;
-        proto_header.app_hash = header.app_hash;
-        proto_header.last_results_hash = header.last_results_hash;
-        proto_header.evidence_hash = header.evidence_hash;
-        proto_header.proposer_address = header.proposer_address;
-        proto_header
+impl From<ProtoHeader> for Header {
+    fn from(proto_header: ProtoHeader) -> Header {
+        Header {
+            version: proto_header.version.into_option().map(Into::into),
+            chain_id: proto_header.chain_id,
+            height: proto_header.height,
+            time: proto_header
+                .time
+                .into_option()
+                .map(|timestamp| Duration::new(timestamp.seconds as u64, timestamp.nanos as u32)),
+            num_txs: proto_header.num_txs,
+            total_txs: proto_header.total_txs,
+            last_block_id: proto_header.last_block_id.into_option().map(Into::into),
+            last_commit_hash: proto_header.last_commit_hash,
+            data_hash: proto_header.data_hash,
+            validators_hash: proto_header.validators_hash,
+            next_validators_hash: proto_header.next_validators_hash,
+            consensus_hash: proto_header.consensus_hash,
+            app_hash: proto_header.app_hash,
+            last_results_hash: proto_header.last_results_hash,
+            evidence_hash: proto_header.evidence_hash,
+            proposer_address: proto_header.proposer_address,
+        }
     }
 }
 
@@ -293,12 +347,12 @@ pub struct Validator {
     pub power: i64,
 }
 
-impl From<Validator> for ProtoValidator {
-    fn from(validator: Validator) -> ProtoValidator {
-        let mut proto_validator = ProtoValidator::new();
-        proto_validator.address = validator.address;
-        proto_validator.power = validator.power;
-        proto_validator
+impl From<ProtoValidator> for Validator {
+    fn from(proto_validator: ProtoValidator) -> Validator {
+        Validator {
+            address: proto_validator.address,
+            power: proto_validator.power,
+        }
     }
 }
 
@@ -310,12 +364,12 @@ pub struct VoteInfo {
     pub signed_last_block: bool,
 }
 
-impl From<VoteInfo> for ProtoVoteInfo {
-    fn from(vote_info: VoteInfo) -> ProtoVoteInfo {
-        let mut proto_vote_info = ProtoVoteInfo::new();
-        proto_vote_info.validator = vote_info.validator.map(Into::into).into();
-        proto_vote_info.signed_last_block = vote_info.signed_last_block;
-        proto_vote_info
+impl From<ProtoVoteInfo> for VoteInfo {
+    fn from(proto_vote_info: ProtoVoteInfo) -> VoteInfo {
+        VoteInfo {
+            validator: proto_vote_info.validator.into_option().map(Into::into),
+            signed_last_block: proto_vote_info.signed_last_block,
+        }
     }
 }
 
@@ -328,17 +382,16 @@ pub struct LastCommitInfo {
     pub votes: Vec<VoteInfo>,
 }
 
-impl From<LastCommitInfo> for ProtoLastCommitInfo {
-    fn from(last_commit_info: LastCommitInfo) -> ProtoLastCommitInfo {
-        let mut proto_last_commit_info = ProtoLastCommitInfo::new();
-        proto_last_commit_info.round = last_commit_info.round;
-        proto_last_commit_info.votes = last_commit_info
-            .votes
-            .into_iter()
-            .map(Into::into)
-            .collect::<Vec<ProtoVoteInfo>>()
-            .into();
-        proto_last_commit_info
+impl From<ProtoLastCommitInfo> for LastCommitInfo {
+    fn from(proto_last_commit_info: ProtoLastCommitInfo) -> LastCommitInfo {
+        LastCommitInfo {
+            round: proto_last_commit_info.round,
+            votes: proto_last_commit_info
+                .votes
+                .into_iter()
+                .map(Into::into)
+                .collect(),
+        }
     }
 }
 
@@ -357,23 +410,18 @@ pub struct Evidence {
     pub total_voting_power: i64,
 }
 
-impl From<Evidence> for ProtoEvidence {
-    fn from(evidence: Evidence) -> ProtoEvidence {
-        let mut proto_evidence = ProtoEvidence::new();
-        proto_evidence.field_type = evidence.evidence_type;
-        proto_evidence.validator = evidence.validator.map(Into::into).into();
-        proto_evidence.height = evidence.height;
-        proto_evidence.time = evidence
-            .time
-            .map(|time| {
-                let mut timestamp = Timestamp::new();
-                timestamp.seconds = time.as_secs() as i64;
-                timestamp.nanos = time.subsec_nanos() as i32;
-                timestamp
-            })
-            .into();
-        proto_evidence.total_voting_power = evidence.total_voting_power;
-        proto_evidence
+impl From<ProtoEvidence> for Evidence {
+    fn from(proto_evidence: ProtoEvidence) -> Evidence {
+        Evidence {
+            evidence_type: proto_evidence.field_type,
+            validator: proto_evidence.validator.into_option().map(Into::into),
+            height: proto_evidence.height,
+            time: proto_evidence
+                .time
+                .into_option()
+                .map(|timestamp| Duration::new(timestamp.seconds as u64, timestamp.nanos as u32)),
+            total_voting_power: proto_evidence.total_voting_power,
+        }
     }
 }
 

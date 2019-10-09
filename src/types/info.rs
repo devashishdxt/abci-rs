@@ -10,13 +10,13 @@ pub struct InfoRequest {
     pub p2p_version: u64,
 }
 
-impl From<InfoRequest> for RequestInfo {
-    fn from(info_request: InfoRequest) -> RequestInfo {
-        let mut request_info = RequestInfo::new();
-        request_info.version = info_request.version;
-        request_info.block_version = info_request.block_version;
-        request_info.p2p_version = info_request.p2p_version;
-        request_info
+impl From<RequestInfo> for InfoRequest {
+    fn from(request_info: RequestInfo) -> InfoRequest {
+        InfoRequest {
+            version: request_info.version,
+            block_version: request_info.block_version,
+            p2p_version: request_info.p2p_version,
+        }
     }
 }
 

@@ -9,12 +9,12 @@ pub struct SetOptionRequest {
     pub value: String,
 }
 
-impl From<SetOptionRequest> for RequestSetOption {
-    fn from(set_option_request: SetOptionRequest) -> RequestSetOption {
-        let mut request_set_option = RequestSetOption::new();
-        request_set_option.key = set_option_request.key;
-        request_set_option.value = set_option_request.value;
-        request_set_option
+impl From<RequestSetOption> for SetOptionRequest {
+    fn from(request_set_option: RequestSetOption) -> SetOptionRequest {
+        SetOptionRequest {
+            key: request_set_option.key,
+            value: request_set_option.value,
+        }
     }
 }
 

@@ -15,20 +15,21 @@ pub struct BeginBlockRequest {
     pub byzantine_validators: Vec<Evidence>,
 }
 
-impl From<BeginBlockRequest> for RequestBeginBlock {
-    fn from(begin_block_request: BeginBlockRequest) -> RequestBeginBlock {
-        let mut request_begin_block = RequestBeginBlock::new();
-        request_begin_block.hash = begin_block_request.hash;
-        request_begin_block.header = begin_block_request.header.map(Into::into).into();
-        request_begin_block.last_commit_info =
-            begin_block_request.last_commit_info.map(Into::into).into();
-        request_begin_block.byzantine_validators = begin_block_request
-            .byzantine_validators
-            .into_iter()
-            .map(Into::into)
-            .collect::<Vec<ProtoEvidence>>()
-            .into();
-        request_begin_block
+impl From<RequestBeginBlock> for BeginBlockRequest {
+    fn from(request_begin_block: RequestBeginBlock) -> BeginBlockRequest {
+        BeginBlockRequest {
+            hash: request_begin_block.hash,
+            header: request_begin_block.header.into_option().map(Into::into),
+            last_commit_info: request_begin_block
+                .last_commit_info
+                .into_option()
+                .map(Into::into),
+            byzantine_validators: request_begin_block
+                .byzantine_validators
+                .into_iter()
+                .map(Into::into)
+                .collect(),
+        }
     }
 }
 

@@ -8,11 +8,11 @@ pub struct CheckTxRequest {
     pub tx: Vec<u8>,
 }
 
-impl From<CheckTxRequest> for RequestCheckTx {
-    fn from(check_tx_request: CheckTxRequest) -> RequestCheckTx {
-        let mut request_check_tx = RequestCheckTx::new();
-        request_check_tx.tx = check_tx_request.tx;
-        request_check_tx
+impl From<RequestCheckTx> for CheckTxRequest {
+    fn from(request_check_tx: RequestCheckTx) -> CheckTxRequest {
+        CheckTxRequest {
+            tx: request_check_tx.tx,
+        }
     }
 }
 
