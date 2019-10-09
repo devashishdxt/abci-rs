@@ -51,17 +51,17 @@ where
         mempool_thread(mempool, mempool_receiver);
         info_thread(info, info_receiver);
 
-        start_io_thread(address, consensus_sender, mempool_sender, info_sender);
+        run_io_loop(address, consensus_sender, mempool_sender, info_sender);
     }
 }
 
-fn start_io_thread(
+fn run_io_loop(
     address: SocketAddr,
     consensus_sender: Sender<(Request, TcpStream)>,
     mempool_sender: Sender<(Request, TcpStream)>,
     info_sender: Sender<(Request, TcpStream)>,
 ) {
-    let handle = thread::spawn(move || loop {
+    loop {
         let listener = TcpListener::bind(address).unwrap();
         log::info!("Started ABCI server on {}", address);
 
@@ -69,6 +69,8 @@ fn start_io_thread(
             match stream {
                 Ok(stream) => match decode(&stream) {
                     Ok(request) => {
+                        log::trace!("Received request: {:?}", request);
+
                         if let Some(request_type) = <Option<RequestType>>::from(&request) {
                             if let Err(err) = match request_type {
                                 RequestType::Consensus => consensus_sender.send((request, stream)),
@@ -89,9 +91,7 @@ fn start_io_thread(
                 Err(err) => log::error!("Connection error: {}", err),
             }
         }
-    });
-
-    let _ = handle.join();
+    }
 }
 
 fn consensus_thread<C: Consensus + 'static>(
@@ -175,6 +175,8 @@ fn info_thread<I: Info + 'static>(info: I, info_receiver: Receiver<(Request, Tcp
 fn respond(stream: TcpStream, value: Response_oneof_value) {
     let mut response = Response::new();
     response.value = Some(value);
+
+    log::trace!("Sending response: {:?}", response);
 
     if let Err(err) = encode(response, stream) {
         log::error!("Error while writing to stream: {}", err);
