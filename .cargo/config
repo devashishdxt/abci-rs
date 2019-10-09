@@ -1,0 +1,3 @@
+[alias]
+# Generates Rust code from .proto files
+gen-proto = "run --package gen-proto"
