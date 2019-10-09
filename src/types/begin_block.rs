@@ -35,7 +35,7 @@ impl From<BeginBlockRequest> for RequestBeginBlock {
 #[derive(Debug, Default)]
 pub struct BeginBlockResponse {
     /// Events for filtering and indexing
-    events: Vec<Event>,
+    pub events: Vec<Event>,
 }
 
 impl From<BeginBlockResponse> for ResponseBeginBlock {

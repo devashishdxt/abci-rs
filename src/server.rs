@@ -1,4 +1,4 @@
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::mpsc::channel};
 
 use crate::{Consensus, Info, Mempool};
 
@@ -32,6 +32,10 @@ where
 
     /// Start ABCI server
     pub fn run(self, address: SocketAddr) {
+        let (consensus_sender, consensus_receiver) = channel();
+        let (mempool_sender, mempool_receiver) = channel();
+        let (info_sender, info_receiver) = channel();
+
         unimplemented!()
     }
 }

@@ -133,7 +133,7 @@ pub struct Proof {
     ///
     /// - The Merkle root of one op is the value being proven in the next op
     /// - The Merkle root of the final op should equal the ultimate root hash being verified against
-    ops: Vec<ProofOp>,
+    pub ops: Vec<ProofOp>,
 }
 
 impl From<Proof> for ProtoProof {
@@ -172,9 +172,9 @@ impl From<ProofOp> for ProtoProofOp {
 #[derive(Debug, Default)]
 pub struct Version {
     /// Protocol version of the blockchain data structures
-    block: u64,
+    pub block: u64,
     /// Protocol version of the application
-    app: u64,
+    pub app: u64,
 }
 
 impl From<Version> for ProtoVersion {
@@ -322,10 +322,10 @@ impl From<VoteInfo> for ProtoVoteInfo {
 #[derive(Debug, Default)]
 pub struct LastCommitInfo {
     /// Commit round
-    round: i32,
+    pub round: i32,
     /// List of validators addresses in the last validator set with their voting power and whether or not they signed a
     /// vote.
-    votes: Vec<VoteInfo>,
+    pub votes: Vec<VoteInfo>,
 }
 
 impl From<LastCommitInfo> for ProtoLastCommitInfo {
@@ -379,8 +379,10 @@ impl From<Evidence> for ProtoEvidence {
 
 #[derive(Debug, Default)]
 pub struct KeyValuePair {
-    key: Vec<u8>,
-    value: Vec<u8>,
+    /// Key
+    pub key: Vec<u8>,
+    /// Value
+    pub value: Vec<u8>,
 }
 
 impl From<KeyValuePair> for ProtoKeyValuePair {
@@ -394,8 +396,10 @@ impl From<KeyValuePair> for ProtoKeyValuePair {
 
 #[derive(Debug, Default)]
 pub struct Event {
-    event_type: String,
-    attributes: Vec<KeyValuePair>,
+    /// Event type
+    pub event_type: String,
+    /// Attributes
+    pub attributes: Vec<KeyValuePair>,
 }
 
 impl From<Event> for ProtoEvent {
