@@ -1,6 +1,4 @@
-use crate::proto::abci::{
-    Event as ProtoEvent, Evidence as ProtoEvidence, RequestBeginBlock, ResponseBeginBlock,
-};
+use crate::proto::abci::{Event as ProtoEvent, RequestBeginBlock, ResponseBeginBlock};
 use crate::types::{Event, Evidence, Header, LastCommitInfo};
 
 #[derive(Debug, Default)]

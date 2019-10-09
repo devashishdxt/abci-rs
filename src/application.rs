@@ -92,6 +92,9 @@ pub trait Consensus: Send + Sync {
     /// [_Mempool_]: trait.Mempool.html#details
     /// [_Info_]: trait.Info.html
     fn commit(&self) -> CommitResponse;
+
+    /// Signals that messages queued on the client should be flushed to the server.
+    fn flush(&self) {}
 }
 
 /// Trait for managing tendermint's mempool.

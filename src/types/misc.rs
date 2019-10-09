@@ -1,7 +1,5 @@
 use std::time::Duration;
 
-use protobuf::well_known_types::Timestamp;
-
 use crate::proto::abci::{
     BlockID as ProtoBlockId, BlockParams as ProtoBlockParams,
     ConsensusParams as ProtoConsensusParams, Event as ProtoEvent, Evidence as ProtoEvidence,

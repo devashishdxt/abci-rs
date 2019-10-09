@@ -1,7 +1,5 @@
 use std::time::Duration;
 
-use protobuf::well_known_types::Timestamp;
-
 use crate::proto::abci::{
     RequestInitChain, ResponseInitChain, ValidatorUpdate as ProtoValidatorUpdate,
 };
