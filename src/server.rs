@@ -99,6 +99,47 @@ fn consensus_thread<C: Consensus + 'static>(
     consensus_receiver: Receiver<(Request, TcpStream)>,
 ) {
     thread::spawn(move || {
+        #[derive(Debug, Clone, Copy)]
+        enum ConsensusState {
+            InitChain,
+            BeginBlock,
+            DeliverTx,
+            EndBlock,
+            Commit,
+        }
+
+        impl Default for ConsensusState {
+            #[inline]
+            fn default() -> Self {
+                ConsensusState::InitChain
+            }
+        }
+
+        impl ConsensusState {
+            fn is_valid_next(self, next: ConsensusState) -> bool {
+                match (self, next) {
+                    (ConsensusState::InitChain, ConsensusState::InitChain) => true,
+                    (ConsensusState::InitChain, ConsensusState::BeginBlock) => true,
+                    (ConsensusState::BeginBlock, ConsensusState::DeliverTx) => true,
+                    (ConsensusState::DeliverTx, ConsensusState::DeliverTx) => true,
+                    (ConsensusState::DeliverTx, ConsensusState::EndBlock) => true,
+                    (ConsensusState::EndBlock, ConsensusState::Commit) => true,
+                    (ConsensusState::Commit, ConsensusState::BeginBlock) => true,
+                    _ => false,
+                }
+            }
+
+            fn validate(&mut self, mut next: ConsensusState) {
+                if self.is_valid_next(next) {
+                    std::mem::swap(self, &mut next);
+                } else {
+                    panic!("{:?} cannot be called after {:?}", next, self);
+                }
+            }
+        }
+
+        let mut consensus_state = ConsensusState::default();
+
         for (request, stream) in consensus_receiver.into_iter() {
             let value = match request.value.unwrap() {
                 Request_oneof_value::flush(_) => {
@@ -106,18 +147,23 @@ fn consensus_thread<C: Consensus + 'static>(
                     Response_oneof_value::flush(ResponseFlush::new())
                 }
                 Request_oneof_value::init_chain(request) => {
+                    consensus_state.validate(ConsensusState::InitChain);
                     Response_oneof_value::init_chain(consensus.init_chain(request.into()).into())
                 }
                 Request_oneof_value::begin_block(request) => {
+                    consensus_state.validate(ConsensusState::BeginBlock);
                     Response_oneof_value::begin_block(consensus.begin_block(request.into()).into())
                 }
                 Request_oneof_value::deliver_tx(request) => {
+                    consensus_state.validate(ConsensusState::DeliverTx);
                     Response_oneof_value::deliver_tx(consensus.deliver_tx(request.into()).into())
                 }
                 Request_oneof_value::end_block(request) => {
+                    consensus_state.validate(ConsensusState::EndBlock);
                     Response_oneof_value::end_block(consensus.end_block(request.into()).into())
                 }
                 Request_oneof_value::commit(_) => {
+                    consensus_state.validate(ConsensusState::Commit);
                     Response_oneof_value::commit(consensus.commit().into())
                 }
                 _ => unreachable!("Non-consensus request cannot be handled by consensus thread"),

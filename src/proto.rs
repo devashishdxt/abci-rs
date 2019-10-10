@@ -15,7 +15,7 @@ pub fn decode<R: Read>(mut reader: R) -> Result<Request> {
 }
 
 pub fn encode<W: Write>(message: Response, mut writer: W) -> Result<()> {
-    writer.write_varint(message.compute_size() as i64)?;
+    writer.write_varint(i64::from(message.compute_size()))?;
     message
         .write_to_writer(&mut writer)
         .map_err(|e| Error::new(ErrorKind::Other, e))
