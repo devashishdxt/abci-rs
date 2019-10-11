@@ -10,7 +10,9 @@ edition = "2018"
 log = "0.4"
 protobuf = "2.8"
 integer-encoding = "1.0"
-# tokio = { version = "0.2.0-alpha.5", default-features = false, features = ["tcp"] }
+
+[dev-dependencies]
+env_logger = "0.7"
 
 [workspace]
 members = ["gen-proto"]
