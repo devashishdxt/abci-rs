@@ -125,7 +125,7 @@ fn parse_bytes_to_counter(bytes: &[u8]) -> Result<u64> {
     Ok(u64::from_be_bytes(counter_bytes))
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
     env_logger::init();
 
     let counter_state: Arc<Mutex<CounterState>> = Default::default();
@@ -135,5 +135,5 @@ fn main() {
     let info = InfoConnection::new(counter_state.clone());
 
     let server = Server::new(consensus, mempool, info);
-    server.run("127.0.0.1:26658".parse().unwrap());
+    server.start("127.0.0.1:26658".parse().unwrap())
 }

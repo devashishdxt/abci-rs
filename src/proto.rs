@@ -10,9 +10,16 @@ use protobuf::{parse_from_reader, Message};
 use self::abci::{Request, Response};
 
 #[allow(dead_code)]
-pub fn decode<R: Read>(mut reader: R) -> Result<Request> {
-    reader.read_varint::<i64>()?;
-    parse_from_reader::<Request>(&mut reader).map_err(|e| Error::new(ErrorKind::InvalidData, e))
+pub fn decode<R: Read>(mut reader: R) -> Result<Option<Request>> {
+    let length = reader.read_varint::<i64>()?;
+
+    if length == 0 {
+        return Ok(None);
+    }
+
+    parse_from_reader::<Request>(&mut reader.take(length as u64))
+        .map(Some)
+        .map_err(|e| Error::new(ErrorKind::InvalidData, e))
 }
 
 pub fn encode<W: Write>(message: Response, mut writer: W) -> Result<()> {
