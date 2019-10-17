@@ -5,7 +5,7 @@ fn main() {
         out_dir: "src/proto",
         includes: &["gen-proto/assets"],
         input: &[
-            "gen-proto/assets/abci.proto",
+            "gen-proto/assets/github.com/tendermint/tendermint/abci//types/types.proto",
             "gen-proto/assets/github.com/tendermint/tendermint/libs/common/types.proto",
             "gen-proto/assets/github.com/tendermint/tendermint/crypto/merkle/merkle.proto",
         ],
