@@ -132,7 +132,7 @@ where
 
                     respond(&mut stream, value);
                 }
-                Ok(None) => continue,
+                Ok(None) => log::trace!("Received empty request"),
                 Err(e) => panic!("Error while receiving ABCI request from socket: {}", e),
             }
         });
@@ -147,33 +147,6 @@ fn respond(stream: &mut TcpStream, value: Response_oneof_value) {
 
     if let Err(err) = encode(response, stream) {
         log::error!("Error while writing to stream: {}", err);
-    }
-}
-
-#[derive(Debug)]
-enum RequestType {
-    Consensus,
-    Mempool,
-    Info,
-}
-
-impl From<&Request> for Option<RequestType> {
-    fn from(request: &Request) -> Option<RequestType> {
-        let request = request.value.as_ref()?;
-
-        match request {
-            Request_oneof_value::echo(_) => Some(RequestType::Info),
-            Request_oneof_value::flush(_) => Some(RequestType::Consensus),
-            Request_oneof_value::info(_) => Some(RequestType::Info),
-            Request_oneof_value::set_option(_) => Some(RequestType::Info),
-            Request_oneof_value::init_chain(_) => Some(RequestType::Consensus),
-            Request_oneof_value::query(_) => Some(RequestType::Info),
-            Request_oneof_value::begin_block(_) => Some(RequestType::Consensus),
-            Request_oneof_value::check_tx(_) => Some(RequestType::Mempool),
-            Request_oneof_value::deliver_tx(_) => Some(RequestType::Consensus),
-            Request_oneof_value::end_block(_) => Some(RequestType::Consensus),
-            Request_oneof_value::commit(_) => Some(RequestType::Consensus),
-        }
     }
 }
 
