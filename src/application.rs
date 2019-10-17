@@ -128,7 +128,5 @@ pub trait Consensus: Send + Sync {
 pub trait Mempool: Send + Sync {
     /// Guardian of the mempool: every node runs CheckTx before letting a transaction into its local mempool.
     /// Technically optional - not involved in processing blocks
-    fn check_tx(&self, _check_tx_request: CheckTxRequest) -> Result<CheckTxResponse> {
-        Ok(Default::default())
-    }
+    fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse>;
 }

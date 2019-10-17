@@ -17,10 +17,13 @@ pub struct ConsensusConnection {
 }
 
 impl ConsensusConnection {
-    pub fn new(state: Arc<Mutex<CounterState>>) -> Self {
+    pub fn new(
+        committed_state: Arc<Mutex<CounterState>>,
+        current_state: Arc<Mutex<Option<CounterState>>>,
+    ) -> Self {
         Self {
-            committed_state: state,
-            current_state: Default::default(),
+            committed_state,
+            current_state,
         }
     }
 }
@@ -80,10 +83,36 @@ impl Consensus for ConsensusConnection {
     }
 }
 
-#[derive(Debug, Default)]
-pub struct MempoolConnection;
+#[derive(Debug)]
+pub struct MempoolConnection {
+    state: Arc<Mutex<Option<CounterState>>>,
+}
 
-impl Mempool for MempoolConnection {}
+impl MempoolConnection {
+    pub fn new(state: Arc<Mutex<Option<CounterState>>>) -> Self {
+        Self { state }
+    }
+}
+
+impl Mempool for MempoolConnection {
+    fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse> {
+        let new_counter = parse_bytes_to_counter(&check_tx_request.tx)?;
+
+        let state_lock = self.state.lock().unwrap();
+        let state = state_lock.as_ref().unwrap();
+
+        if state.counter + 1 != new_counter {
+            Err(Error {
+                code: 2,
+                codespace: "Validation error".to_owned(),
+                log: "Only consecutive integers are allowed".to_owned(),
+                info: "Numbers to counter app should be supplied in increasing order of consecutive integers staring from 1".to_owned(),
+            })
+        } else {
+            Ok(Default::default())
+        }
+    }
+}
 
 pub struct InfoConnection {
     state: Arc<Mutex<CounterState>>,
@@ -128,11 +157,12 @@ fn parse_bytes_to_counter(bytes: &[u8]) -> Result<u64> {
 fn main() -> std::io::Result<()> {
     env_logger::init();
 
-    let counter_state: Arc<Mutex<CounterState>> = Default::default();
+    let committed_state: Arc<Mutex<CounterState>> = Default::default();
+    let current_state: Arc<Mutex<Option<CounterState>>> = Default::default();
 
-    let consensus = ConsensusConnection::new(counter_state.clone());
-    let mempool = MempoolConnection::default();
-    let info = InfoConnection::new(counter_state.clone());
+    let consensus = ConsensusConnection::new(committed_state.clone(), current_state.clone());
+    let mempool = MempoolConnection::new(current_state.clone());
+    let info = InfoConnection::new(committed_state.clone());
 
     let server = Server::new(consensus, mempool, info);
     server.start("127.0.0.1:26658".parse().unwrap())
