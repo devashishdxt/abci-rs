@@ -11,7 +11,6 @@ use crate::{
 };
 
 /// ABCI Server
-#[allow(dead_code)]
 pub struct Server<C, M, I>
 where
     C: Consensus,
@@ -130,7 +129,6 @@ where
     }
 }
 
-#[allow(dead_code)]
 fn respond(stream: &mut TcpStream, value: Response_oneof_value) {
     let mut response = Response::new();
     response.value = Some(value);
@@ -142,7 +140,6 @@ fn respond(stream: &mut TcpStream, value: Response_oneof_value) {
     }
 }
 
-#[allow(dead_code)]
 #[derive(Debug)]
 enum RequestType {
     Consensus,
@@ -170,7 +167,6 @@ impl From<&Request> for Option<RequestType> {
     }
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 enum ConsensusState {
     InitChain,
@@ -187,13 +183,13 @@ impl Default for ConsensusState {
     }
 }
 
-#[allow(dead_code)]
 impl ConsensusState {
     fn validate(&mut self, mut next: ConsensusState) {
         let is_valid = match (&self, next) {
             (ConsensusState::InitChain, ConsensusState::InitChain) => true,
             (ConsensusState::InitChain, ConsensusState::BeginBlock) => true,
             (ConsensusState::BeginBlock, ConsensusState::DeliverTx) => true,
+            (ConsensusState::BeginBlock, ConsensusState::EndBlock) => true,
             (ConsensusState::DeliverTx, ConsensusState::DeliverTx) => true,
             (ConsensusState::DeliverTx, ConsensusState::EndBlock) => true,
             (ConsensusState::EndBlock, ConsensusState::Commit) => true,

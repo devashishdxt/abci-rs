@@ -9,7 +9,6 @@ use protobuf::{parse_from_reader, Message};
 
 use self::abci::{Request, Response};
 
-#[allow(dead_code)]
 pub fn decode<R: Read>(mut reader: R) -> Result<Option<Request>> {
     let length = reader.read_varint::<i64>()?;
 
