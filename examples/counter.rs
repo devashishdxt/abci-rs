@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use abci_rs::{types::*, Consensus, Error, Info, Mempool, Result, Server};
+use abci::{types::*, Consensus, Error, Info, Mempool, Result, Server};
 
 /// Simple counter
 #[derive(Debug, Default, Clone)]
