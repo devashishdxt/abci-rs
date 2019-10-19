@@ -1,14 +1,16 @@
 [package]
 name = "abci-rs"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Devashish Dixit <devashishdxt@gmail.com>"]
 license = "MIT/Apache-2.0"
 description = "A Rust crate for creating ABCI applications"
 homepage = "https://github.com/devashishdxt/abci-rs"
+documentation = "https://devashishdxt.github.io/abci-rs/abci/"
 repository = "https://github.com/devashishdxt/abci-rs"
 categories = ["network-programming"]
 keywords = ["blockchain", "tendermint", "abci"]
 readme = "README.md"
+include = ["Cargo.toml", "src/**/*.rs", "README.md"]
 edition = "2018"
 
 [lib]
