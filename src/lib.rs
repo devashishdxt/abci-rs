@@ -1,5 +1,48 @@
 #![deny(missing_docs, unsafe_code, unstable_features)]
-//! Implementation of Tendermint ABCI protocol.
+//! A Rust crate for creating ABCI applications.
+//!
+//! ## ABCI Overview
+//!
+//! ABCI is the interface between Tendermint (a state-machine replication engine) and your application (the actual state
+//! machine). It consists of a set of methods, where each method has a corresponding `Request` and `Response` message type.
+//! Tendermint calls the ABCI methods on the ABCI application by sending the `Request` messages and receiving the `Response`
+//! messages in return.
+//!
+//! ABCI methods are split across 3 separate ABCI connections:
+//!
+//! - `Consensus` Connection: `InitChain`, `BeginBlock`, `DeliverTx`, `EndBlock`, `Commit`
+//! - `Mempool` Connection: `CheckTx`
+//! - `Info` Connection: `Info`, `SetOption`, `Query`
+//!
+//! Additionally, there is a `Flush` method that is called on every connection, and an `Echo` method that is just for
+//! debugging.
+//!
+//! To know more about ABCI protocol specifications, go to official ABCI [documentation](https://tendermint.com/docs/spec/abci/).
+//!
+//! ## Usage
+//!
+//! Add `abci-rs` in your `Cargo.toml`'s `dependencies` section:
+//!
+//! ```toml
+//! [dependencies]
+//! abci-rs = "0.1"
+//! ```
+//!
+//! Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,
+//! `Mempool` and `Info`.
+//!
+//! > Note: Implementations of these traits are expected to be `Send + Sync` and methods take immutable reference of `self`.
+//! So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.) constructs.
+//!
+//! After implementing all three above mentioned `trait`s, you can create a `Server` object and use `server.start()`
+//! function to start ABCI application.
+//!
+//! To know more, go to `examples/counter.rs` to see a sample ABCI application.
+//!
+//! ## Supported Versions
+//!
+//! - Tendermint v0.32.0
+//! - ABCI v0.16.0
 mod application;
 mod error;
 mod proto;
