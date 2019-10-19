@@ -1,0 +1,267 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `src/application.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>application.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../abci/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">error</span>::<span class="prelude-ty">Result</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">types</span>::<span class="kw-2">*</span>;
+
+<span class="doccomment">/// Trait for initialization and for queries from the user.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Info</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> {
+    <span class="doccomment">/// Echo a string to test abci client/server implementation.</span>
+    <span class="kw">fn</span> <span class="ident">echo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">message</span>: <span class="ident">String</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
+        <span class="ident">message</span>
+    }
+
+    <span class="doccomment">/// Return information about the application state.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Crash Recovery</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// On startup, Tendermint calls the [`info`] method to get the **latest committed state** of the app. The app</span>
+    <span class="doccomment">/// **MUST** return information consistent with the last block it successfully completed [`commit`] for.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If the app succesfully committed block `H` but not `H+1`, then</span>
+    <span class="doccomment">/// - `last_block_height = H`</span>
+    <span class="doccomment">/// - `last_block_app_hash = &lt;hash returned by Commit for block H&gt;`</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If the app failed during the [`commit`] of block `H`, then</span>
+    <span class="doccomment">/// - `last_block_height = H-1`</span>
+    <span class="doccomment">/// - `last_block_app_hash = &lt;hash returned by Commit for block H-1, which is the hash in the header of block H&gt;`</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`info`]: trait.Info.html#tymethod.info</span>
+    <span class="doccomment">/// [`commit`]: trait.Consensus.html#tymethod.commit</span>
+    <span class="kw">fn</span> <span class="ident">info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">info_request</span>: <span class="ident">InfoRequest</span>) <span class="op">-&gt;</span> <span class="ident">InfoResponse</span>;
+
+    <span class="doccomment">/// Set non-consensus critical application specific options.</span>
+    <span class="kw">fn</span> <span class="ident">set_option</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_set_option_request</span>: <span class="ident">SetOptionRequest</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SetOptionResponse</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">Default</span>::<span class="ident">default</span>())
+    }
+
+    <span class="doccomment">/// Query for data from the application at current or past height.</span>
+    <span class="kw">fn</span> <span class="ident">query</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_query_request</span>: <span class="ident">QueryRequest</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">QueryResponse</span><span class="op">&gt;</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">Default</span>::<span class="ident">default</span>())
+    }
+}
+
+<span class="doccomment">/// Trait for managing consensus of blockchain.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Details</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// [_Consensus_] should maintain a `consensus_state` - the working state for block execution. It should be updated by</span>
+<span class="doccomment">/// the calls to [`begin_block`], [`deliver_tx`], and [`end_block`] during block execution and committed to disk as the</span>
+<span class="doccomment">/// **latest committed state** during [`commit`].</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Updates made to the `consensus_state` by each method call must be readable by each subsequent method - ie. the</span>
+<span class="doccomment">/// updates are linearizable.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// [_Consensus_]: trait.Consensus.html#details</span>
+<span class="doccomment">/// [`begin_block`]: trait.Consensus.html#tymethod.begin_block</span>
+<span class="doccomment">/// [`deliver_tx`]: trait.Consensus.html#tymethod.deliver_tx</span>
+<span class="doccomment">/// [`end_block`]: trait.Consensus.html#tymethod.end_block</span>
+<span class="doccomment">/// [`commit`]: trait.Consensus.html#tymethod.commit</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Consensus</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> {
+    <span class="doccomment">/// Called once upon genesis. Usually used to establish initial (genesis) state.</span>
+    <span class="kw">fn</span> <span class="ident">init_chain</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">init_chain_request</span>: <span class="ident">InitChainRequest</span>) <span class="op">-&gt;</span> <span class="ident">InitChainResponse</span>;
+
+    <span class="doccomment">/// Signals the beginning of a new block. Called prior to any [`deliver_tx`](trait.Consensus.html#tymethod.deliver_tx) s.</span>
+    <span class="kw">fn</span> <span class="ident">begin_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">begin_block_request</span>: <span class="ident">BeginBlockRequest</span>) <span class="op">-&gt;</span> <span class="ident">BeginBlockResponse</span>;
+
+    <span class="doccomment">/// Execute the transaction in full. The workhorse of the application.</span>
+    <span class="kw">fn</span> <span class="ident">deliver_tx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">deliver_tx_request</span>: <span class="ident">DeliverTxRequest</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">DeliverTxResponse</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Signals the end of a block. Called after all transactions, prior to each [`commit`](trait.Commit.html#tymethod.commit).</span>
+    <span class="kw">fn</span> <span class="ident">end_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">end_block_request</span>: <span class="ident">EndBlockRequest</span>) <span class="op">-&gt;</span> <span class="ident">EndBlockResponse</span>;
+
+    <span class="doccomment">/// Persist the application state.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Details</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Application state should only be persisted to disk during [`commit`].</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Before [`commit`] is called, Tendermint locks and flushes the mempool so that no new messages will be received</span>
+    <span class="doccomment">/// on the mempool connection. This provides an opportunity to safely update all three states ([_Consensus_],</span>
+    <span class="doccomment">/// [_Mempool_] and [_Info_]) to the **latest committed state** at once.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// When [`commit`] completes, it unlocks the mempool.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Warning</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// If the ABCI application logic processing the [`commit`] message sends a `/broadcast_tx_sync` or</span>
+    <span class="doccomment">/// `/broadcast_tx_commit` and waits for the response before proceeding, it will deadlock. Executing those</span>
+    <span class="doccomment">/// `broadcast_tx` calls involves acquiring a lock that is held during the [`commit`] call, so it&#39;s not possible. If</span>
+    <span class="doccomment">/// you make the call to the `broadcast_tx` endpoints concurrently, that&#39;s no problem, it just can&#39;t be part of the</span>
+    <span class="doccomment">/// sequential logic of the [`commit`] function.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`commit`]: trait.Commit.html#tymethod.commit</span>
+    <span class="doccomment">/// [_Consensus_]: trait.Consensus.html#details</span>
+    <span class="doccomment">/// [_Mempool_]: trait.Mempool.html#details</span>
+    <span class="doccomment">/// [_Info_]: trait.Info.html</span>
+    <span class="kw">fn</span> <span class="ident">commit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">CommitResponse</span>;
+
+    <span class="doccomment">/// Signals that messages queued on the client should be flushed to the server.</span>
+    <span class="kw">fn</span> <span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {}
+}
+
+<span class="doccomment">/// Trait for managing tendermint&#39;s mempool.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// # Details</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// [_Mempool_] should maintain a `mempool_state` to sequentially process pending transactions in the mempool that have</span>
+<span class="doccomment">/// not yet been committed. It should be initialized to the latest committed state at the end of every [`commit`].</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The `mempool_state` may be updated concurrently with the `consensus_state`, as messages may be sent concurrently on</span>
+<span class="doccomment">/// [_Consensus_] and [_Mempool_] connections. However, before calling [`commit`], Tendermint will lock and flush the</span>
+<span class="doccomment">/// mempool connection, ensuring that all existing [`check_tx`] are responded to and no new ones can begin.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// After [`commit`], [`check_tx`] is run again on all transactions that remain in the node&#39;s local mempool after</span>
+<span class="doccomment">/// filtering those included in the block. To prevent the mempool from rechecking all transactions every time a block is</span>
+<span class="doccomment">/// committed, set the configuration option `mempool.recheck=false`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Finally, the mempool will unlock and new transactions can be processed through [`check_tx`] again.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Note that [`check_tx`] doesn&#39;t have to check everything that affects transaction validity; the expensive things can</span>
+<span class="doccomment">/// be skipped. In fact, [`check_tx`] doesn&#39;t have to check anything; it might say that any transaction is a valid</span>
+<span class="doccomment">/// transaction. Unlike [`deliver_tx`], [`check_tx`] is just there as a sort of weak filter to keep invalid transactions</span>
+<span class="doccomment">/// out of the blockchain. It&#39;s weak, because a Byzantine node doesn&#39;t care about [`check_tx`]; it can propose a block</span>
+<span class="doccomment">/// full of invalid transactions if it wants.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// [_Mempool_]: trait.Mempool.html#details</span>
+<span class="doccomment">/// [`commit`]: trait.Consensus.html#tymethod.commit</span>
+<span class="doccomment">/// [_Consensus_]: trait.Consensus.html#details</span>
+<span class="doccomment">/// [`deliver_tx`]: trait.Consensus.html#tymethod.deliver_tx</span>
+<span class="doccomment">/// [`check_tx`]: trait.Mempool.html#method.check_tx</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Mempool</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> {
+    <span class="doccomment">/// Guardian of the mempool: every node runs CheckTx before letting a transaction into its local mempool.</span>
+    <span class="doccomment">/// Technically optional - not involved in processing blocks</span>
+    <span class="kw">fn</span> <span class="ident">check_tx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">check_tx_request</span>: <span class="ident">CheckTxRequest</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">CheckTxResponse</span><span class="op">&gt;</span>;
+}
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g., <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g., <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g., <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../../";window.currentCrate = "abci";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
