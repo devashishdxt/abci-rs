@@ -1,6 +1,6 @@
 use std::{
-    io,
-    net::{SocketAddr, TcpListener, TcpStream},
+    io::{self, Read, Write},
+    net::{SocketAddr, TcpListener},
     sync::{Arc, Mutex},
     thread,
 };
@@ -52,7 +52,10 @@ where
         Ok(())
     }
 
-    fn handle_connection(&self, mut stream: TcpStream) {
+    fn handle_connection<S>(&self, mut stream: S)
+    where
+        S: Read + Write + Send + 'static,
+    {
         let consensus = self.consensus.clone();
         let mempool = self.mempool.clone();
         let info = self.info.clone();
@@ -139,13 +142,13 @@ where
     }
 }
 
-fn respond(stream: &mut TcpStream, value: Response_oneof_value) {
+fn respond<W: Write>(writer: W, value: Response_oneof_value) {
     let mut response = Response::new();
     response.value = Some(value);
 
     log::trace!("Sending response: {:?}", response);
 
-    if let Err(err) = encode(response, stream) {
+    if let Err(err) = encode(response, writer) {
         log::error!("Error while writing to stream: {}", err);
     }
 }
