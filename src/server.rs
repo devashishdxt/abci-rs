@@ -4,6 +4,8 @@ use std::{
     sync::{Arc, Mutex},
     thread,
 };
+#[cfg(all(unix, feature = "uds"))]
+use std::{os::unix::net::UnixListener, path::PathBuf};
 
 use crate::{
     proto::{abci::*, decode, encode},
@@ -41,12 +43,27 @@ where
     }
 
     /// Starts ABCI Server
-    pub fn start(&self, addr: SocketAddr) -> io::Result<()> {
-        let listener = TcpListener::bind(addr)?;
-        log::info!("Started ABCI server at {}", addr);
+    pub fn start<T: Into<Address>>(&self, addr: T) -> io::Result<()> {
+        let addr = addr.into();
 
-        for stream in listener.incoming() {
-            self.handle_connection(stream?);
+        match addr {
+            Address::Tcp(addr) => {
+                let listener = TcpListener::bind(addr)?;
+                log::info!("Started ABCI server at {}", addr);
+
+                for stream in listener.incoming() {
+                    self.handle_connection(stream?);
+                }
+            }
+            #[cfg(all(unix, feature = "uds"))]
+            Address::Uds(path) => {
+                let listener = UnixListener::bind(&path)?;
+                log::info!("Started ABCI server at {}", path.display());
+
+                for stream in listener.incoming() {
+                    self.handle_connection(stream?);
+                }
+            }
         }
 
         Ok(())
@@ -150,6 +167,32 @@ fn respond<W: Write>(writer: W, value: Response_oneof_value) {
 
     if let Err(err) = encode(response, writer) {
         log::error!("Error while writing to stream: {}", err);
+    }
+}
+
+/// Address of ABCI Server
+pub enum Address {
+    /// TCP Address
+    Tcp(SocketAddr),
+    /// UDS Address
+    ///
+    /// ### Platform support
+    ///
+    /// This is supported on **Unix** only.
+    #[cfg(all(unix, feature = "uds"))]
+    Uds(PathBuf),
+}
+
+impl From<SocketAddr> for Address {
+    fn from(addr: SocketAddr) -> Self {
+        Self::Tcp(addr)
+    }
+}
+
+#[cfg(all(unix, feature = "uds"))]
+impl From<PathBuf> for Address {
+    fn from(path: PathBuf) -> Self {
+        Self::Uds(path)
     }
 }
 

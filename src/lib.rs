@@ -39,6 +39,12 @@
 //!
 //! To know more, go to `examples/counter.rs` to see a sample ABCI application.
 //!
+//! ### Features
+//!
+//! - `uds`: Enables support for running ABCI server over Unix Domain Socket (UDS)
+//!   - Supported on **Unix** only.
+//!   - **Disabled** by default.
+//!
 //! ## Supported Versions
 //!
 //! - Tendermint v0.32.0
@@ -52,4 +58,4 @@ pub mod types;
 
 pub use self::application::{Consensus, Info, Mempool};
 pub use self::error::{Error, Result};
-pub use self::server::Server;
+pub use self::server::{Address, Server};

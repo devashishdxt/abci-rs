@@ -1,4 +1,7 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    net::SocketAddr,
+    sync::{Arc, Mutex},
+};
 
 use abci::{types::*, Consensus, Error, Info, Mempool, Result, Server};
 
@@ -165,5 +168,5 @@ fn main() -> std::io::Result<()> {
     let info = InfoConnection::new(committed_state.clone());
 
     let server = Server::new(consensus, mempool, info);
-    server.start("127.0.0.1:26658".parse().unwrap())
+    server.start("127.0.0.1:26658".parse::<SocketAddr>().unwrap())
 }

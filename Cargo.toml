@@ -26,5 +26,9 @@ integer-encoding = "1.0"
 [dev-dependencies]
 env_logger = "0.7"
 
+[features]
+default = []
+uds = []
+
 [workspace]
 members = ["gen-proto"]
