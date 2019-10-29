@@ -41,11 +41,14 @@
 //!
 //! ### Features
 //!
+//! - `sync`: Enables ABCI Server with synchronous IO
+//!   - **Enabled** by default.
+//! - `async`: Enables ABCI Server with asynchronous IO
+//!   - Supported on **nightly** Rust only.
+//!   - **Disabled** by default.
 //! - `uds`: Enables support for running ABCI server over Unix Domain Socket (UDS)
 //!   - Supported on **Unix** only.
 //!   - **Disabled** by default.
-//! - `sync`: Enables ABCI Server with synchronous IO
-//!   - **Enabled** by default.
 //!
 //! ## Supported Versions
 //!

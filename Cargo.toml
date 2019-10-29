@@ -22,6 +22,7 @@ name = "abci"
 log = "0.4"
 protobuf = "2.8"
 integer-encoding = "1.0"
+tokio = { version = "0.2.0-alpha.6", default-features = false, features = ["tcp"], optional = true }
 
 [dev-dependencies]
 env_logger = "0.7"
@@ -29,7 +30,7 @@ env_logger = "0.7"
 [features]
 default = ["sync"]
 sync = ["utils"]
-async = ["utils"]
+async = ["utils", "tokio"]
 uds = []
 utils = []
 
