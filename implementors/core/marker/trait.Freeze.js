@@ -6,5 +6,4 @@ implementors["abci"] = [{text:"impl Freeze for <a class=\"struct\" href=\"abci/s
             } else {
                 window.pending_implementors = implementors;
             }
-        
-})()
+        })()
