@@ -3,7 +3,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use abci::{types::*, Consensus, Error, Info, Mempool, Result, Server};
+use abci::{types::*, Consensus, Error, Info, Mempool, Result, SyncServer};
 
 /// Simple counter
 #[derive(Debug, Default, Clone)]
@@ -167,6 +167,6 @@ fn main() -> std::io::Result<()> {
     let mempool = MempoolConnection::new(current_state.clone());
     let info = InfoConnection::new(committed_state.clone());
 
-    let server = Server::new(consensus, mempool, info);
+    let server = SyncServer::new(consensus, mempool, info);
     server.start("127.0.0.1:26658".parse::<SocketAddr>().unwrap())
 }

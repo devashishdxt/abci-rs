@@ -2,28 +2,34 @@ pub mod abci;
 pub mod merkle;
 pub mod types;
 
-use std::io::{Error, ErrorKind, Read, Result, Write};
+#[cfg(feature = "sync")]
+pub use self::encode_decode::{decode, encode};
 
-use integer_encoding::{VarIntReader, VarIntWriter};
-use protobuf::{parse_from_reader, Message};
+#[cfg(feature = "sync")]
+mod encode_decode {
+    use std::io::{Error, ErrorKind, Read, Result, Write};
 
-use self::abci::{Request, Response};
+    use integer_encoding::{VarIntReader, VarIntWriter};
+    use protobuf::{parse_from_reader, Message};
 
-pub fn decode<R: Read>(mut reader: R) -> Result<Option<Request>> {
-    let length = reader.read_varint::<i64>()?;
+    use super::abci::{Request, Response};
 
-    if length == 0 {
-        return Ok(None);
+    pub fn decode<R: Read>(mut reader: R) -> Result<Option<Request>> {
+        let length = reader.read_varint::<i64>()?;
+
+        if length == 0 {
+            return Ok(None);
+        }
+
+        parse_from_reader::<Request>(&mut reader.take(length as u64))
+            .map(Some)
+            .map_err(|e| Error::new(ErrorKind::InvalidData, e))
     }
 
-    parse_from_reader::<Request>(&mut reader.take(length as u64))
-        .map(Some)
-        .map_err(|e| Error::new(ErrorKind::InvalidData, e))
-}
-
-pub fn encode<W: Write>(message: Response, mut writer: W) -> Result<()> {
-    writer.write_varint(i64::from(message.compute_size()))?;
-    message
-        .write_to_writer(&mut writer)
-        .map_err(|e| Error::new(ErrorKind::Other, e))
+    pub fn encode<W: Write>(message: Response, mut writer: W) -> Result<()> {
+        writer.write_varint(i64::from(message.compute_size()))?;
+        message
+            .write_to_writer(&mut writer)
+            .map_err(|e| Error::new(ErrorKind::Other, e))
+    }
 }

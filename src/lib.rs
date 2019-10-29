@@ -44,6 +44,8 @@
 //! - `uds`: Enables support for running ABCI server over Unix Domain Socket (UDS)
 //!   - Supported on **Unix** only.
 //!   - **Disabled** by default.
+//! - `sync`: Enables ABCI Server with synchronous IO
+//!   - **Enabled** by default.
 //!
 //! ## Supported Versions
 //!
@@ -52,10 +54,85 @@
 mod application;
 mod error;
 mod proto;
-mod server;
+#[cfg(feature = "sync")]
+mod sync_server;
 
 pub mod types;
 
 pub use self::application::{Consensus, Info, Mempool};
 pub use self::error::{Error, Result};
-pub use self::server::{Address, Server};
+#[cfg(feature = "sync")]
+pub use self::sync_server::SyncServer;
+#[cfg(feature = "utils")]
+pub use self::utils::Address;
+
+#[cfg(feature = "utils")]
+mod utils {
+    use std::net::SocketAddr;
+    #[cfg(all(unix, feature = "uds"))]
+    use std::path::PathBuf;
+
+    /// Address of ABCI Server
+    pub enum Address {
+        /// TCP Address
+        Tcp(SocketAddr),
+        /// UDS Address
+        ///
+        /// ### Platform support
+        ///
+        /// This is supported on **Unix** only.
+        #[cfg(all(unix, feature = "uds"))]
+        Uds(PathBuf),
+    }
+
+    impl From<SocketAddr> for Address {
+        fn from(addr: SocketAddr) -> Self {
+            Self::Tcp(addr)
+        }
+    }
+
+    #[cfg(all(unix, feature = "uds"))]
+    impl From<PathBuf> for Address {
+        fn from(path: PathBuf) -> Self {
+            Self::Uds(path)
+        }
+    }
+
+    #[derive(Debug, Clone, Copy)]
+    pub enum ConsensusState {
+        InitChain,
+        BeginBlock,
+        DeliverTx,
+        EndBlock,
+        Commit,
+    }
+
+    impl Default for ConsensusState {
+        #[inline]
+        fn default() -> Self {
+            ConsensusState::InitChain
+        }
+    }
+
+    impl ConsensusState {
+        pub fn validate(&mut self, mut next: ConsensusState) {
+            let is_valid = match (&self, next) {
+                (ConsensusState::InitChain, ConsensusState::InitChain) => true,
+                (ConsensusState::InitChain, ConsensusState::BeginBlock) => true,
+                (ConsensusState::BeginBlock, ConsensusState::DeliverTx) => true,
+                (ConsensusState::BeginBlock, ConsensusState::EndBlock) => true,
+                (ConsensusState::DeliverTx, ConsensusState::DeliverTx) => true,
+                (ConsensusState::DeliverTx, ConsensusState::EndBlock) => true,
+                (ConsensusState::EndBlock, ConsensusState::Commit) => true,
+                (ConsensusState::Commit, ConsensusState::BeginBlock) => true,
+                _ => false,
+            };
+
+            if is_valid {
+                std::mem::swap(self, &mut next);
+            } else {
+                panic!("{:?} cannot be called after {:?}", next, self);
+            }
+        }
+    }
+}

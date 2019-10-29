@@ -1,19 +1,21 @@
 use std::{
     io::{self, Read, Write},
-    net::{SocketAddr, TcpListener},
+    net::TcpListener,
     sync::{Arc, Mutex},
     thread,
 };
+
 #[cfg(all(unix, feature = "uds"))]
-use std::{os::unix::net::UnixListener, path::PathBuf};
+use std::os::unix::net::UnixListener;
 
 use crate::{
     proto::{abci::*, decode, encode},
-    Consensus, Info, Mempool,
+    utils::ConsensusState,
+    Address, Consensus, Info, Mempool,
 };
 
 /// ABCI Server
-pub struct Server<C, M, I>
+pub struct SyncServer<C, M, I>
 where
     C: Consensus,
     M: Mempool,
@@ -25,7 +27,7 @@ where
     consensus_state: Arc<Mutex<ConsensusState>>,
 }
 
-impl<C, M, I> Server<C, M, I>
+impl<C, M, I> SyncServer<C, M, I>
 where
     C: Consensus + 'static,
     M: Mempool + 'static,
@@ -34,7 +36,7 @@ where
     /// Creates a new instance of [`Server`](struct.Server.html)
     #[inline]
     pub fn new(consensus: C, mempool: M, info: I) -> Self {
-        Server {
+        Self {
             consensus: Arc::new(consensus),
             mempool: Arc::new(mempool),
             info: Arc::new(info),
@@ -167,69 +169,5 @@ fn respond<W: Write>(writer: W, value: Response_oneof_value) {
 
     if let Err(err) = encode(response, writer) {
         log::error!("Error while writing to stream: {}", err);
-    }
-}
-
-/// Address of ABCI Server
-pub enum Address {
-    /// TCP Address
-    Tcp(SocketAddr),
-    /// UDS Address
-    ///
-    /// ### Platform support
-    ///
-    /// This is supported on **Unix** only.
-    #[cfg(all(unix, feature = "uds"))]
-    Uds(PathBuf),
-}
-
-impl From<SocketAddr> for Address {
-    fn from(addr: SocketAddr) -> Self {
-        Self::Tcp(addr)
-    }
-}
-
-#[cfg(all(unix, feature = "uds"))]
-impl From<PathBuf> for Address {
-    fn from(path: PathBuf) -> Self {
-        Self::Uds(path)
-    }
-}
-
-#[derive(Debug, Clone, Copy)]
-enum ConsensusState {
-    InitChain,
-    BeginBlock,
-    DeliverTx,
-    EndBlock,
-    Commit,
-}
-
-impl Default for ConsensusState {
-    #[inline]
-    fn default() -> Self {
-        ConsensusState::InitChain
-    }
-}
-
-impl ConsensusState {
-    fn validate(&mut self, mut next: ConsensusState) {
-        let is_valid = match (&self, next) {
-            (ConsensusState::InitChain, ConsensusState::InitChain) => true,
-            (ConsensusState::InitChain, ConsensusState::BeginBlock) => true,
-            (ConsensusState::BeginBlock, ConsensusState::DeliverTx) => true,
-            (ConsensusState::BeginBlock, ConsensusState::EndBlock) => true,
-            (ConsensusState::DeliverTx, ConsensusState::DeliverTx) => true,
-            (ConsensusState::DeliverTx, ConsensusState::EndBlock) => true,
-            (ConsensusState::EndBlock, ConsensusState::Commit) => true,
-            (ConsensusState::Commit, ConsensusState::BeginBlock) => true,
-            _ => false,
-        };
-
-        if is_valid {
-            std::mem::swap(self, &mut next);
-        } else {
-            panic!("{:?} cannot be called after {:?}", next, self);
-        }
     }
 }
