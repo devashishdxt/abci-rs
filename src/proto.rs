@@ -36,11 +36,11 @@ mod encode_decode_sync {
 
 #[cfg(feature = "async")]
 mod codec_async {
-    use std::io::{Error, ErrorKind, Read};
+    use std::io::{Error, ErrorKind};
 
-    use bytes::{Buf, BufMut, BytesMut, IntoBuf};
-    use integer_encoding::{VarIntReader, VarIntWriter};
-    use protobuf::{parse_from_reader, Message};
+    use bytes::{BufMut, BytesMut};
+    use integer_encoding::{VarInt, VarIntWriter};
+    use protobuf::{parse_from_bytes, Message};
     use tokio::codec::{Decoder, Encoder};
 
     use super::abci::{Request, Response};
@@ -65,17 +65,21 @@ mod codec_async {
         type Error = Error;
 
         fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
-            let mut reader = (&*src).into_buf().reader();
-
-            let length = reader.read_varint::<i64>()?;
-
-            if length == 0 {
+            if src.is_empty() {
                 return Ok(None);
             }
 
-            parse_from_reader::<Request>(&mut reader.take(length as u64))
-                .map(Some)
-                .map_err(|e| Error::new(ErrorKind::InvalidData, e))
+            let (length, consumed) = i64::decode_var(&src[..]);
+
+            if length as usize + consumed > src.len() {
+                return Ok(None);
+            }
+
+            src.split_to(consumed);
+            let request = parse_from_bytes(&src[..length as usize])?;
+            src.split_to(length as usize);
+
+            Ok(Some(request))
         }
     }
 }

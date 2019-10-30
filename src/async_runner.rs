@@ -76,9 +76,9 @@ async fn handle_connection<C, M, I, S>(
     tokio::spawn(async move {
         let mut framed = Framed::new(stream, AbciCodec);
 
-        loop {
-            match framed.next().await {
-                Some(Ok(request)) => {
+        while let Some(request) = framed.next().await {
+            match request {
+                Ok(request) => {
                     let response = process(
                         consensus.clone(),
                         mempool.clone(),
@@ -91,8 +91,7 @@ async fn handle_connection<C, M, I, S>(
                         log::error!("Error while writing to stream: {}", err);
                     }
                 }
-                Some(Err(e)) => panic!("Error while receiving ABCI request from socket: {}", e),
-                None => log::debug!("Received empty request"),
+                Err(e) => panic!("Error while receiving ABCI request from socket: {}", e),
             }
         }
     });
