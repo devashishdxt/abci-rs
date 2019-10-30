@@ -96,7 +96,6 @@
 <span id="96">96</span>
 <span id="97">97</span>
 <span id="98">98</span>
-<span id="99">99</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">Mutex</span>};
 
@@ -176,9 +175,9 @@
     <span class="ident">tokio</span>::<span class="ident">spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">framed</span> <span class="op">=</span> <span class="ident">Framed</span>::<span class="ident">new</span>(<span class="ident">stream</span>, <span class="ident">AbciCodec</span>);
 
-        <span class="kw">loop</span> {
-            <span class="kw">match</span> <span class="ident">framed</span>.<span class="ident">next</span>().<span class="kw">await</span> {
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">request</span>)) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">request</span>) <span class="op">=</span> <span class="ident">framed</span>.<span class="ident">next</span>().<span class="kw">await</span> {
+            <span class="kw">match</span> <span class="ident">request</span> {
+                <span class="prelude-val">Ok</span>(<span class="ident">request</span>) <span class="op">=</span><span class="op">&gt;</span> {
                     <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">process</span>(
                         <span class="ident">consensus</span>.<span class="ident">clone</span>(),
                         <span class="ident">mempool</span>.<span class="ident">clone</span>(),
@@ -191,8 +190,7 @@
                         <span class="ident">log</span>::<span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;Error while writing to stream: {}&quot;</span>, <span class="ident">err</span>);
                     }
                 }
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error while receiving ABCI request from socket: {}&quot;</span>, <span class="ident">e</span>),
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">log</span>::<span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Received empty request&quot;</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Error while receiving ABCI request from socket: {}&quot;</span>, <span class="ident">e</span>),
             }
         }
     });
