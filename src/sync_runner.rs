@@ -85,7 +85,7 @@ fn handle_connection<C, M, I, S>(
                     log::error!("Error while writing to stream: {}", err);
                 }
             }
-            Ok(None) => log::trace!("Received empty request"),
+            Ok(None) => log::debug!("Received empty request"),
             Err(e) => panic!("Error while receiving ABCI request from socket: {}", e),
         }
     });

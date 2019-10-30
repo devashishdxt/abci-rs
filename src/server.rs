@@ -50,7 +50,7 @@ where
     M: Mempool + 'static,
     I: Info + 'static,
 {
-    log::trace!("Received request: {:?}", request);
+    log::debug!("Received request: {:?}", request);
 
     let value = match request.value.unwrap() {
         Request_oneof_value::echo(request) => {
@@ -114,7 +114,7 @@ where
     let mut response = Response::new();
     response.value = Some(value);
 
-    log::trace!("Sending response: {:?}", response);
+    log::debug!("Sending response: {:?}", response);
 
     response
 }

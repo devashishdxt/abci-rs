@@ -92,7 +92,7 @@ async fn handle_connection<C, M, I, S>(
                     }
                 }
                 Some(Err(e)) => panic!("Error while receiving ABCI request from socket: {}", e),
-                None => log::trace!("Received empty request"),
+                None => log::debug!("Received empty request"),
             }
         }
     });
