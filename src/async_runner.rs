@@ -1,5 +1,7 @@
 use std::sync::{Arc, Mutex};
 
+#[cfg(all(unix, feature = "uds"))]
+use tokio::net::unix::UnixListener;
 use tokio::{codec::Framed, io, net::tcp::TcpListener, prelude::*};
 
 use crate::{
@@ -40,7 +42,22 @@ where
             }
         }
         #[cfg(all(unix, feature = "uds"))]
-        Address::Uds(_) => unimplemented!(),
+        Address::Uds(path) => {
+            let mut listener = UnixListener::bind(&path)?;
+            log::info!("Started ABCI server at {}", path.display());
+
+            loop {
+                let (stream, _) = listener.accept().await?;
+                handle_connection(
+                    server.consensus.clone(),
+                    server.mempool.clone(),
+                    server.info.clone(),
+                    server.consensus_state.clone(),
+                    stream,
+                )
+                .await;
+            }
+        }
     }
 }
 

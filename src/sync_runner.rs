@@ -8,7 +8,7 @@ use std::{
 };
 
 use crate::{
-    proto::{abci::*, decode_sync, encode_sync},
+    proto::{decode_sync, encode_sync},
     server::{process, ConsensusState},
     Address, Consensus, Info, Mempool, Server,
 };
