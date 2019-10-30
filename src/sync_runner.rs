@@ -80,18 +80,13 @@ fn handle_connection<C, M, I, S>(
                     consensus_state.clone(),
                     request,
                 );
-                respond(&mut stream, response);
+
+                if let Err(err) = encode_sync(response, &mut stream) {
+                    log::error!("Error while writing to stream: {}", err);
+                }
             }
             Ok(None) => log::trace!("Received empty request"),
             Err(e) => panic!("Error while receiving ABCI request from socket: {}", e),
         }
     });
-}
-
-fn respond<W: Write>(writer: W, response: Response) {
-    log::trace!("Sending response: {:?}", response);
-
-    if let Err(err) = encode_sync(response, writer) {
-        log::error!("Error while writing to stream: {}", err);
-    }
 }

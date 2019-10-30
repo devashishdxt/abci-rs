@@ -114,6 +114,8 @@ where
     let mut response = Response::new();
     response.value = Some(value);
 
+    log::trace!("Sending response: {:?}", response);
+
     response
 }
 
