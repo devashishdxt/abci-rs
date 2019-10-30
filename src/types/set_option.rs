@@ -1,5 +1,5 @@
-use crate::error::Result;
 use crate::proto::abci::{RequestSetOption, ResponseSetOption};
+use crate::types::Result;
 
 #[derive(Debug, Default)]
 pub struct SetOptionRequest {

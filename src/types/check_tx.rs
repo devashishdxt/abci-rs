@@ -1,6 +1,5 @@
-use crate::error::Result;
 use crate::proto::abci::{Event as ProtoEvent, RequestCheckTx, ResponseCheckTx};
-use crate::types::Event;
+use crate::types::{Event, Result};
 
 #[derive(Debug, Default)]
 pub struct CheckTxRequest {

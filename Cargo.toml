@@ -22,17 +22,16 @@ name = "abci"
 log = "0.4"
 protobuf = "2.8"
 integer-encoding = "1.0"
-tokio = { version = "0.2.0-alpha.6", default-features = false, features = ["tcp"], optional = true }
+tokio = { version = "0.2.0-alpha.6", default-features = false, features = ["tcp", "rt-full", "codec"], optional = true }
+bytes = { version = "0.4", optional = true }
 
 [dev-dependencies]
 env_logger = "0.7"
 
 [features]
-default = ["sync"]
-sync = ["utils"]
-async = ["utils", "tokio"]
+default = []
+async = ["tokio", "bytes"]
 uds = []
-utils = []
 
 [workspace]
 members = ["gen-proto"]

@@ -21,3 +21,18 @@ pub use self::init_chain::*;
 pub use self::misc::*;
 pub use self::query::*;
 pub use self::set_option::*;
+
+/// ABCI Error
+pub struct Error {
+    /// Error code
+    pub code: u32,
+    /// Namespace for error code
+    pub codespace: String,
+    /// Output of application's logger (may be non-deterministic)
+    pub log: String,
+    /// Additional information (may be non-deterministic)
+    pub info: String,
+}
+
+/// ABCI Result
+pub type Result<T> = std::result::Result<T, Error>;

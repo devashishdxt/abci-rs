@@ -1,4 +1,3 @@
-use crate::error::Result;
 use crate::types::*;
 
 /// Trait for initialization and for queries from the user.

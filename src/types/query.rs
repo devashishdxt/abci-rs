@@ -1,6 +1,5 @@
-use crate::error::Result;
 use crate::proto::abci::{RequestQuery, ResponseQuery};
-use crate::types::Proof;
+use crate::types::{Proof, Result};
 
 #[derive(Debug, Default)]
 pub struct QueryRequest {
