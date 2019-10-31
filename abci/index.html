@@ -16,7 +16,7 @@ debugging.</p>
 <h2 id="usage" class="section-header"><a href="#usage">Usage</a></h2>
 <p>Add <code>abci-rs</code> in your <code>Cargo.toml</code>'s <code>dependencies</code> section:</p>
 <pre><code class="language-toml">[dependencies]
-abci-rs = &quot;0.1&quot;
+abci-rs = &quot;0.2&quot;
 </code></pre>
 <p>Each ABCI application has to implement three core traits corresponding to all three ABCI connections, <code>Consensus</code>,
 <code>Mempool</code> and <code>Info</code>.</p>
@@ -24,9 +24,9 @@ abci-rs = &quot;0.1&quot;
 <p>Note: Implementations of these traits are expected to be <code>Send + Sync</code> and methods take immutable reference of <code>self</code>.
 So, internal mutability must be handled using thread safe (<code>Arc</code>, <code>Mutex</code>, etc.) constructs.</p>
 </blockquote>
-<p>After implementing all three above mentioned <code>trait</code>s, you can create a <code>Server</code> object and use <code>server.start()</code>
-function to start ABCI application.</p>
-<p>To know more, go to <code>examples/counter.rs</code> to see a sample ABCI application.</p>
+<p>After implementing all three above mentioned <code>trait</code>s, you can create a <code>Server</code> object and use <code>run_sync()</code> or
+<code>run_async()</code> function to start ABCI application.</p>
+<p>To know more, go to <code>examples/</code> to see a sample ABCI applications.</p>
 <h3 id="features" class="section-header"><a href="#features">Features</a></h3>
 <ul>
 <li><code>async</code>: Enables ABCI Server with asynchronous IO
