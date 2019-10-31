@@ -26,7 +26,7 @@ Add `abci-rs` in your `Cargo.toml`'s `dependencies` section:
 
 ```toml
 [dependencies]
-abci-rs = "0.1"
+abci-rs = "0.2"
 ```
 
 Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,
@@ -35,17 +35,16 @@ Each ABCI application has to implement three core traits corresponding to all th
 > Note: Implementations of these traits are expected to be `Send + Sync` and methods take immutable reference of `self`.
 So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.) constructs.
 
-After implementing all three above mentioned `trait`s, you can create a `Server` object and use `server.start()`
-function to start ABCI application.
+After implementing all three above mentioned `trait`s, you can create a `Server` object and use `run_sync()` or
+`run_async()` function to start ABCI application.
 
-To know more, go to `examples/counter.rs` to see a sample ABCI application.
+To know more, go to `examples/` to see a sample ABCI applications.
 
 ### Features
 
-- `sync`: Enables ABCI Server with synchronous IO
-  - **Enabled** by default.
 - `async`: Enables ABCI Server with asynchronous IO
   - Supported on **nightly** Rust only.
+  - Only supports **`tokio`** executor.
   - **Disabled** by default.
 - `uds`: Enables support for running ABCI server over Unix Domain Socket (UDS)
   - Supported on **Unix** only.

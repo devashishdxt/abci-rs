@@ -25,7 +25,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! abci-rs = "0.1"
+//! abci-rs = "0.2"
 //! ```
 //!
 //! Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,
@@ -34,10 +34,10 @@
 //! > Note: Implementations of these traits are expected to be `Send + Sync` and methods take immutable reference of `self`.
 //! So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.) constructs.
 //!
-//! After implementing all three above mentioned `trait`s, you can create a `Server` object and use `server.start()`
-//! function to start ABCI application.
+//! After implementing all three above mentioned `trait`s, you can create a `Server` object and use `run_sync()` or
+//! `run_async()` function to start ABCI application.
 //!
-//! To know more, go to `examples/counter.rs` to see a sample ABCI application.
+//! To know more, go to `examples/` to see a sample ABCI applications.
 //!
 //! ### Features
 //!
