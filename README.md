@@ -43,7 +43,6 @@ To know more, go to `examples/` to see a sample ABCI applications.
 ### Features
 
 - `async`: Enables ABCI Server with asynchronous IO
-  - Supported on **nightly** Rust only.
   - Only supports **`tokio`** executor.
   - **Disabled** by default.
 - `uds`: Enables support for running ABCI server over Unix Domain Socket (UDS)
