@@ -1,10 +1,6 @@
 #[cfg(all(unix, feature = "uds"))]
 use std::path::PathBuf;
-use std::{
-    io::Result,
-    net::SocketAddr,
-    sync::{Arc, Mutex},
-};
+use std::{io::Result, net::SocketAddr};
 
 #[cfg(all(unix, feature = "uds"))]
 use async_std::os::unix::net::UnixListener;
@@ -12,6 +8,7 @@ use async_std::{
     io::{Read, Write},
     net::TcpListener,
     prelude::*,
+    sync::{Arc, Mutex},
     task,
 };
 
@@ -143,7 +140,7 @@ where
         Request_oneof_value::init_chain(request) => {
             consensus_state
                 .lock()
-                .unwrap()
+                .await
                 .validate(ConsensusState::InitChain);
             Response_oneof_value::init_chain(consensus.init_chain(request.into()).await.into())
         }
@@ -153,7 +150,7 @@ where
         Request_oneof_value::begin_block(request) => {
             consensus_state
                 .lock()
-                .unwrap()
+                .await
                 .validate(ConsensusState::BeginBlock);
             Response_oneof_value::begin_block(consensus.begin_block(request.into()).await.into())
         }
@@ -163,21 +160,21 @@ where
         Request_oneof_value::deliver_tx(request) => {
             consensus_state
                 .lock()
-                .unwrap()
+                .await
                 .validate(ConsensusState::DeliverTx);
             Response_oneof_value::deliver_tx(consensus.deliver_tx(request.into()).await.into())
         }
         Request_oneof_value::end_block(request) => {
             consensus_state
                 .lock()
-                .unwrap()
+                .await
                 .validate(ConsensusState::EndBlock);
             Response_oneof_value::end_block(consensus.end_block(request.into()).await.into())
         }
         Request_oneof_value::commit(_) => {
             consensus_state
                 .lock()
-                .unwrap()
+                .await
                 .validate(ConsensusState::Commit);
             Response_oneof_value::commit(consensus.commit().await.into())
         }
