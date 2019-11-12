@@ -53,16 +53,14 @@
 //! - Tendermint v0.32.0
 //! - ABCI v0.16.0
 mod application;
-#[cfg(feature = "async")]
-mod async_runner;
 mod proto;
 mod server;
-mod sync_runner;
 
 pub mod types;
 
+/// Utility macro for implementing [`Consensus`](trait.Consensus.html), [`Mempool`](trait.Mempool.html) and
+/// [`Info`](trait.Info.html) traits.
+pub use async_trait::async_trait;
+
 pub use self::application::{Consensus, Info, Mempool};
-#[cfg(feature = "async")]
-pub use self::async_runner::run_async;
 pub use self::server::{Address, Server};
-pub use self::sync_runner::run_sync;
