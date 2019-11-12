@@ -1,9 +1,12 @@
+use async_trait::async_trait;
+
 use crate::types::*;
 
 /// Trait for initialization and for queries from the user.
+#[async_trait]
 pub trait Info: Send + Sync {
     /// Echo a string to test abci client/server implementation.
-    fn echo(&self, message: String) -> String {
+    async fn echo(&self, message: String) -> String {
         message
     }
 
@@ -24,15 +27,15 @@ pub trait Info: Send + Sync {
     ///
     /// [`info`]: trait.Info.html#tymethod.info
     /// [`commit`]: trait.Consensus.html#tymethod.commit
-    fn info(&self, info_request: InfoRequest) -> InfoResponse;
+    async fn info(&self, info_request: InfoRequest) -> InfoResponse;
 
     /// Set non-consensus critical application specific options.
-    fn set_option(&self, _set_option_request: SetOptionRequest) -> Result<SetOptionResponse> {
+    async fn set_option(&self, _set_option_request: SetOptionRequest) -> Result<SetOptionResponse> {
         Ok(Default::default())
     }
 
     /// Query for data from the application at current or past height.
-    fn query(&self, _query_request: QueryRequest) -> Result<QueryResponse> {
+    async fn query(&self, _query_request: QueryRequest) -> Result<QueryResponse> {
         Ok(Default::default())
     }
 }
@@ -53,18 +56,19 @@ pub trait Info: Send + Sync {
 /// [`deliver_tx`]: trait.Consensus.html#tymethod.deliver_tx
 /// [`end_block`]: trait.Consensus.html#tymethod.end_block
 /// [`commit`]: trait.Consensus.html#tymethod.commit
+#[async_trait]
 pub trait Consensus: Send + Sync {
     /// Called once upon genesis. Usually used to establish initial (genesis) state.
-    fn init_chain(&self, init_chain_request: InitChainRequest) -> InitChainResponse;
+    async fn init_chain(&self, init_chain_request: InitChainRequest) -> InitChainResponse;
 
-    /// Signals the beginning of a new block. Called prior to any [`deliver_tx`](trait.Consensus.html#tymethod.deliver_tx) s.
-    fn begin_block(&self, begin_block_request: BeginBlockRequest) -> BeginBlockResponse;
+    /// Signals the beginning of a new block. Called prior to any [`deliver_tx`](trait.Consensus.html#tymethod.deliver_tx)s.
+    async fn begin_block(&self, begin_block_request: BeginBlockRequest) -> BeginBlockResponse;
 
     /// Execute the transaction in full. The workhorse of the application.
-    fn deliver_tx(&self, deliver_tx_request: DeliverTxRequest) -> Result<DeliverTxResponse>;
+    async fn deliver_tx(&self, deliver_tx_request: DeliverTxRequest) -> Result<DeliverTxResponse>;
 
     /// Signals the end of a block. Called after all transactions, prior to each [`commit`](trait.Commit.html#tymethod.commit).
-    fn end_block(&self, end_block_request: EndBlockRequest) -> EndBlockResponse;
+    async fn end_block(&self, end_block_request: EndBlockRequest) -> EndBlockResponse;
 
     /// Persist the application state.
     ///
@@ -90,10 +94,10 @@ pub trait Consensus: Send + Sync {
     /// [_Consensus_]: trait.Consensus.html#details
     /// [_Mempool_]: trait.Mempool.html#details
     /// [_Info_]: trait.Info.html
-    fn commit(&self) -> CommitResponse;
+    async fn commit(&self) -> CommitResponse;
 
     /// Signals that messages queued on the client should be flushed to the server.
-    fn flush(&self) {}
+    async fn flush(&self) {}
 }
 
 /// Trait for managing tendermint's mempool.
@@ -124,8 +128,9 @@ pub trait Consensus: Send + Sync {
 /// [_Consensus_]: trait.Consensus.html#details
 /// [`deliver_tx`]: trait.Consensus.html#tymethod.deliver_tx
 /// [`check_tx`]: trait.Mempool.html#method.check_tx
+#[async_trait]
 pub trait Mempool: Send + Sync {
     /// Guardian of the mempool: every node runs CheckTx before letting a transaction into its local mempool.
     /// Technically optional - not involved in processing blocks
-    fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse>;
+    async fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse>;
 }

@@ -1,11 +1,24 @@
 #[cfg(all(unix, feature = "uds"))]
 use std::path::PathBuf;
 use std::{
+    io::Result,
     net::SocketAddr,
     sync::{Arc, Mutex},
 };
 
-use crate::{proto::abci::*, Consensus, Info, Mempool};
+#[cfg(all(unix, feature = "uds"))]
+use async_std::os::unix::net::UnixListener;
+use async_std::{
+    io::{Read, Write},
+    net::TcpListener,
+    prelude::*,
+    task,
+};
+
+use crate::{
+    proto::{abci::*, decode, encode},
+    Consensus, Info, Mempool,
+};
 
 /// ABCI Server
 pub struct Server<C, M, I>
@@ -36,9 +49,68 @@ where
             consensus_state: Arc::new(Mutex::new(ConsensusState::default())),
         }
     }
+
+    /// Starts ABCI server
+    pub async fn run<T>(&self, addr: T) -> Result<()>
+    where
+        T: Into<Address>,
+    {
+        let addr = addr.into();
+
+        match addr {
+            Address::Tcp(addr) => {
+                let listener = TcpListener::bind(addr).await?;
+                log::info!("Started ABCI server at {}", addr);
+
+                let mut incoming = listener.incoming();
+
+                while let Some(stream) = incoming.next().await {
+                    self.handle_connection(stream?).await;
+                }
+            }
+            #[cfg(all(unix, feature = "uds"))]
+            Address::Uds(path) => {
+                let listener = UnixListener::bind(&path).await?;
+                log::info!("Started ABCI server at {}", path.display());
+
+                let mut incoming = listener.incoming();
+
+                while let Some(stream) = incoming.next().await {
+                    self.handle_connection(stream?).await;
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    async fn handle_connection<S>(&self, mut stream: S)
+    where
+        S: Read + Write + Send + Unpin + 'static,
+    {
+        let consensus = self.consensus.clone();
+        let mempool = self.mempool.clone();
+        let info = self.info.clone();
+        let consensus_state = self.consensus_state.clone();
+
+        task::spawn(async move {
+            match decode(&mut stream).await {
+                Ok(Some(request)) => {
+                    let response =
+                        process(consensus, mempool, info, consensus_state, request).await;
+
+                    if let Err(err) = encode(response, &mut stream).await {
+                        log::error!("Error while writing to stream: {}", err);
+                    }
+                }
+                Ok(None) => log::debug!("Received empty request"),
+                Err(e) => panic!("Error while receiving ABCI request from socket: {}", e),
+            }
+        });
+    }
 }
 
-pub fn process<C, M, I>(
+async fn process<C, M, I>(
     consensus: Arc<C>,
     mempool: Arc<M>,
     info: Arc<I>,
@@ -55,59 +127,59 @@ where
     let value = match request.value.unwrap() {
         Request_oneof_value::echo(request) => {
             let mut response = ResponseEcho::new();
-            response.message = info.echo(request.message);
+            response.message = info.echo(request.message).await;
             Response_oneof_value::echo(response)
         }
         Request_oneof_value::flush(_) => {
-            consensus.flush();
+            consensus.flush().await;
             Response_oneof_value::flush(ResponseFlush::new())
         }
         Request_oneof_value::info(request) => {
-            Response_oneof_value::info(info.info(request.into()).into())
+            Response_oneof_value::info(info.info(request.into()).await.into())
         }
         Request_oneof_value::set_option(request) => {
-            Response_oneof_value::set_option(info.set_option(request.into()).into())
+            Response_oneof_value::set_option(info.set_option(request.into()).await.into())
         }
         Request_oneof_value::init_chain(request) => {
             consensus_state
                 .lock()
                 .unwrap()
                 .validate(ConsensusState::InitChain);
-            Response_oneof_value::init_chain(consensus.init_chain(request.into()).into())
+            Response_oneof_value::init_chain(consensus.init_chain(request.into()).await.into())
         }
         Request_oneof_value::query(request) => {
-            Response_oneof_value::query(info.query(request.into()).into())
+            Response_oneof_value::query(info.query(request.into()).await.into())
         }
         Request_oneof_value::begin_block(request) => {
             consensus_state
                 .lock()
                 .unwrap()
                 .validate(ConsensusState::BeginBlock);
-            Response_oneof_value::begin_block(consensus.begin_block(request.into()).into())
+            Response_oneof_value::begin_block(consensus.begin_block(request.into()).await.into())
         }
         Request_oneof_value::check_tx(request) => {
-            Response_oneof_value::check_tx(mempool.check_tx(request.into()).into())
+            Response_oneof_value::check_tx(mempool.check_tx(request.into()).await.into())
         }
         Request_oneof_value::deliver_tx(request) => {
             consensus_state
                 .lock()
                 .unwrap()
                 .validate(ConsensusState::DeliverTx);
-            Response_oneof_value::deliver_tx(consensus.deliver_tx(request.into()).into())
+            Response_oneof_value::deliver_tx(consensus.deliver_tx(request.into()).await.into())
         }
         Request_oneof_value::end_block(request) => {
             consensus_state
                 .lock()
                 .unwrap()
                 .validate(ConsensusState::EndBlock);
-            Response_oneof_value::end_block(consensus.end_block(request.into()).into())
+            Response_oneof_value::end_block(consensus.end_block(request.into()).await.into())
         }
         Request_oneof_value::commit(_) => {
             consensus_state
                 .lock()
                 .unwrap()
                 .validate(ConsensusState::Commit);
-            Response_oneof_value::commit(consensus.commit().into())
+            Response_oneof_value::commit(consensus.commit().await.into())
         }
     };
 
