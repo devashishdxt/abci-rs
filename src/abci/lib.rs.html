@@ -64,8 +64,6 @@
 <span id="64">64</span>
 <span id="65">65</span>
 <span id="66">66</span>
-<span id="67">67</span>
-<span id="68">68</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>, <span class="ident">unsafe_code</span>, <span class="ident">unstable_features</span>)]</span>
 <span class="doccomment">//! A Rust crate for creating ABCI applications.</span>
@@ -94,7 +92,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```toml</span>
 <span class="doccomment">//! [dependencies]</span>
-<span class="doccomment">//! abci-rs = &quot;0.2&quot;</span>
+<span class="doccomment">//! abci-rs = &quot;0.3&quot;</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,</span>
@@ -103,16 +101,16 @@
 <span class="doccomment">//! &gt; Note: Implementations of these traits are expected to be `Send + Sync` and methods take immutable reference of `self`.</span>
 <span class="doccomment">//! So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.) constructs.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! After implementing all three above mentioned `trait`s, you can create a `Server` object and use `run_sync()` or</span>
-<span class="doccomment">//! `run_async()` function to start ABCI application.</span>
+<span class="doccomment">//! After implementing all three above mentioned `trait`s, you can create a `Server` object and use `Server::run()`to start</span>
+<span class="doccomment">//! ABCI application.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! To know more, go to `examples/` to see a sample ABCI applications.</span>
+<span class="doccomment">//! `Server::run()` is an `async` function and returns a `Future`. So, you&#39;ll need an executor to run `Future` returned from</span>
+<span class="doccomment">//! `Server::run()`. `async-std` and `tokio` are two popular options. In `counter` example, we use `async-std`&#39;s executor.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! To know more, go to `examples/` to see a sample ABCI application.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ### Features</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! - `async`: Enables ABCI Server with asynchronous IO</span>
-<span class="doccomment">//!   - Only supports **`tokio`** executor.</span>
-<span class="doccomment">//!   - **Disabled** by default.</span>
 <span class="doccomment">//! - `uds`: Enables support for running ABCI server over Unix Domain Socket (UDS)</span>
 <span class="doccomment">//!   - Supported on **Unix** only.</span>
 <span class="doccomment">//!   - **Disabled** by default.</span>
@@ -122,18 +120,16 @@
 <span class="doccomment">//! - Tendermint v0.32.0</span>
 <span class="doccomment">//! - ABCI v0.16.0</span>
 <span class="kw">mod</span> <span class="ident">application</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
-<span class="kw">mod</span> <span class="ident">async_runner</span>;
 <span class="kw">mod</span> <span class="ident">proto</span>;
 <span class="kw">mod</span> <span class="ident">server</span>;
-<span class="kw">mod</span> <span class="ident">sync_runner</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">types</span>;
 
+<span class="doccomment">/// Utility macro for implementing [`Consensus`](trait.Consensus.html), [`Mempool`](trait.Mempool.html) and</span>
+<span class="doccomment">/// [`Info`](trait.Info.html) traits.</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
+
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">application</span>::{<span class="ident">Consensus</span>, <span class="ident">Info</span>, <span class="ident">Mempool</span>};
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">async_runner</span>::<span class="ident">run_async</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">server</span>::{<span class="ident">Address</span>, <span class="ident">Server</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">sync_runner</span>::<span class="ident">run_sync</span>;
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "abci";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
