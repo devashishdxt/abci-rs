@@ -48,6 +48,11 @@ where
     }
 
     /// Starts ABCI server
+    /// 
+    /// # Note
+    /// 
+    /// This is an `async` function and returns a `Future`. So, you'll need an executor to run the `Future` returned
+    /// from this function. `async-std` and `tokio` are two popular options.
     pub async fn run<T>(&self, addr: T) -> Result<()>
     where
         T: Into<Address>,
