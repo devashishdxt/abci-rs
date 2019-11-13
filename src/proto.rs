@@ -16,6 +16,7 @@ use self::abci::{Request, Response};
 const BUFLEN: usize = 10;
 const MSB: u8 = 0b1000_0000;
 
+/// Decodes a `Request` from stream
 pub async fn decode<R: Read + Unpin>(mut reader: R) -> Result<Option<Request>> {
     let length: i64 = read_varint(&mut reader).await?;
 
@@ -31,6 +32,7 @@ pub async fn decode<R: Read + Unpin>(mut reader: R) -> Result<Option<Request>> {
         .map_err(|e| Error::new(ErrorKind::InvalidData, e))
 }
 
+/// Encodes a `Response` to stream
 pub async fn encode<W: Write + Unpin>(message: Response, mut writer: W) -> Result<()> {
     write_varint(&mut writer, i64::from(message.compute_size())).await?;
 

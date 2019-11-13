@@ -25,7 +25,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! abci-rs = "0.2"
+//! abci-rs = "0.3"
 //! ```
 //!
 //! Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,
@@ -34,16 +34,16 @@
 //! > Note: Implementations of these traits are expected to be `Send + Sync` and methods take immutable reference of `self`.
 //! So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.) constructs.
 //!
-//! After implementing all three above mentioned `trait`s, you can create a `Server` object and use `run_sync()` or
-//! `run_async()` function to start ABCI application.
+//! After implementing all three above mentioned `trait`s, you can create a `Server` object and use `Server::run()`to start
+//! ABCI application.
 //!
-//! To know more, go to `examples/` to see a sample ABCI applications.
+//! `Server::run()` is an `async` function and returns a `Future`. So, you'll need an executor to run `Future` returned from
+//! `Server::run()`. `async-std` and `tokio` are two popular options. In `counter` example, we use `async-std`'s executor.
+//!
+//! To know more, go to `examples/` to see a sample ABCI application.
 //!
 //! ### Features
 //!
-//! - `async`: Enables ABCI Server with asynchronous IO
-//!   - Only supports **`tokio`** executor.
-//!   - **Disabled** by default.
 //! - `uds`: Enables support for running ABCI server over Unix Domain Socket (UDS)
 //!   - Supported on **Unix** only.
 //!   - **Disabled** by default.

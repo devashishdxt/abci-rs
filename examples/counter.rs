@@ -3,7 +3,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use abci::{run_sync, types::*, Consensus, Info, Mempool, Server};
+use abci::{async_trait, types::*, Consensus, Info, Mempool, Server};
 
 /// Simple counter
 #[derive(Debug, Default, Clone)]
@@ -31,12 +31,13 @@ impl ConsensusConnection {
     }
 }
 
+#[async_trait]
 impl Consensus for ConsensusConnection {
-    fn init_chain(&self, _init_chain_request: InitChainRequest) -> InitChainResponse {
+    async fn init_chain(&self, _init_chain_request: InitChainRequest) -> InitChainResponse {
         Default::default()
     }
 
-    fn begin_block(&self, _begin_block_request: BeginBlockRequest) -> BeginBlockResponse {
+    async fn begin_block(&self, _begin_block_request: BeginBlockRequest) -> BeginBlockResponse {
         let committed_state = self.committed_state.lock().unwrap().clone();
 
         let mut current_state = self.current_state.lock().unwrap();
@@ -45,7 +46,7 @@ impl Consensus for ConsensusConnection {
         Default::default()
     }
 
-    fn deliver_tx(&self, deliver_tx_request: DeliverTxRequest) -> Result<DeliverTxResponse> {
+    async fn deliver_tx(&self, deliver_tx_request: DeliverTxRequest) -> Result<DeliverTxResponse> {
         let new_counter = parse_bytes_to_counter(&deliver_tx_request.tx)?;
 
         let mut current_state_lock = self.current_state.lock().unwrap();
@@ -65,7 +66,7 @@ impl Consensus for ConsensusConnection {
         Ok(Default::default())
     }
 
-    fn end_block(&self, end_block_request: EndBlockRequest) -> EndBlockResponse {
+    async fn end_block(&self, end_block_request: EndBlockRequest) -> EndBlockResponse {
         let mut current_state_lock = self.current_state.lock().unwrap();
         let mut current_state = current_state_lock.as_mut().unwrap();
 
@@ -75,7 +76,7 @@ impl Consensus for ConsensusConnection {
         Default::default()
     }
 
-    fn commit(&self) -> CommitResponse {
+    async fn commit(&self) -> CommitResponse {
         let current_state = self.current_state.lock().unwrap().as_ref().unwrap().clone();
         let mut committed_state = self.committed_state.lock().unwrap();
         *committed_state = current_state;
@@ -97,8 +98,9 @@ impl MempoolConnection {
     }
 }
 
+#[async_trait]
 impl Mempool for MempoolConnection {
-    fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse> {
+    async fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse> {
         let new_counter = parse_bytes_to_counter(&check_tx_request.tx)?;
 
         let state_lock = self.state.lock().unwrap();
@@ -127,8 +129,9 @@ impl InfoConnection {
     }
 }
 
+#[async_trait]
 impl Info for InfoConnection {
-    fn info(&self, _info_request: InfoRequest) -> InfoResponse {
+    async fn info(&self, _info_request: InfoRequest) -> InfoResponse {
         let state = self.state.lock().unwrap();
 
         InfoResponse {
@@ -169,5 +172,5 @@ fn main() -> std::io::Result<()> {
 
     let server = Server::new(consensus, mempool, info);
 
-    run_sync(&server, "127.0.0.1:26658".parse::<SocketAddr>().unwrap())
+    async_std::task::block_on(server.run("127.0.0.1:26658".parse::<SocketAddr>().unwrap()))
 }
