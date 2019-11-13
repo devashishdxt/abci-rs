@@ -91,18 +91,27 @@ where
         let consensus_state = self.consensus_state.clone();
 
         task::spawn(async move {
-            match decode(&mut stream).await {
-                Ok(Some(request)) => {
-                    let response =
-                        process(consensus, mempool, info, consensus_state, request).await;
+            while let Ok(request) = decode(&mut stream).await {
+                match request {
+                    Some(request) => {
+                        let response = process(
+                            consensus.clone(),
+                            mempool.clone(),
+                            info.clone(),
+                            consensus_state.clone(),
+                            request,
+                        )
+                        .await;
 
-                    if let Err(err) = encode(response, &mut stream).await {
-                        log::error!("Error while writing to stream: {}", err);
+                        if let Err(err) = encode(response, &mut stream).await {
+                            log::error!("Error while writing to stream: {}", err);
+                        }
                     }
+                    None => log::debug!("Received empty request"),
                 }
-                Ok(None) => log::debug!("Received empty request"),
-                Err(e) => panic!("Error while receiving ABCI request from socket: {}", e),
             }
+
+            log::error!("Error while receiving ABCI request from socket");
         });
     }
 }
