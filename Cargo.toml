@@ -22,7 +22,7 @@ name = "abci"
 log = "0.4"
 protobuf = "2.8"
 integer-encoding = "1.0"
-async-std = "1.0"
+async-std = "1.1"
 async-trait = "0.1"
 
 [dev-dependencies]
