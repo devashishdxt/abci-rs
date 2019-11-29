@@ -1,6 +1,6 @@
 [package]
 name = "abci-rs"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["Devashish Dixit <devashishdxt@gmail.com>"]
 license = "MIT/Apache-2.0"
 description = "A Rust crate for creating ABCI applications"
