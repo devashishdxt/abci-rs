@@ -1,16 +1,12 @@
-#[cfg(all(unix, feature = "uds"))]
-use std::path::PathBuf;
-use std::{io::Result, net::SocketAddr};
-
-#[cfg(all(unix, feature = "uds"))]
-use async_std::os::unix::net::UnixListener;
 use async_std::{
-    io::{Read, Write},
-    net::TcpListener,
+    io::{Read, Result, Write},
+    net::{SocketAddr, TcpListener},
     prelude::*,
     sync::{Arc, Mutex},
     task,
 };
+#[cfg(all(unix, feature = "uds"))]
+use async_std::{os::unix::net::UnixListener, path::PathBuf};
 
 use crate::{
     proto::{abci::*, decode, encode},
