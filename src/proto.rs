@@ -2,10 +2,8 @@ pub mod abci;
 pub mod merkle;
 pub mod types;
 
-use std::io::{Error, ErrorKind, Result};
-
 use async_std::{
-    io::{Read, Write},
+    io::{Error, ErrorKind, Read, Result, Write},
     prelude::*,
 };
 use integer_encoding::VarInt;
