@@ -38,8 +38,9 @@ So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.)
 After implementing all three above mentioned `trait`s, you can create a `Server` object and use `Server::run()` to start
 ABCI application.
 
-`Server::run()` is an `async` function and returns a `Future`. So, you'll need an executor to run `Future` returned from
-`Server::run()`. `async-std` and `tokio` are two popular options. In `counter` example, we use `async-std`'s executor.
+`Server::run()` is an `async` function and returns a `Future`. So, you'll need an executor to drive `Future` returned
+from `Server::run()`. `async-std` and `tokio` are two popular options. In `counter` example, we use `async-std`'s
+executor.
 
 To know more, go to `examples/` to see a sample ABCI application.
 
