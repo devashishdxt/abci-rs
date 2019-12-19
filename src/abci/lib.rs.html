@@ -64,6 +64,7 @@
 <span id="64">64</span>
 <span id="65">65</span>
 <span id="66">66</span>
+<span id="67">67</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>, <span class="ident">unsafe_code</span>, <span class="ident">unstable_features</span>)]</span>
 <span class="doccomment">//! A Rust crate for creating ABCI applications.</span>
@@ -104,8 +105,9 @@
 <span class="doccomment">//! After implementing all three above mentioned `trait`s, you can create a `Server` object and use `Server::run()`to start</span>
 <span class="doccomment">//! ABCI application.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! `Server::run()` is an `async` function and returns a `Future`. So, you&#39;ll need an executor to run `Future` returned from</span>
-<span class="doccomment">//! `Server::run()`. `async-std` and `tokio` are two popular options. In `counter` example, we use `async-std`&#39;s executor.</span>
+<span class="doccomment">//! `Server::run()` is an `async` function and returns a `Future`. So, you&#39;ll need an executor to drive `Future` returned</span>
+<span class="doccomment">//! from `Server::run()`. `async-std` and `tokio` are two popular options. In `counter` example, we use `async-std`&#39;s</span>
+<span class="doccomment">//! executor.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! To know more, go to `examples/` to see a sample ABCI application.</span>
 <span class="doccomment">//!</span>

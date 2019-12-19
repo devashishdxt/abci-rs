@@ -311,7 +311,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// # Note</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// This is an `async` function and returns a `Future`. So, you&#39;ll need an executor to run the `Future` returned</span>
+    <span class="doccomment">/// This is an `async` function and returns a `Future`. So, you&#39;ll need an executor to drive the `Future` returned</span>
     <span class="doccomment">/// from this function. `async-std` and `tokio` are two popular options.</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
     <span class="kw">where</span>
