@@ -65,6 +65,18 @@
 <span id="65">65</span>
 <span id="66">66</span>
 <span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>, <span class="ident">unsafe_code</span>, <span class="ident">unstable_features</span>)]</span>
 <span class="doccomment">//! A Rust crate for creating ABCI applications.</span>
@@ -106,8 +118,7 @@
 <span class="doccomment">//! ABCI application.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! `Server::run()` is an `async` function and returns a `Future`. So, you&#39;ll need an executor to drive `Future` returned</span>
-<span class="doccomment">//! from `Server::run()`. `async-std` and `tokio` are two popular options. In `counter` example, we use `async-std`&#39;s</span>
-<span class="doccomment">//! executor.</span>
+<span class="doccomment">//! from `Server::run()`. `async-std` and `tokio` are two popular options. In `counter` example, we use `tokio`&#39;s executor.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! To know more, go to `examples/` to see a sample ABCI application.</span>
 <span class="doccomment">//!</span>
@@ -116,11 +127,24 @@
 <span class="doccomment">//! - `uds`: Enables support for running ABCI server over Unix Domain Socket (UDS)</span>
 <span class="doccomment">//!   - Supported on **Unix** only.</span>
 <span class="doccomment">//!   - **Disabled** by default.</span>
+<span class="doccomment">//! - `tokio`: Enables `tokio` backend for running ABCI TCP/UDS server</span>
+<span class="doccomment">//!   - **Enabled** by default.</span>
+<span class="doccomment">//! - `async-std`: Enables `async-std` backend for running ABCI TCP/UDS server</span>
+<span class="doccomment">//!   - **Disabled** by default.</span>
+<span class="doccomment">//!   </span>
+<span class="doccomment">//! &gt; Note: Features `tokio` and `async-std` are mutually exclusive, i.e., only one of them can be enabled at a time. Compilation</span>
+<span class="doccomment">//! will fail if either both of them are enabled or none of them are enabled.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Supported Versions</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! - Tendermint v0.32.0</span>
 <span class="doccomment">//! - ABCI v0.16.0</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tokio&quot;</span>))]</span>
+<span class="macro">compile_error</span><span class="macro">!</span>(<span class="string">&quot;Features `async-std` and `tokio` are mutually exclusive&quot;</span>);
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tokio&quot;</span>)))]</span>
+<span class="macro">compile_error</span><span class="macro">!</span>(<span class="string">&quot;Either feature `async-std` or `tokio` must be enabled for this crate&quot;</span>);
+
 <span class="kw">mod</span> <span class="ident">application</span>;
 <span class="kw">mod</span> <span class="ident">proto</span>;
 <span class="kw">mod</span> <span class="ident">server</span>;
