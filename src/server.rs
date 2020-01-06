@@ -1,12 +1,27 @@
+#[cfg(feature = "uds")]
+use std::path::PathBuf;
+use std::{io::Result, net::SocketAddr, sync::Arc};
+
+#[cfg(all(unix, feature = "async-std", feature = "uds"))]
+use async_std::os::unix::net::UnixListener;
+#[cfg(feature = "async-std")]
 use async_std::{
-    io::{Read, Result, Write},
-    net::{SocketAddr, TcpListener},
+    io::{Read, Write},
+    net::TcpListener,
     prelude::*,
-    sync::{Arc, Mutex},
-    task,
+    sync::Mutex,
+    task::spawn,
 };
-#[cfg(all(unix, feature = "uds"))]
-use async_std::{os::unix::net::UnixListener, path::PathBuf};
+#[cfg(all(unix, feature = "tokio", feature = "uds"))]
+use tokio::net::UnixListener;
+#[cfg(feature = "tokio")]
+use tokio::{
+    io::{AsyncRead as Read, AsyncWrite as Write},
+    net::TcpListener,
+    spawn,
+    stream::StreamExt,
+    sync::Mutex,
+};
 
 use crate::{
     proto::{abci::*, decode, encode},
@@ -57,7 +72,12 @@ where
 
         match addr {
             Address::Tcp(addr) => {
+                #[cfg(feature = "async-std")]
                 let listener = TcpListener::bind(addr).await?;
+
+                #[cfg(feature = "tokio")]
+                let mut listener = TcpListener::bind(addr).await?;
+
                 log::info!("Started ABCI server at {}", addr);
 
                 let mut incoming = listener.incoming();
@@ -68,7 +88,12 @@ where
             }
             #[cfg(all(unix, feature = "uds"))]
             Address::Uds(path) => {
+                #[cfg(feature = "async-std")]
                 let listener = UnixListener::bind(&path).await?;
+
+                #[cfg(feature = "tokio")]
+                let mut listener = UnixListener::bind(&path)?;
+
                 log::info!("Started ABCI server at {}", path.display());
 
                 let mut incoming = listener.incoming();
@@ -91,7 +116,7 @@ where
         let info = self.info.clone();
         let consensus_state = self.consensus_state.clone();
 
-        task::spawn(async move {
+        spawn(async move {
             while let Ok(request) = decode(&mut stream).await {
                 match request {
                     Some(request) => {

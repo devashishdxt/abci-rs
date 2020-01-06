@@ -160,7 +160,8 @@ fn parse_bytes_to_counter(bytes: &[u8]) -> Result<u64> {
     Ok(u64::from_be_bytes(counter_bytes))
 }
 
-fn main() -> std::io::Result<()> {
+#[tokio::main]
+async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     let committed_state: Arc<Mutex<CounterState>> = Default::default();
@@ -172,5 +173,7 @@ fn main() -> std::io::Result<()> {
 
     let server = Server::new(consensus, mempool, info);
 
-    async_std::task::block_on(server.run("127.0.0.1:26658".parse::<SocketAddr>().unwrap()))
+    server
+        .run("127.0.0.1:26658".parse::<SocketAddr>().unwrap())
+        .await
 }

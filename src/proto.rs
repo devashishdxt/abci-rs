@@ -2,10 +2,16 @@ pub mod abci;
 pub mod merkle;
 pub mod types;
 
+use std::io::{Error, ErrorKind, Result};
+
+#[cfg(feature = "async-std")]
 use async_std::{
-    io::{Error, ErrorKind, Read, Result, Write},
+    io::{Read, Write},
     prelude::*,
 };
+#[cfg(feature = "tokio")]
+use tokio::io::{AsyncRead as Read, AsyncReadExt, AsyncWrite as Write, AsyncWriteExt};
+
 use integer_encoding::VarInt;
 use protobuf::{parse_from_bytes, Message};
 

@@ -39,8 +39,7 @@ After implementing all three above mentioned `trait`s, you can create a `Server`
 ABCI application.
 
 `Server::run()` is an `async` function and returns a `Future`. So, you'll need an executor to drive `Future` returned
-from `Server::run()`. `async-std` and `tokio` are two popular options. In `counter` example, we use `async-std`'s
-executor.
+from `Server::run()`. `async-std` and `tokio` are two popular options. In `counter` example, we use `tokio`'s executor.
 
 To know more, go to `examples/` to see a sample ABCI application.
 
@@ -49,6 +48,13 @@ To know more, go to `examples/` to see a sample ABCI application.
 - `uds`: Enables support for running ABCI server over Unix Domain Socket (UDS)
   - Supported on **Unix** only.
   - **Disabled** by default.
+- `tokio`: Enables `tokio` backend for running ABCI TCP/UDS server
+  - **Enabled** by default.
+- `async-std`: Enables `async-std` backend for running ABCI TCP/UDS server
+  - **Disabled** by default.
+
+> Features `tokio` and `async-std` are mutually exclusive, i.e., only one of them can be enabled at a time. Compilation
+will fail if either both of them are enabled or none of them are enabled.
 
 ## Supported Versions
 
