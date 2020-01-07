@@ -267,7 +267,7 @@ pub enum Address {
     Tcp(SocketAddr),
     /// UDS Address
     #[cfg(unix)]
-    #[cfg_attr(any(docsrs, feature = "doc"), doc(cfg(unix)))]
+    #[cfg_attr(feature = "doc", doc(cfg(unix)))]
     Uds(PathBuf),
 }
 

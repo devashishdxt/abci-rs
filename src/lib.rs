@@ -56,7 +56,7 @@
 //!
 //! - Tendermint v0.32.0
 //! - ABCI v0.16.0
-#![cfg_attr(any(docsrs, feature = "doc"), feature(doc_cfg))]
+#![cfg_attr(feature = "doc", feature(doc_cfg))]
 
 #[cfg(all(feature = "async-std", feature = "tokio"))]
 compile_error!("Features `async-std` and `tokio` are mutually exclusive");
