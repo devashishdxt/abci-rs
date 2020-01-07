@@ -266,11 +266,8 @@ pub enum Address {
     /// TCP Address
     Tcp(SocketAddr),
     /// UDS Address
-    ///
-    /// ### Platform support
-    ///
-    /// This is supported on **Unix** only.
     #[cfg(unix)]
+    #[cfg_attr(any(docsrs, feature = "doc"), doc(cfg(unix)))]
     Uds(PathBuf),
 }
 

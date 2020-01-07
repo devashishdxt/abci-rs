@@ -1,4 +1,4 @@
-#![deny(missing_docs, unsafe_code, unstable_features)]
+#![deny(missing_docs, unsafe_code)]
 //! A Rust crate for creating ABCI applications.
 //!
 //! ## ABCI Overview
@@ -56,6 +56,8 @@
 //!
 //! - Tendermint v0.32.0
 //! - ABCI v0.16.0
+#![cfg_attr(any(docsrs, feature = "doc"), feature(doc_cfg))]
+
 #[cfg(all(feature = "async-std", feature = "tokio"))]
 compile_error!("Features `async-std` and `tokio` are mutually exclusive");
 

@@ -17,7 +17,7 @@ jobs:
     - uses: actions-rs/cargo@v1
       with:
         command: doc
-        args: --no-deps
+        args: --no-deps --features doc
     - uses: peaceiris/actions-gh-pages@v2.5.0
       env:
         ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
