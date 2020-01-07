@@ -283,9 +283,6 @@
 <span id="283">283</span>
 <span id="284">284</span>
 <span id="285">285</span>
-<span id="286">286</span>
-<span id="287">287</span>
-<span id="288">288</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
@@ -555,11 +552,8 @@
     <span class="doccomment">/// TCP Address</span>
     <span class="ident">Tcp</span>(<span class="ident">SocketAddr</span>),
     <span class="doccomment">/// UDS Address</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ### Platform support</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is supported on **Unix** only.</span>
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">any</span>(<span class="ident">docsrs</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;doc&quot;</span>), <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">unix</span>)))]</span>
     <span class="ident">Uds</span>(<span class="ident">PathBuf</span>),
 }
 
