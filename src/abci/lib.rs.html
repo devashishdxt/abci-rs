@@ -135,7 +135,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! - Tendermint v0.32.0</span>
 <span class="doccomment">//! - ABCI v0.16.0</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">any</span>(<span class="ident">docsrs</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;doc&quot;</span>), <span class="ident">feature</span>(<span class="ident">doc_cfg</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;doc&quot;</span>, <span class="ident">feature</span>(<span class="ident">doc_cfg</span>))]</span>
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tokio&quot;</span>))]</span>
 <span class="macro">compile_error</span><span class="macro">!</span>(<span class="string">&quot;Features `async-std` and `tokio` are mutually exclusive&quot;</span>);
