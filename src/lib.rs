@@ -44,9 +44,6 @@
 //!
 //! ### Features
 //!
-//! - `uds`: Enables support for running ABCI server over Unix Domain Socket (UDS)
-//!   - Supported on **Unix** only.
-//!   - **Disabled** by default.
 //! - `tokio`: Enables `tokio` backend for running ABCI TCP/UDS server
 //!   - **Enabled** by default.
 //! - `async-std`: Enables `async-std` backend for running ABCI TCP/UDS server

@@ -32,7 +32,6 @@ tokio = { version = "0.2", features = ["macros"] }
 
 [features]
 default = ["tokio"]
-uds = []
 
 [workspace]
 members = ["gen-proto"]

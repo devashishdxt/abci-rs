@@ -1,8 +1,8 @@
-#[cfg(feature = "uds")]
+#[cfg(unix)]
 use std::path::PathBuf;
 use std::{io::Result, net::SocketAddr, sync::Arc};
 
-#[cfg(all(unix, feature = "async-std", feature = "uds"))]
+#[cfg(all(unix, feature = "async-std"))]
 use async_std::os::unix::net::UnixListener;
 #[cfg(feature = "async-std")]
 use async_std::{
@@ -12,7 +12,7 @@ use async_std::{
     sync::Mutex,
     task::spawn,
 };
-#[cfg(all(unix, feature = "tokio", feature = "uds"))]
+#[cfg(all(unix, feature = "tokio"))]
 use tokio::net::UnixListener;
 #[cfg(feature = "tokio")]
 use tokio::{
@@ -86,7 +86,7 @@ where
                     self.handle_connection(stream?).await;
                 }
             }
-            #[cfg(all(unix, feature = "uds"))]
+            #[cfg(unix)]
             Address::Uds(path) => {
                 #[cfg(feature = "async-std")]
                 let listener = UnixListener::bind(&path).await?;
@@ -270,7 +270,7 @@ pub enum Address {
     /// ### Platform support
     ///
     /// This is supported on **Unix** only.
-    #[cfg(all(unix, feature = "uds"))]
+    #[cfg(unix)]
     Uds(PathBuf),
 }
 
@@ -280,7 +280,7 @@ impl From<SocketAddr> for Address {
     }
 }
 
-#[cfg(all(unix, feature = "uds"))]
+#[cfg(unix)]
 impl From<PathBuf> for Address {
     fn from(path: PathBuf) -> Self {
         Self::Uds(path)
