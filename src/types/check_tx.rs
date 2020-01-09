@@ -1,16 +1,46 @@
-use crate::proto::abci::{Event as ProtoEvent, RequestCheckTx, ResponseCheckTx};
+use crate::proto::abci::{
+    CheckTxType as ProtoCheckTxType, Event as ProtoEvent, RequestCheckTx, ResponseCheckTx,
+};
 use crate::types::{Event, Result};
 
 #[derive(Debug, Default)]
 pub struct CheckTxRequest {
     /// The request transaction bytes
     pub tx: Vec<u8>,
+    /// Denotes if this is a new request of a re-check request
+    pub check_type: CheckTxType,
 }
 
 impl From<RequestCheckTx> for CheckTxRequest {
     fn from(request_check_tx: RequestCheckTx) -> CheckTxRequest {
         CheckTxRequest {
             tx: request_check_tx.tx,
+            check_type: request_check_tx.field_type.into(),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum CheckTxType {
+    /// Denotes that the transaction has never been checked
+    New,
+    /// Denotes that the transaction was already checked and certain expensive operation (like checking signatures) can
+    /// be skipped
+    Recheck,
+}
+
+impl Default for CheckTxType {
+    #[inline]
+    fn default() -> Self {
+        Self::New
+    }
+}
+
+impl From<ProtoCheckTxType> for CheckTxType {
+    fn from(proto_check_tx_type: ProtoCheckTxType) -> Self {
+        match proto_check_tx_type {
+            ProtoCheckTxType::New => Self::New,
+            ProtoCheckTxType::Recheck => Self::Recheck,
         }
     }
 }

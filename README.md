@@ -55,8 +55,8 @@ will fail if either both of them are enabled or none of them are enabled.
 
 ## Supported Versions
 
-- Tendermint v0.32.0
-- ABCI v0.16.0
+- Tendermint v0.32.8
+- ABCI v0.16.1
 
 ## License
 

@@ -1,6 +1,44 @@
-use protobuf_codegen_pure::{run, Args};
+use std::{fs::OpenOptions, io::Write};
 
-fn main() {
+use bytes::Bytes;
+use protobuf_codegen_pure::{run, Args};
+use reqwest::Result;
+
+const TENDERMINT_URL: &str = "https://raw.githubusercontent.com/tendermint/tendermint/v0.32.8/";
+
+const FILES_TO_DOWNLOAD: [(&str, &str); 3] = [
+    (
+        "libs/common/types.proto",
+        "gen-proto/assets/github.com/tendermint/tendermint/libs/common/types.proto",
+    ),
+    (
+        "abci/types/types.proto",
+        "gen-proto/assets/github.com/tendermint/tendermint/abci/types/abci.proto",
+    ),
+    (
+        "crypto/merkle/merkle.proto",
+        "gen-proto/assets/github.com/tendermint/tendermint/crypto/merkle/merkle.proto",
+    ),
+];
+
+#[tokio::main]
+async fn main() {
+    for (file, destination) in FILES_TO_DOWNLOAD.iter() {
+        let bytes = get_bytes(&format!("{}{}", TENDERMINT_URL, file))
+            .await
+            .expect(&format!("Unable to download [{}]", file));
+
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(destination)
+            .expect(&format!("Unable to open file [{}]", destination));
+
+        file.write_all(&bytes)
+            .expect(&format!("Unable to write to [{}]", destination));
+    }
+
     let args = Args {
         out_dir: "src/proto",
         includes: &["gen-proto/assets"],
@@ -13,4 +51,9 @@ fn main() {
     };
 
     run(args).expect("Unable to build protobuf files");
+}
+
+async fn get_bytes(url: &str) -> Result<Bytes> {
+    let response = reqwest::get(url).await?;
+    response.bytes().await
 }
