@@ -104,7 +104,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```toml</span>
 <span class="doccomment">//! [dependencies]</span>
-<span class="doccomment">//! abci-rs = &quot;0.4&quot;</span>
+<span class="doccomment">//! abci-rs = &quot;0.5&quot;</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,</span>
@@ -131,10 +131,10 @@
 <span class="doccomment">//! &gt; Note: Features `tokio` and `async-std` are mutually exclusive, i.e., only one of them can be enabled at a time. Compilation</span>
 <span class="doccomment">//! will fail if either both of them are enabled or none of them are enabled.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! ## Supported Versions</span>
+<span class="doccomment">//! ## Minimum Supported Versions</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! - Tendermint v0.32.0</span>
-<span class="doccomment">//! - ABCI v0.16.0</span>
+<span class="doccomment">//! - Tendermint v0.32.8</span>
+<span class="doccomment">//! - ABCI v0.16.1</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;doc&quot;</span>, <span class="ident">feature</span>(<span class="ident">doc_cfg</span>))]</span>
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;tokio&quot;</span>))]</span>

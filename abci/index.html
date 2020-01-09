@@ -16,7 +16,7 @@ debugging.</p>
 <h2 id="usage" class="section-header"><a href="#usage">Usage</a></h2>
 <p>Add <code>abci-rs</code> in your <code>Cargo.toml</code>'s <code>dependencies</code> section:</p>
 <pre><code class="language-toml">[dependencies]
-abci-rs = &quot;0.4&quot;
+abci-rs = &quot;0.5&quot;
 </code></pre>
 <p>Each ABCI application has to implement three core traits corresponding to all three ABCI connections, <code>Consensus</code>,
 <code>Mempool</code> and <code>Info</code>.</p>
@@ -46,10 +46,10 @@ from <code>Server::run()</code>. <code>async-std</code> and <code>tokio</code> a
 <p>Note: Features <code>tokio</code> and <code>async-std</code> are mutually exclusive, i.e., only one of them can be enabled at a time. Compilation
 will fail if either both of them are enabled or none of them are enabled.</p>
 </blockquote>
-<h2 id="supported-versions" class="section-header"><a href="#supported-versions">Supported Versions</a></h2>
+<h2 id="minimum-supported-versions" class="section-header"><a href="#minimum-supported-versions">Minimum Supported Versions</a></h2>
 <ul>
-<li>Tendermint v0.32.0</li>
-<li>ABCI v0.16.0</li>
+<li>Tendermint v0.32.8</li>
+<li>ABCI v0.16.1</li>
 </ul>
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table><tr class='module-item'><td><a class="mod" href="types/index.html" title='abci::types mod'>types</a></td><td class='docblock-short'><p>Types used in ABCI</p>
