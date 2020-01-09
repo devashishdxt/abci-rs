@@ -25,7 +25,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! abci-rs = "0.4"
+//! abci-rs = "0.5"
 //! ```
 //!
 //! Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,
@@ -52,10 +52,10 @@
 //! > Note: Features `tokio` and `async-std` are mutually exclusive, i.e., only one of them can be enabled at a time. Compilation
 //! will fail if either both of them are enabled or none of them are enabled.
 //!
-//! ## Supported Versions
+//! ## Minimum Supported Versions
 //!
-//! - Tendermint v0.32.0
-//! - ABCI v0.16.0
+//! - Tendermint v0.32.8
+//! - ABCI v0.16.1
 #![cfg_attr(feature = "doc", feature(doc_cfg))]
 
 #[cfg(all(feature = "async-std", feature = "tokio"))]
