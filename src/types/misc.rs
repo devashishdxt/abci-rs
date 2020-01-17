@@ -1,5 +1,7 @@
 use std::time::Duration;
 
+use protobuf::well_known_types::Duration as ProtoDuration;
+
 use crate::proto::abci::{
     BlockID as ProtoBlockId, BlockParams as ProtoBlockParams,
     ConsensusParams as ProtoConsensusParams, Event as ProtoEvent, Evidence as ProtoEvidence,
@@ -9,7 +11,7 @@ use crate::proto::abci::{
     ValidatorUpdate as ProtoValidatorUpdate, Version as ProtoVersion, VoteInfo as ProtoVoteInfo,
 };
 use crate::proto::merkle::{Proof as ProtoProof, ProofOp as ProtoProofOp};
-use crate::proto::types::KVPair as ProtoKeyValuePair;
+use crate::proto::types::Pair as ProtoKeyValuePair;
 
 #[derive(Debug, Default)]
 pub struct ConsensusParams {
@@ -79,29 +81,54 @@ impl From<ProtoBlockParams> for BlockParams {
 }
 
 #[derive(Debug, Default)]
+/// Tendermint adopts a hybrid approach to check validity of an evidence. User can provide both `max_age_num_blocks` and
+/// `max_age_duration` and tendermint only rejects an evidence if it is older than `max_age_num_blocks` and also
+/// `max_age_duration`.
+///
+/// # Note
+///
+/// - This should correspond with an app's "unbonding period" or other similar mechanism for handling
+///   Nothing-At-Stake attacks.
 pub struct EvidenceParams {
     /// Max age of evidence, in blocks. Evidence older than this is considered stale and ignored
-    ///
-    /// # Note
-    ///
-    /// - This should correspond with an app's "unbonding period" or other similar mechanism for handling
-    ///   Nothing-At-Stake attacks.
-    /// - This should change to time (instead of blocks)!
-    pub max_age: i64,
+    pub max_age_num_blocks: i64,
+    /// Max age of evidence, in time duration. Evidence older than this is considered stale and ignored
+    pub max_age_duration: Option<Duration>,
 }
 
 impl From<EvidenceParams> for ProtoEvidenceParams {
     fn from(evidence_params: EvidenceParams) -> ProtoEvidenceParams {
         let mut proto_evidence_params = ProtoEvidenceParams::new();
-        proto_evidence_params.max_age = evidence_params.max_age;
+        proto_evidence_params.max_age_num_blocks = evidence_params.max_age_num_blocks;
+        proto_evidence_params.max_age_duration = evidence_params
+            .max_age_duration
+            .map(|duration| {
+                let mut proto_duration = ProtoDuration::new();
+                proto_duration.set_seconds(duration.as_secs() as i64);
+                proto_duration.set_nanos(duration.subsec_nanos() as i32);
+                proto_duration
+            })
+            .into();
         proto_evidence_params
     }
 }
 
 impl From<ProtoEvidenceParams> for EvidenceParams {
     fn from(proto_evidence_params: ProtoEvidenceParams) -> EvidenceParams {
+        let max_age_duration =
+            proto_evidence_params
+                .max_age_duration
+                .into_option()
+                .map(|ref proto_duration| {
+                    Duration::new(
+                        proto_duration.get_seconds() as u64,
+                        proto_duration.get_nanos() as u32,
+                    )
+                });
+
         EvidenceParams {
-            max_age: proto_evidence_params.max_age,
+            max_age_num_blocks: proto_evidence_params.max_age_num_blocks,
+            max_age_duration,
         }
     }
 }
@@ -284,10 +311,6 @@ pub struct Header {
     /// Time of the previous block. For heights > 1, it's the weighted median of the timestamps of the valid votes in
     /// the `block.last_commit`. For height == 1, it's genesis time. (duration since epoch)
     pub time: Option<Duration>,
-    /// Number of transactions in the block
-    pub num_txs: i64,
-    /// Total number of transactions in the blockchain until now
-    pub total_txs: i64,
     /// Hash of the previous (parent) block
     pub last_block_id: Option<BlockId>,
     /// Hash of the previous block's commit
@@ -321,8 +344,6 @@ impl From<ProtoHeader> for Header {
                 .time
                 .into_option()
                 .map(|timestamp| Duration::new(timestamp.seconds as u64, timestamp.nanos as u32)),
-            num_txs: proto_header.num_txs,
-            total_txs: proto_header.total_txs,
             last_block_id: proto_header.last_block_id.into_option().map(Into::into),
             last_commit_hash: proto_header.last_commit_hash,
             data_hash: proto_header.data_hash,
