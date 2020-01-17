@@ -25,7 +25,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! abci-rs = "0.5"
+//! abci-rs = "0.6"
 //! ```
 //!
 //! Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,
@@ -54,8 +54,7 @@
 //!
 //! ## Minimum Supported Versions
 //!
-//! - Tendermint v0.32.8
-//! - ABCI v0.16.1
+//! - Tendermint: [`v0.33.0`](https://github.com/tendermint/tendermint/releases/tag/v0.33.0)
 #![cfg_attr(feature = "doc", feature(doc_cfg))]
 
 #[cfg(all(feature = "async-std", feature = "tokio"))]

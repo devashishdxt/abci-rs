@@ -26,7 +26,7 @@ Add `abci-rs` in your `Cargo.toml`'s `dependencies` section:
 
 ```toml
 [dependencies]
-abci-rs = "0.5"
+abci-rs = "0.6"
 ```
 
 Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,
@@ -55,8 +55,7 @@ will fail if either both of them are enabled or none of them are enabled.
 
 ## Minimum Supported Versions
 
-- Tendermint v0.32.8
-- ABCI v0.16.1
+- Tendermint: [`v0.33.0`](https://github.com/tendermint/tendermint/releases/tag/v0.33.0)
 
 ## License
 
