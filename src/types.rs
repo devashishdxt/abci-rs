@@ -22,7 +22,10 @@ pub use self::misc::*;
 pub use self::query::*;
 pub use self::set_option::*;
 
+use std::fmt;
+
 /// ABCI Error
+#[derive(Debug)]
 pub struct Error {
     /// Error code
     pub code: u32,
@@ -33,6 +36,14 @@ pub struct Error {
     /// Additional information (may be non-deterministic)
     pub info: String,
 }
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Error #{} ({}): {}", self.code, self.codespace, self.log)
+    }
+}
+
+impl std::error::Error for Error {}
 
 /// ABCI Result
 pub type Result<T> = std::result::Result<T, Error>;

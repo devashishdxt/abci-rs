@@ -27,14 +27,32 @@ pub trait Info: Send + Sync {
     ///
     /// [`info`]: trait.Info.html#tymethod.info
     /// [`commit`]: trait.Consensus.html#tymethod.commit
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn info(&self, info_request: InfoRequest) -> InfoResponse
+    /// ```
     async fn info(&self, info_request: InfoRequest) -> InfoResponse;
 
     /// Set non-consensus critical application specific options.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn set_option(&self, set_option_request: SetOptionRequest) -> Result<SetOptionResponse>
+    /// ```
     async fn set_option(&self, _set_option_request: SetOptionRequest) -> Result<SetOptionResponse> {
         Ok(Default::default())
     }
 
     /// Query for data from the application at current or past height.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn query(&self, query_request: QueryRequest) -> Result<QueryResponse>
+    /// ```
     async fn query(&self, _query_request: QueryRequest) -> Result<QueryResponse> {
         Ok(Default::default())
     }
@@ -59,15 +77,39 @@ pub trait Info: Send + Sync {
 #[async_trait]
 pub trait Consensus: Send + Sync {
     /// Called once upon genesis. Usually used to establish initial (genesis) state.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn init_chain(&self, init_chain_request: InitChainRequest) -> InitChainResponse
+    /// ```
     async fn init_chain(&self, init_chain_request: InitChainRequest) -> InitChainResponse;
 
     /// Signals the beginning of a new block. Called prior to any [`deliver_tx`](trait.Consensus.html#tymethod.deliver_tx)s.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn begin_block(&self, begin_block_request: BeginBlockRequest) -> BeginBlockResponse
+    /// ```
     async fn begin_block(&self, begin_block_request: BeginBlockRequest) -> BeginBlockResponse;
 
     /// Execute the transaction in full. The workhorse of the application.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn deliver_tx(&self, deliver_tx_request: DeliverTxRequest) -> Result<DeliverTxResponse>
+    /// ```
     async fn deliver_tx(&self, deliver_tx_request: DeliverTxRequest) -> Result<DeliverTxResponse>;
 
     /// Signals the end of a block. Called after all transactions, prior to each [`commit`](trait.Commit.html#tymethod.commit).
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn end_block(&self, end_block_request: EndBlockRequest) -> EndBlockResponse
+    /// ```
     async fn end_block(&self, end_block_request: EndBlockRequest) -> EndBlockResponse;
 
     /// Persist the application state.
@@ -94,9 +136,21 @@ pub trait Consensus: Send + Sync {
     /// [_Consensus_]: trait.Consensus.html#details
     /// [_Mempool_]: trait.Mempool.html#details
     /// [_Info_]: trait.Info.html
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn commit(&self) -> CommitResponse
+    /// ```
     async fn commit(&self) -> CommitResponse;
 
     /// Signals that messages queued on the client should be flushed to the server.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn flush(&self)
+    /// ```
     async fn flush(&self) {}
 }
 
@@ -132,5 +186,11 @@ pub trait Consensus: Send + Sync {
 pub trait Mempool: Send + Sync {
     /// Guardian of the mempool: every node runs CheckTx before letting a transaction into its local mempool.
     /// Technically optional - not involved in processing blocks
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse>
+    /// ```
     async fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse>;
 }
