@@ -134,6 +134,66 @@
 <span id="134">134</span>
 <span id="135">135</span>
 <span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 
@@ -164,14 +224,32 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`info`]: trait.Info.html#tymethod.info</span>
     <span class="doccomment">/// [`commit`]: trait.Consensus.html#tymethod.commit</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Equivalent to</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust,ignore</span>
+    <span class="doccomment">/// async fn info(&amp;self, info_request: InfoRequest) -&gt; InfoResponse</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">info_request</span>: <span class="ident">InfoRequest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">InfoResponse</span>;
 
     <span class="doccomment">/// Set non-consensus critical application specific options.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Equivalent to</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust,ignore</span>
+    <span class="doccomment">/// async fn set_option(&amp;self, set_option_request: SetOptionRequest) -&gt; Result&lt;SetOptionResponse&gt;</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">set_option</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_set_option_request</span>: <span class="ident">SetOptionRequest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SetOptionResponse</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">Default</span>::<span class="ident">default</span>())
     }
 
     <span class="doccomment">/// Query for data from the application at current or past height.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Equivalent to</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust,ignore</span>
+    <span class="doccomment">/// async fn query(&amp;self, query_request: QueryRequest) -&gt; Result&lt;QueryResponse&gt;</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_query_request</span>: <span class="ident">QueryRequest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">QueryResponse</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">Default</span>::<span class="ident">default</span>())
     }
@@ -196,15 +274,39 @@
 <span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Consensus</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> {
     <span class="doccomment">/// Called once upon genesis. Usually used to establish initial (genesis) state.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Equivalent to</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust,ignore</span>
+    <span class="doccomment">/// async fn init_chain(&amp;self, init_chain_request: InitChainRequest) -&gt; InitChainResponse</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">init_chain</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">init_chain_request</span>: <span class="ident">InitChainRequest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">InitChainResponse</span>;
 
     <span class="doccomment">/// Signals the beginning of a new block. Called prior to any [`deliver_tx`](trait.Consensus.html#tymethod.deliver_tx)s.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Equivalent to</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust,ignore</span>
+    <span class="doccomment">/// async fn begin_block(&amp;self, begin_block_request: BeginBlockRequest) -&gt; BeginBlockResponse</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">begin_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">begin_block_request</span>: <span class="ident">BeginBlockRequest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BeginBlockResponse</span>;
 
     <span class="doccomment">/// Execute the transaction in full. The workhorse of the application.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Equivalent to</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust,ignore</span>
+    <span class="doccomment">/// async fn deliver_tx(&amp;self, deliver_tx_request: DeliverTxRequest) -&gt; Result&lt;DeliverTxResponse&gt;</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">deliver_tx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">deliver_tx_request</span>: <span class="ident">DeliverTxRequest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">DeliverTxResponse</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Signals the end of a block. Called after all transactions, prior to each [`commit`](trait.Commit.html#tymethod.commit).</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Equivalent to</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust,ignore</span>
+    <span class="doccomment">/// async fn end_block(&amp;self, end_block_request: EndBlockRequest) -&gt; EndBlockResponse</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">end_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">end_block_request</span>: <span class="ident">EndBlockRequest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">EndBlockResponse</span>;
 
     <span class="doccomment">/// Persist the application state.</span>
@@ -231,9 +333,21 @@
     <span class="doccomment">/// [_Consensus_]: trait.Consensus.html#details</span>
     <span class="doccomment">/// [_Mempool_]: trait.Mempool.html#details</span>
     <span class="doccomment">/// [_Info_]: trait.Info.html</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Equivalent to</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust,ignore</span>
+    <span class="doccomment">/// async fn commit(&amp;self) -&gt; CommitResponse</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">commit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">CommitResponse</span>;
 
     <span class="doccomment">/// Signals that messages queued on the client should be flushed to the server.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Equivalent to</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust,ignore</span>
+    <span class="doccomment">/// async fn flush(&amp;self)</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {}
 }
 
@@ -269,6 +383,12 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Mempool</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> {
     <span class="doccomment">/// Guardian of the mempool: every node runs CheckTx before letting a transaction into its local mempool.</span>
     <span class="doccomment">/// Technically optional - not involved in processing blocks</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Equivalent to</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```rust,ignore</span>
+    <span class="doccomment">/// async fn check_tx(&amp;self, check_tx_request: CheckTxRequest) -&gt; Result&lt;CheckTxResponse&gt;</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">check_tx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">check_tx_request</span>: <span class="ident">CheckTxRequest</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">CheckTxResponse</span><span class="op">&gt;</span>;
 }
 </pre></div>
