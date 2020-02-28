@@ -1,11 +1,15 @@
-#[cfg(unix)]
-use std::path::PathBuf;
-use std::{io::Result, net::SocketAddr, sync::Arc};
+use std::path::{Path, PathBuf};
+use std::{
+    io::{ErrorKind, Result},
+    net::SocketAddr,
+    sync::Arc,
+};
 
 #[cfg(all(unix, feature = "async-std"))]
 use async_std::os::unix::net::UnixListener;
 #[cfg(feature = "async-std")]
 use async_std::{
+    fs::{create_dir_all, read, write},
     io::{Read, Write},
     net::TcpListener,
     prelude::*,
@@ -16,6 +20,7 @@ use async_std::{
 use tokio::net::UnixListener;
 #[cfg(feature = "tokio")]
 use tokio::{
+    fs::{create_dir_all, read, write},
     io::{AsyncRead as Read, AsyncWrite as Write},
     net::TcpListener,
     spawn,
@@ -28,6 +33,8 @@ use crate::{
     Consensus, Info, Mempool,
 };
 
+const CONSENSUS_STATE_FILE: &str = "consensus_state.abci";
+
 /// ABCI Server
 pub struct Server<C, M, I>
 where
@@ -39,6 +46,7 @@ where
     pub(crate) mempool: Arc<M>,
     pub(crate) info: Arc<I>,
     pub(crate) consensus_state: Arc<Mutex<ConsensusState>>,
+    pub(crate) storage_path: PathBuf,
 }
 
 impl<C, M, I> Server<C, M, I>
@@ -48,14 +56,38 @@ where
     I: Info + 'static,
 {
     /// Creates a new instance of [`Server`](struct.Server.html)
-    #[inline]
-    pub fn new(consensus: C, mempool: M, info: I) -> Self {
-        Self {
+    ///
+    /// # Note
+    ///
+    /// This is an `async` function and returns a `Future`. So, you'll need an executor to drive the `Future` returned
+    /// from this function. `async-std` and `tokio` are two popular options.
+    pub async fn new<P: AsRef<Path>>(consensus: C, mempool: M, info: I, path: P) -> Result<Self> {
+        let storage_path = path.as_ref().to_path_buf();
+
+        // Create storage directory if it does not already exist
+        if let Err(e) = create_dir_all(&storage_path).await {
+            match e.kind() {
+                ErrorKind::AlreadyExists => {
+                    // do nothing
+                }
+                _ => {
+                    return Err(e);
+                }
+            }
+        }
+
+        // Read consensus state from file
+        let mut consensus_state_path = storage_path.clone();
+        consensus_state_path.push(CONSENSUS_STATE_FILE);
+        let consensus_state = ConsensusState::read(&consensus_state_path).await?;
+
+        Ok(Self {
             consensus: Arc::new(consensus),
             mempool: Arc::new(mempool),
             info: Arc::new(info),
-            consensus_state: Arc::new(Mutex::new(ConsensusState::default())),
-        }
+            consensus_state: Arc::new(Mutex::new(consensus_state)),
+            storage_path,
+        })
     }
 
     /// Starts ABCI server
@@ -115,6 +147,8 @@ where
         let mempool = self.mempool.clone();
         let info = self.info.clone();
         let consensus_state = self.consensus_state.clone();
+        let mut consensus_state_path = self.storage_path.clone();
+        consensus_state_path.push(CONSENSUS_STATE_FILE);
 
         spawn(async move {
             while let Ok(request) = decode(&mut stream).await {
@@ -125,6 +159,7 @@ where
                             mempool.clone(),
                             info.clone(),
                             consensus_state.clone(),
+                            &consensus_state_path,
                             request,
                         )
                         .await;
@@ -142,17 +177,19 @@ where
     }
 }
 
-async fn process<C, M, I>(
+async fn process<C, M, I, P>(
     consensus: Arc<C>,
     mempool: Arc<M>,
     info: Arc<I>,
     consensus_state: Arc<Mutex<ConsensusState>>,
+    consensus_state_path: P,
     request: Request,
 ) -> Response
 where
     C: Consensus + 'static,
     M: Mempool + 'static,
     I: Info + 'static,
+    P: AsRef<Path>,
 {
     log::debug!("Received request: {:?}", request);
 
@@ -177,7 +214,19 @@ where
                 .lock()
                 .await
                 .validate(ConsensusState::InitChain);
-            Response_oneof_value::init_chain(consensus.init_chain(request.into()).await.into())
+            let response =
+                Response_oneof_value::init_chain(consensus.init_chain(request.into()).await.into());
+
+            ConsensusState::initialize(&consensus_state_path)
+                .await
+                .unwrap_or_else(|_| {
+                    panic!(
+                        "Unable to update consensus state at: {}",
+                        consensus_state_path.as_ref().display()
+                    )
+                });
+
+            response
         }
         Request_oneof_value::query(request) => {
             Response_oneof_value::query(info.query(request.into()).await.into())
@@ -225,6 +274,8 @@ where
 
 #[derive(Debug, Clone, Copy)]
 pub enum ConsensusState {
+    NotInitialized,
+    Initialized,
     InitChain,
     BeginBlock,
     DeliverTx,
@@ -235,14 +286,15 @@ pub enum ConsensusState {
 impl Default for ConsensusState {
     #[inline]
     fn default() -> Self {
-        ConsensusState::InitChain
+        ConsensusState::NotInitialized
     }
 }
 
 impl ConsensusState {
-    pub fn validate(&mut self, mut next: ConsensusState) {
-        let is_valid = match (&self, next) {
-            (ConsensusState::InitChain, ConsensusState::InitChain) => true,
+    pub fn validate(&mut self, next: ConsensusState) {
+        let is_valid = match (*self, next) {
+            (ConsensusState::NotInitialized, ConsensusState::InitChain) => true,
+            (ConsensusState::Initialized, ConsensusState::BeginBlock) => true,
             (ConsensusState::InitChain, ConsensusState::BeginBlock) => true,
             (ConsensusState::BeginBlock, ConsensusState::DeliverTx) => true,
             (ConsensusState::BeginBlock, ConsensusState::EndBlock) => true,
@@ -254,10 +306,41 @@ impl ConsensusState {
         };
 
         if is_valid {
-            std::mem::swap(self, &mut next);
+            *self = next;
         } else {
             panic!("{:?} cannot be called after {:?}", next, self);
         }
+    }
+
+    pub async fn read(path: impl AsRef<Path>) -> Result<Self> {
+        let bytes = read(&path).await;
+
+        let bytes = match bytes {
+            Ok(bytes) => Ok(bytes),
+            Err(e) => match e.kind() {
+                ErrorKind::NotFound => {
+                    let new_bytes = vec![0];
+                    write(&path, &new_bytes).await?;
+                    Ok(new_bytes)
+                }
+                _ => Err(e),
+            },
+        }?;
+
+        if bytes.is_empty() {
+            return Err(ErrorKind::UnexpectedEof.into());
+        }
+
+        if bytes[0] == 0 {
+            Ok(ConsensusState::NotInitialized)
+        } else {
+            Ok(ConsensusState::Initialized)
+        }
+    }
+
+    #[inline]
+    pub async fn initialize(path: impl AsRef<Path>) -> Result<()> {
+        write(path, &[1u8]).await
     }
 }
 
