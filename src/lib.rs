@@ -54,7 +54,7 @@
 //!
 //! ## Minimum Supported Versions
 //!
-//! - Tendermint: [`v0.33.0`](https://github.com/tendermint/tendermint/releases/tag/v0.33.0)
+//! - Tendermint: [`v0.33.1`](https://github.com/tendermint/tendermint/releases/tag/v0.33.1)
 #![cfg_attr(feature = "doc", feature(doc_cfg))]
 
 #[cfg(all(feature = "async-std", feature = "tokio"))]

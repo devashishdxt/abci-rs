@@ -4,20 +4,20 @@ use bytes::Bytes;
 use protobuf_codegen_pure::{run, Args};
 use reqwest::Result;
 
-const TENDERMINT_URL: &str = "https://raw.githubusercontent.com/tendermint/tendermint/v0.33.0/";
+const TENDERMINT_URL: &str = "https://raw.githubusercontent.com/tendermint/tendermint/v0.33.1/";
 
 const FILES_TO_DOWNLOAD: [(&str, &str); 3] = [
     (
         "libs/kv/types.proto",
-        "gen-proto/assets/github.com/tendermint/tendermint/libs/kv/types.proto",
+        "gen-proto/assets/libs/kv/types.proto",
     ),
     (
         "abci/types/types.proto",
-        "gen-proto/assets/github.com/tendermint/tendermint/abci/types/abci.proto",
+        "gen-proto/assets/abci/types/abci.proto",
     ),
     (
         "crypto/merkle/merkle.proto",
-        "gen-proto/assets/github.com/tendermint/tendermint/crypto/merkle/merkle.proto",
+        "gen-proto/assets/crypto/merkle/merkle.proto",
     ),
 ];
 
@@ -43,9 +43,9 @@ async fn main() {
         out_dir: "src/proto",
         includes: &["gen-proto/assets"],
         input: &[
-            "gen-proto/assets/github.com/tendermint/tendermint/abci/types/abci.proto",
-            "gen-proto/assets/github.com/tendermint/tendermint/libs/kv/types.proto",
-            "gen-proto/assets/github.com/tendermint/tendermint/crypto/merkle/merkle.proto",
+            "gen-proto/assets/abci/types/abci.proto",
+            "gen-proto/assets/libs/kv/types.proto",
+            "gen-proto/assets/crypto/merkle/merkle.proto",
         ],
         customize: Default::default(),
     };
