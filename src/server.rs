@@ -54,22 +54,12 @@ where
     ///
     /// This is an `async` function and returns a `Future`. So, you'll need an executor to drive the `Future` returned
     /// from this function. `async-std` and `tokio` are two popular options.
-    ///
-    /// # Arguments
-    ///
-    /// - `is_initialized` should be `true` if `InitChain` was previously executed. `false` otherwise.
-    pub async fn new(consensus: C, mempool: M, info: I, is_initialized: bool) -> Result<Self> {
-        let consensus_state = if is_initialized {
-            ConsensusState::Initialized
-        } else {
-            ConsensusState::NotInitialized
-        };
-
+    pub async fn new(consensus: C, mempool: M, info: I) -> Result<Self> {
         Ok(Self {
             consensus: Arc::new(consensus),
             mempool: Arc::new(mempool),
             info: Arc::new(info),
-            consensus_state: Arc::new(Mutex::new(consensus_state)),
+            consensus_state: Default::default(),
         })
     }
 
@@ -100,7 +90,7 @@ where
                 while let Some(stream) = incoming.next().await {
                     let stream = stream?;
                     let peer_addr = stream.peer_addr().ok();
-                    self.handle_connection(stream, peer_addr).await;
+                    self.handle_connection(stream, peer_addr);
                 }
             }
             #[cfg(unix)]
@@ -118,7 +108,7 @@ where
                 while let Some(stream) = incoming.next().await {
                     let stream = stream?;
                     let peer_addr = stream.peer_addr().ok();
-                    self.handle_connection(stream, peer_addr).await;
+                    self.handle_connection(stream, peer_addr);
                 }
             }
         }
@@ -127,7 +117,7 @@ where
     }
 
     #[instrument(skip(self, stream))]
-    async fn handle_connection<S, P>(&self, mut stream: S, peer_addr: Option<P>)
+    fn handle_connection<S, P>(&self, mut stream: S, peer_addr: Option<P>)
     where
         S: Read + Write + Send + Unpin + 'static,
         P: std::fmt::Debug + Send + 'static,
@@ -192,7 +182,18 @@ where
             Response_oneof_value::flush(ResponseFlush::new())
         }
         Request_oneof_value::info(request) => {
-            Response_oneof_value::info(info.info(request.into()).await.into())
+            let mut consensus_state = consensus_state.lock().await;
+            let info_response = info.info(request.into()).await;
+
+            if *consensus_state == ConsensusState::NoInfo {
+                if info_response.last_block_height == 0 {
+                    *consensus_state = ConsensusState::NotInitialized;
+                } else {
+                    *consensus_state = ConsensusState::Initialized;
+                }
+            }
+
+            Response_oneof_value::info(info_response.into())
         }
         Request_oneof_value::set_option(request) => {
             Response_oneof_value::set_option(info.set_option(request.into()).await.into())
@@ -248,8 +249,9 @@ where
     response
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum ConsensusState {
+    NoInfo,
     NotInitialized,
     Initialized,
     InitChain,
@@ -262,7 +264,7 @@ pub enum ConsensusState {
 impl Default for ConsensusState {
     #[inline]
     fn default() -> Self {
-        ConsensusState::NotInitialized
+        ConsensusState::NoInfo
     }
 }
 

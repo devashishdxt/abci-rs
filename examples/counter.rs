@@ -176,7 +176,7 @@ async fn main() -> std::io::Result<()> {
     let mempool = MempoolConnection::new(current_state.clone());
     let info = InfoConnection::new(committed_state.clone());
 
-    let server = Server::new(consensus, mempool, info, false).await?;
+    let server = Server::new(consensus, mempool, info).await?;
 
     server
         .run("127.0.0.1:26658".parse::<SocketAddr>().unwrap())
