@@ -44,24 +44,24 @@
 //!
 //! ### Features
 //!
-//! - `tokio`: Enables `tokio` backend for running ABCI TCP/UDS server
+//! - `use-tokio`: Enables `tokio` backend for running ABCI TCP/UDS server
 //!   - **Enabled** by default.
-//! - `async-std`: Enables `async-std` backend for running ABCI TCP/UDS server
+//! - `use-async-std`: Enables `async-std` backend for running ABCI TCP/UDS server
 //!   - **Disabled** by default.
 //!   
-//! > Note: Features `tokio` and `async-std` are mutually exclusive, i.e., only one of them can be enabled at a time. Compilation
-//! will fail if either both of them are enabled or none of them are enabled.
+//! > Note: Features `use-tokio` and `use-async-std` are mutually exclusive, i.e., only one of them can be enabled at a time.
+//! Compilation will fail if either both of them are enabled or none of them are enabled.
 //!
 //! ## Minimum Supported Versions
 //!
 //! - Tendermint: [`v0.33.1`](https://github.com/tendermint/tendermint/releases/tag/v0.33.1)
 #![cfg_attr(feature = "doc", feature(doc_cfg))]
 
-#[cfg(all(feature = "async-std", feature = "tokio"))]
-compile_error!("Features `async-std` and `tokio` are mutually exclusive");
+#[cfg(all(feature = "use-async-std", feature = "use-tokio"))]
+compile_error!("Features `use-async-std` and `use-tokio` are mutually exclusive");
 
-#[cfg(not(any(feature = "async-std", feature = "tokio")))]
-compile_error!("Either feature `async-std` or `tokio` must be enabled for this crate");
+#[cfg(not(any(feature = "use-async-std", feature = "use-tokio")))]
+compile_error!("Either feature `use-async-std` or `use-tokio` must be enabled for this crate");
 
 mod application;
 mod proto;

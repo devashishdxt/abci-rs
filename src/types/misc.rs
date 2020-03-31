@@ -11,7 +11,7 @@ use crate::proto::abci::{
     ValidatorUpdate as ProtoValidatorUpdate, Version as ProtoVersion, VoteInfo as ProtoVoteInfo,
 };
 use crate::proto::merkle::{Proof as ProtoProof, ProofOp as ProtoProofOp};
-use crate::proto::types::Pair as ProtoKeyValuePair;
+use crate::proto::types::Pair as ProtoPair;
 
 #[derive(Debug, Default)]
 pub struct ConsensusParams {
@@ -445,16 +445,16 @@ impl From<ProtoEvidence> for Evidence {
 }
 
 #[derive(Debug, Default)]
-pub struct KeyValuePair {
+pub struct Pair {
     /// Key
     pub key: Vec<u8>,
     /// Value
     pub value: Vec<u8>,
 }
 
-impl From<KeyValuePair> for ProtoKeyValuePair {
-    fn from(pair: KeyValuePair) -> ProtoKeyValuePair {
-        let mut proto_pair = ProtoKeyValuePair::new();
+impl From<Pair> for ProtoPair {
+    fn from(pair: Pair) -> ProtoPair {
+        let mut proto_pair = ProtoPair::new();
         proto_pair.key = pair.key;
         proto_pair.value = pair.value;
         proto_pair
@@ -466,7 +466,7 @@ pub struct Event {
     /// Event type
     pub event_type: String,
     /// Attributes
-    pub attributes: Vec<KeyValuePair>,
+    pub attributes: Vec<Pair>,
 }
 
 impl From<Event> for ProtoEvent {
@@ -477,7 +477,7 @@ impl From<Event> for ProtoEvent {
             .attributes
             .into_iter()
             .map(Into::into)
-            .collect::<Vec<ProtoKeyValuePair>>()
+            .collect::<Vec<ProtoPair>>()
             .into();
         proto_event
     }

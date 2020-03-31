@@ -4,7 +4,7 @@ use bytes::Bytes;
 use protobuf_codegen_pure::{run, Args};
 use reqwest::Result;
 
-const TENDERMINT_URL: &str = "https://raw.githubusercontent.com/tendermint/tendermint/v0.33.1/";
+const TENDERMINT_URL: &str = "https://raw.githubusercontent.com/tendermint/tendermint/v0.33.2/";
 
 const FILES_TO_DOWNLOAD: [(&str, &str); 3] = [
     (

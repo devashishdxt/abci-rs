@@ -45,27 +45,28 @@ To know more, go to `examples/` to see a sample ABCI application.
 
 ### Features
 
-- `tokio`: Enables `tokio` backend for running ABCI TCP/UDS server
+- `use-tokio`: Enables `tokio` backend for running ABCI TCP/UDS server
   - **Enabled** by default.
-- `async-std`: Enables `async-std` backend for running ABCI TCP/UDS server
+- `use-async-std`: Enables `async-std` backend for running ABCI TCP/UDS server
   - **Disabled** by default.
 
-> Features `tokio` and `async-std` are mutually exclusive, i.e., only one of them can be enabled at a time. Compilation
-will fail if either both of them are enabled or none of them are enabled.
+> Features `use-tokio` and `use-async-std` are mutually exclusive, i.e., only one of them can be enabled at a time.
+Compilation will fail if either both of them are enabled or none of them are enabled.
 
 ## Minimum Supported Versions
 
-- Tendermint: [`v0.33.1`](https://github.com/tendermint/tendermint/releases/tag/v0.33.1)
+- Tendermint: [`v0.33.2`](https://github.com/tendermint/tendermint/releases/tag/v0.33.1)
 
 ## License
 
 Licensed under either of
 
-- Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
-- MIT license (http://opensource.org/licenses/MIT)
+- Apache License, Version 2.0 (<http://www.apache.org/licenses/LICENSE-2.0)>
+- MIT license (<http://opensource.org/licenses/MIT)>
 
 at your option.
 
 ## Contribution
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as 
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as
 defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
