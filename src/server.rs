@@ -55,8 +55,9 @@ where
     /// This is an `async` function and returns a `Future`. So, you'll need an executor to drive the `Future` returned
     /// from this function. `async-std` and `tokio` are two popular options.
     ///
-    /// `is_initialized` should be `true` if this is a restart of the server and `InitChain` was previously executed.
-    /// `false` otherwise.
+    /// # Arguments
+    ///
+    /// - `is_initialized` should be `true` if `InitChain` was previously executed. `false` otherwise.
     pub async fn new(consensus: C, mempool: M, info: I, is_initialized: bool) -> Result<Self> {
         let consensus_state = if is_initialized {
             ConsensusState::Initialized
