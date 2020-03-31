@@ -31,20 +31,20 @@ from <code>Server::run()</code>. <code>async-std</code> and <code>tokio</code> a
 <p>To know more, go to <code>examples/</code> to see a sample ABCI application.</p>
 <h3 id="features" class="section-header"><a href="#features">Features</a></h3>
 <ul>
-<li><code>tokio</code>: Enables <code>tokio</code> backend for running ABCI TCP/UDS server
+<li><code>use-tokio</code>: Enables <code>tokio</code> backend for running ABCI TCP/UDS server
 <ul>
 <li><strong>Enabled</strong> by default.</li>
 </ul>
 </li>
-<li><code>async-std</code>: Enables <code>async-std</code> backend for running ABCI TCP/UDS server
+<li><code>use-async-std</code>: Enables <code>async-std</code> backend for running ABCI TCP/UDS server
 <ul>
 <li><strong>Disabled</strong> by default.</li>
 </ul>
 </li>
 </ul>
 <blockquote>
-<p>Note: Features <code>tokio</code> and <code>async-std</code> are mutually exclusive, i.e., only one of them can be enabled at a time. Compilation
-will fail if either both of them are enabled or none of them are enabled.</p>
+<p>Note: Features <code>use-tokio</code> and <code>use-async-std</code> are mutually exclusive, i.e., only one of them can be enabled at a time.
+Compilation will fail if either both of them are enabled or none of them are enabled.</p>
 </blockquote>
 <h2 id="minimum-supported-versions" class="section-header"><a href="#minimum-supported-versions">Minimum Supported Versions</a></h2>
 <ul>
