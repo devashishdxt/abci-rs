@@ -1,9 +1,9 @@
 # abci-rs
 
-![Continuous Integration](https://github.com/devashishdxt/abci-rs/workflows/Continuous%20Integration/badge.svg)
-![Crates.io](https://img.shields.io/crates/v/abci-rs)
-![Documentation](https://docs.rs/abci-rs/badge.svg)
-![License](https://img.shields.io/crates/l/abci-rs)
+[![Continuous Integration](https://github.com/devashishdxt/abci-rs/workflows/Continuous%20Integration/badge.svg)](https://github.com/devashishdxt/abci-rs/actions?query=workflow%3A%22Continuous+Integration%22)
+[![Crates.io](https://img.shields.io/crates/v/abci-rs)](https://crates.io/crates/abci-rs)
+[![Documentation](https://docs.rs/abci-rs/badge.svg)](https://docs.rs/abci-rs)
+[![License](https://img.shields.io/crates/l/abci-rs)](https://github.com/devashishdxt/abci-rs/blob/master/LICENSE-MIT)
 
 A Rust crate for creating ABCI applications.
 
