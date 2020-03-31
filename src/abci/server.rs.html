@@ -311,6 +311,7 @@
 <span id="311">311</span>
 <span id="312">312</span>
 <span id="313">313</span>
+<span id="314">314</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
@@ -369,8 +370,9 @@
     <span class="doccomment">/// This is an `async` function and returns a `Future`. So, you&#39;ll need an executor to drive the `Future` returned</span>
     <span class="doccomment">/// from this function. `async-std` and `tokio` are two popular options.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// `is_initialized` should be `true` if this is a restart of the server and `InitChain` was previously executed.</span>
-    <span class="doccomment">/// `false` otherwise.</span>
+    <span class="doccomment">/// # Arguments</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// - `is_initialized` should be `true` if `InitChain` was previously executed. `false` otherwise.</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">consensus</span>: <span class="ident">C</span>, <span class="ident">mempool</span>: <span class="ident">M</span>, <span class="ident">info</span>: <span class="ident">I</span>, <span class="ident">is_initialized</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">consensus_state</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">is_initialized</span> {
             <span class="ident">ConsensusState</span>::<span class="ident">Initialized</span>
