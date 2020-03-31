@@ -4,6 +4,8 @@ use std::{
 };
 
 use abci::{async_trait, types::*, Consensus, Info, Mempool, Server};
+use tracing::{subscriber::set_global_default, Level};
+use tracing_subscriber::FmtSubscriber;
 
 /// Simple counter
 #[derive(Debug, Default, Clone)]
@@ -162,7 +164,10 @@ fn parse_bytes_to_counter(bytes: &[u8]) -> Result<u64> {
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    env_logger::init();
+    let subscriber = FmtSubscriber::builder()
+        .with_max_level(Level::DEBUG)
+        .finish();
+    set_global_default(subscriber).unwrap();
 
     let committed_state: Arc<Mutex<CounterState>> = Default::default();
     let current_state: Arc<Mutex<Option<CounterState>>> = Default::default();

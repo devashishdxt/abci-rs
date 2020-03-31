@@ -22,6 +22,7 @@ use tokio::{
     stream::StreamExt,
     sync::Mutex,
 };
+use tracing::{debug, error, info, instrument};
 
 use crate::{
     proto::{abci::*, decode, encode},
@@ -91,12 +92,14 @@ where
                 #[cfg(feature = "use-tokio")]
                 let mut listener = TcpListener::bind(addr).await?;
 
-                log::info!("Started ABCI server at {}", addr);
+                info!(message = "Started ABCI server at", %addr);
 
                 let mut incoming = listener.incoming();
 
                 while let Some(stream) = incoming.next().await {
-                    self.handle_connection(stream?).await;
+                    let stream = stream?;
+                    let peer_addr = stream.peer_addr().ok();
+                    self.handle_connection(stream, peer_addr).await;
                 }
             }
             #[cfg(unix)]
@@ -107,12 +110,14 @@ where
                 #[cfg(feature = "use-tokio")]
                 let mut listener = UnixListener::bind(&path)?;
 
-                log::info!("Started ABCI server at {}", path.display());
+                info!(message = "Started ABCI server at", path = %path.display());
 
                 let mut incoming = listener.incoming();
 
                 while let Some(stream) = incoming.next().await {
-                    self.handle_connection(stream?).await;
+                    let stream = stream?;
+                    let peer_addr = stream.peer_addr().ok();
+                    self.handle_connection(stream, peer_addr).await;
                 }
             }
         }
@@ -120,10 +125,14 @@ where
         Ok(())
     }
 
-    async fn handle_connection<S>(&self, mut stream: S)
+    #[instrument(skip(self, stream))]
+    async fn handle_connection<S, P>(&self, mut stream: S, peer_addr: Option<P>)
     where
         S: Read + Write + Send + Unpin + 'static,
+        P: std::fmt::Debug + Send + 'static,
     {
+        info!("New peer connection");
+
         let consensus = self.consensus.clone();
         let mempool = self.mempool.clone();
         let info = self.info.clone();
@@ -143,18 +152,22 @@ where
                         .await;
 
                         if let Err(err) = encode(response, &mut stream).await {
-                            log::error!("Error while writing to stream: {}", err);
+                            error!(message = "Error while writing to stream", %err, ?peer_addr);
                         }
                     }
-                    None => log::debug!("Received empty request"),
+                    None => debug!(message = "Received empty request", ?peer_addr),
                 }
             }
 
-            log::error!("Error while receiving ABCI request from socket");
+            error!(
+                message = "Error while receiving ABCI request from socket",
+                ?peer_addr
+            );
         });
     }
 }
 
+#[instrument(skip(consensus, mempool, info, consensus_state))]
 async fn process<C, M, I>(
     consensus: Arc<C>,
     mempool: Arc<M>,
@@ -167,8 +180,6 @@ where
     M: Mempool + 'static,
     I: Info + 'static,
 {
-    log::debug!("Received request: {:?}", request);
-
     let value = match request.value.unwrap() {
         Request_oneof_value::echo(request) => {
             let mut response = ResponseEcho::new();
@@ -231,7 +242,7 @@ where
     let mut response = Response::new();
     response.value = Some(value);
 
-    log::debug!("Sending response: {:?}", response);
+    debug!(message = "Sending response", ?response);
 
     response
 }
@@ -278,6 +289,7 @@ impl ConsensusState {
 }
 
 /// Address of ABCI Server
+#[derive(Debug)]
 pub enum Address {
     /// TCP Address
     Tcp(SocketAddr),
