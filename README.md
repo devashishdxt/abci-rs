@@ -1,5 +1,10 @@
 # abci-rs
 
+![Continuous Integration](https://github.com/devashishdxt/abci-rs/workflows/Continuous%20Integration/badge.svg)
+![Crates.io](https://img.shields.io/crates/v/abci-rs)
+![Documentation](https://docs.rs/abci-rs/badge.svg)
+![License](https://img.shields.io/crates/l/abci-rs)
+
 A Rust crate for creating ABCI applications.
 
 ## ABCI Overview
