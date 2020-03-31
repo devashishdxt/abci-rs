@@ -25,7 +25,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! abci-rs = "0.6"
+//! abci-rs = "0.7"
 //! ```
 //!
 //! Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,
