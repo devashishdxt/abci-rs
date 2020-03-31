@@ -312,6 +312,8 @@
 <span id="312">312</span>
 <span id="313">313</span>
 <span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
@@ -369,22 +371,12 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This is an `async` function and returns a `Future`. So, you&#39;ll need an executor to drive the `Future` returned</span>
     <span class="doccomment">/// from this function. `async-std` and `tokio` are two popular options.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Arguments</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// - `is_initialized` should be `true` if `InitChain` was previously executed. `false` otherwise.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">consensus</span>: <span class="ident">C</span>, <span class="ident">mempool</span>: <span class="ident">M</span>, <span class="ident">info</span>: <span class="ident">I</span>, <span class="ident">is_initialized</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">consensus_state</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">is_initialized</span> {
-            <span class="ident">ConsensusState</span>::<span class="ident">Initialized</span>
-        } <span class="kw">else</span> {
-            <span class="ident">ConsensusState</span>::<span class="ident">NotInitialized</span>
-        };
-
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">consensus</span>: <span class="ident">C</span>, <span class="ident">mempool</span>: <span class="ident">M</span>, <span class="ident">info</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="self">Self</span> {
             <span class="ident">consensus</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">consensus</span>),
             <span class="ident">mempool</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">mempool</span>),
             <span class="ident">info</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">info</span>),
-            <span class="ident">consensus_state</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">Mutex</span>::<span class="ident">new</span>(<span class="ident">consensus_state</span>)),
+            <span class="ident">consensus_state</span>: <span class="ident">Default</span>::<span class="ident">default</span>(),
         })
     }
 
@@ -415,7 +407,7 @@
                 <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="ident">incoming</span>.<span class="ident">next</span>().<span class="kw">await</span> {
                     <span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">stream</span><span class="question-mark">?</span>;
                     <span class="kw">let</span> <span class="ident">peer_addr</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">peer_addr</span>().<span class="ident">ok</span>();
-                    <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="ident">peer_addr</span>).<span class="kw">await</span>;
+                    <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="ident">peer_addr</span>);
                 }
             }
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
@@ -433,7 +425,7 @@
                 <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="ident">incoming</span>.<span class="ident">next</span>().<span class="kw">await</span> {
                     <span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">stream</span><span class="question-mark">?</span>;
                     <span class="kw">let</span> <span class="ident">peer_addr</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">peer_addr</span>().<span class="ident">ok</span>();
-                    <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="ident">peer_addr</span>).<span class="kw">await</span>;
+                    <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="ident">peer_addr</span>);
                 }
             }
         }
@@ -442,7 +434,7 @@
     }
 
     <span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">stream</span>))]</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_connection</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">stream</span>: <span class="ident">S</span>, <span class="ident">peer_addr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>)
+    <span class="kw">fn</span> <span class="ident">handle_connection</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">stream</span>: <span class="ident">S</span>, <span class="ident">peer_addr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>)
     <span class="kw">where</span>
         <span class="ident">S</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         <span class="ident">P</span>: <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -507,7 +499,18 @@
             <span class="ident">Response_oneof_value</span>::<span class="ident">flush</span>(<span class="ident">ResponseFlush</span>::<span class="ident">new</span>())
         }
         <span class="ident">Request_oneof_value</span>::<span class="ident">info</span>(<span class="ident">request</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">Response_oneof_value</span>::<span class="ident">info</span>(<span class="ident">info</span>.<span class="ident">info</span>(<span class="ident">request</span>.<span class="ident">into</span>()).<span class="kw">await</span>.<span class="ident">into</span>())
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">consensus_state</span> <span class="op">=</span> <span class="ident">consensus_state</span>.<span class="ident">lock</span>().<span class="kw">await</span>;
+            <span class="kw">let</span> <span class="ident">info_response</span> <span class="op">=</span> <span class="ident">info</span>.<span class="ident">info</span>(<span class="ident">request</span>.<span class="ident">into</span>()).<span class="kw">await</span>;
+
+            <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">consensus_state</span> <span class="op">=</span><span class="op">=</span> <span class="ident">ConsensusState</span>::<span class="ident">NoInfo</span> {
+                <span class="kw">if</span> <span class="ident">info_response</span>.<span class="ident">last_block_height</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+                    <span class="kw-2">*</span><span class="ident">consensus_state</span> <span class="op">=</span> <span class="ident">ConsensusState</span>::<span class="ident">NotInitialized</span>;
+                } <span class="kw">else</span> {
+                    <span class="kw-2">*</span><span class="ident">consensus_state</span> <span class="op">=</span> <span class="ident">ConsensusState</span>::<span class="ident">Initialized</span>;
+                }
+            }
+
+            <span class="ident">Response_oneof_value</span>::<span class="ident">info</span>(<span class="ident">info_response</span>.<span class="ident">into</span>())
         }
         <span class="ident">Request_oneof_value</span>::<span class="ident">set_option</span>(<span class="ident">request</span>) <span class="op">=</span><span class="op">&gt;</span> {
             <span class="ident">Response_oneof_value</span>::<span class="ident">set_option</span>(<span class="ident">info</span>.<span class="ident">set_option</span>(<span class="ident">request</span>.<span class="ident">into</span>()).<span class="kw">await</span>.<span class="ident">into</span>())
@@ -563,8 +566,9 @@
     <span class="ident">response</span>
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ConsensusState</span> {
+    <span class="ident">NoInfo</span>,
     <span class="ident">NotInitialized</span>,
     <span class="ident">Initialized</span>,
     <span class="ident">InitChain</span>,
@@ -577,7 +581,7 @@
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">ConsensusState</span> {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">ConsensusState</span>::<span class="ident">NotInitialized</span>
+        <span class="ident">ConsensusState</span>::<span class="ident">NoInfo</span>
     }
 }
 
