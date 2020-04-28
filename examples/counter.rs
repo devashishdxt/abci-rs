@@ -85,6 +85,7 @@ impl Consensus for ConsensusConnection {
 
         CommitResponse {
             data: (*committed_state).app_hash.clone(),
+            retain_height: 0,
         }
     }
 }
