@@ -1,10 +1,10 @@
 use std::{fs::OpenOptions, io::Write};
 
 use bytes::Bytes;
-use protobuf_codegen_pure::{run, Args};
+use protobuf_codegen_pure::Codegen;
 use reqwest::Result;
 
-const TENDERMINT_URL: &str = "https://raw.githubusercontent.com/tendermint/tendermint/v0.33.2/";
+const TENDERMINT_URL: &str = "https://raw.githubusercontent.com/tendermint/tendermint/v0.33.4/";
 
 const FILES_TO_DOWNLOAD: [(&str, &str); 3] = [
     (
@@ -39,18 +39,16 @@ async fn main() {
             .expect(&format!("Unable to write to [{}]", destination));
     }
 
-    let args = Args {
-        out_dir: "src/proto",
-        includes: &["gen-proto/assets"],
-        input: &[
+    Codegen::new()
+        .out_dir("src/proto")
+        .include("gen-proto/assets")
+        .inputs(&[
             "gen-proto/assets/abci/types/abci.proto",
             "gen-proto/assets/libs/kv/types.proto",
             "gen-proto/assets/crypto/merkle/merkle.proto",
-        ],
-        customize: Default::default(),
-    };
-
-    run(args).expect("Unable to build protobuf files");
+        ])
+        .run()
+        .expect("Unable to build protobuf files");
 }
 
 async fn get_bytes(url: &str) -> Result<Bytes> {
