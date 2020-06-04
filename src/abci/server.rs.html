@@ -309,11 +309,6 @@
 <span id="309">309</span>
 <span id="310">310</span>
 <span id="311">311</span>
-<span id="312">312</span>
-<span id="313">313</span>
-<span id="314">314</span>
-<span id="315">315</span>
-<span id="316">316</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
@@ -366,12 +361,7 @@
     <span class="ident">I</span>: <span class="ident">Info</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
     <span class="doccomment">/// Creates a new instance of [`Server`](struct.Server.html)</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Note</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is an `async` function and returns a `Future`. So, you&#39;ll need an executor to drive the `Future` returned</span>
-    <span class="doccomment">/// from this function. `async-std` and `tokio` are two popular options.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">consensus</span>: <span class="ident">C</span>, <span class="ident">mempool</span>: <span class="ident">M</span>, <span class="ident">info</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">consensus</span>: <span class="ident">C</span>, <span class="ident">mempool</span>: <span class="ident">M</span>, <span class="ident">info</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="self">Self</span> {
             <span class="ident">consensus</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">consensus</span>),
             <span class="ident">mempool</span>: <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">mempool</span>),
