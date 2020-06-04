@@ -49,12 +49,7 @@ where
     I: Info + 'static,
 {
     /// Creates a new instance of [`Server`](struct.Server.html)
-    ///
-    /// # Note
-    ///
-    /// This is an `async` function and returns a `Future`. So, you'll need an executor to drive the `Future` returned
-    /// from this function. `async-std` and `tokio` are two popular options.
-    pub async fn new(consensus: C, mempool: M, info: I) -> Result<Self> {
+    pub fn new(consensus: C, mempool: M, info: I) -> Result<Self> {
         Ok(Self {
             consensus: Arc::new(consensus),
             mempool: Arc::new(mempool),
