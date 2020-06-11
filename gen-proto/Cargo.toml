@@ -12,4 +12,4 @@ futures = "0.3"
 tokio = { version = "0.2", features = ["macros"] }
 reqwest = "0.10"
 bytes = "0.5"
-protobuf-codegen-pure = "2.14"
+protobuf-codegen-pure = "2.8"

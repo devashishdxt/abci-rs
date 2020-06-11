@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 // const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_14_0;
 
-#[derive(PartialEq, Clone, Default)]
+#[derive(PartialEq,Clone,Default)]
 pub struct ProofOp {
     // message fields
     pub field_type: ::std::string::String,
@@ -49,6 +49,7 @@ impl ProofOp {
     }
 
     // string type = 1;
+
 
     pub fn get_field_type(&self) -> &str {
         &self.field_type
@@ -75,6 +76,7 @@ impl ProofOp {
 
     // bytes key = 2;
 
+
     pub fn get_key(&self) -> &[u8] {
         &self.key
     }
@@ -99,6 +101,7 @@ impl ProofOp {
     }
 
     // bytes data = 3;
+
 
     pub fn get_data(&self) -> &[u8] {
         &self.data
@@ -129,34 +132,22 @@ impl ::protobuf::Message for ProofOp {
         true
     }
 
-    fn merge_from(
-        &mut self,
-        is: &mut ::protobuf::CodedInputStream<'_>,
-    ) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream<'_>) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(
-                        wire_type,
-                        is,
-                        &mut self.field_type,
-                    )?;
-                }
+                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.field_type)?;
+                },
                 2 => {
                     ::protobuf::rt::read_singular_proto3_bytes_into(wire_type, is, &mut self.key)?;
-                }
+                },
                 3 => {
                     ::protobuf::rt::read_singular_proto3_bytes_into(wire_type, is, &mut self.data)?;
-                }
+                },
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(
-                        field_number,
-                        wire_type,
-                        is,
-                        self.mut_unknown_fields(),
-                    )?;
-                }
+                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
+                },
             };
         }
         ::std::result::Result::Ok(())
@@ -180,10 +171,7 @@ impl ::protobuf::Message for ProofOp {
         my_size
     }
 
-    fn write_to_with_cached_sizes(
-        &self,
-        os: &mut ::protobuf::CodedOutputStream<'_>,
-    ) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::ProtobufResult<()> {
         if !self.field_type.is_empty() {
             os.write_string(1, &self.field_type)?;
         }
@@ -228,37 +216,29 @@ impl ::protobuf::Message for ProofOp {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
-            ::protobuf::lazy::Lazy::INIT;
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy::INIT;
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
-                    _,
-                    ::protobuf::types::ProtobufTypeString,
-                >(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
                     "type",
-                    |m: &ProofOp| &m.field_type,
-                    |m: &mut ProofOp| &mut m.field_type,
+                    |m: &ProofOp| { &m.field_type },
+                    |m: &mut ProofOp| { &mut m.field_type },
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
-                    _,
-                    ::protobuf::types::ProtobufTypeBytes,
-                >(
-                    "key", |m: &ProofOp| &m.key, |m: &mut ProofOp| &mut m.key
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBytes>(
+                    "key",
+                    |m: &ProofOp| { &m.key },
+                    |m: &mut ProofOp| { &mut m.key },
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
-                    _,
-                    ::protobuf::types::ProtobufTypeBytes,
-                >(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBytes>(
                     "data",
-                    |m: &ProofOp| &m.data,
-                    |m: &mut ProofOp| &mut m.data,
+                    |m: &ProofOp| { &m.data },
+                    |m: &mut ProofOp| { &mut m.data },
                 ));
                 ::protobuf::reflect::MessageDescriptor::new_pb_name::<ProofOp>(
                     "ProofOp",
                     fields,
-                    file_descriptor_proto(),
+                    file_descriptor_proto()
                 )
             })
         }
@@ -266,7 +246,9 @@ impl ::protobuf::Message for ProofOp {
 
     fn default_instance() -> &'static ProofOp {
         static mut instance: ::protobuf::lazy::Lazy<ProofOp> = ::protobuf::lazy::Lazy::INIT;
-        unsafe { instance.get(ProofOp::new) }
+        unsafe {
+            instance.get(ProofOp::new)
+        }
     }
 }
 
@@ -291,7 +273,7 @@ impl ::protobuf::reflect::ProtobufValue for ProofOp {
     }
 }
 
-#[derive(PartialEq, Clone, Default)]
+#[derive(PartialEq,Clone,Default)]
 pub struct Proof {
     // message fields
     pub ops: ::protobuf::RepeatedField<ProofOp>,
@@ -312,6 +294,7 @@ impl Proof {
     }
 
     // repeated .tendermint.crypto.merkle.ProofOp ops = 1;
+
 
     pub fn get_ops(&self) -> &[ProofOp] {
         &self.ops
@@ -342,28 +325,20 @@ impl ::protobuf::Message for Proof {
             if !v.is_initialized() {
                 return false;
             }
-        }
+        };
         true
     }
 
-    fn merge_from(
-        &mut self,
-        is: &mut ::protobuf::CodedInputStream<'_>,
-    ) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream<'_>) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.ops)?;
-                }
+                },
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(
-                        field_number,
-                        wire_type,
-                        is,
-                        self.mut_unknown_fields(),
-                    )?;
-                }
+                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
+                },
             };
         }
         ::std::result::Result::Ok(())
@@ -376,21 +351,18 @@ impl ::protobuf::Message for Proof {
         for value in &self.ops {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        }
+        };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(
-        &self,
-        os: &mut ::protobuf::CodedOutputStream<'_>,
-    ) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream<'_>) -> ::protobuf::ProtobufResult<()> {
         for v in &self.ops {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        }
+        };
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -426,21 +398,19 @@ impl ::protobuf::Message for Proof {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
-            ::protobuf::lazy::Lazy::INIT;
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy::INIT;
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(
-                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
-                        _,
-                        ::protobuf::types::ProtobufTypeMessage<ProofOp>,
-                    >("ops", |m: &Proof| &m.ops, |m: &mut Proof| &mut m.ops),
-                );
+                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<ProofOp>>(
+                    "ops",
+                    |m: &Proof| { &m.ops },
+                    |m: &mut Proof| { &mut m.ops },
+                ));
                 ::protobuf::reflect::MessageDescriptor::new_pb_name::<Proof>(
                     "Proof",
                     fields,
-                    file_descriptor_proto(),
+                    file_descriptor_proto()
                 )
             })
         }
@@ -448,7 +418,9 @@ impl ::protobuf::Message for Proof {
 
     fn default_instance() -> &'static Proof {
         static mut instance: ::protobuf::lazy::Lazy<Proof> = ::protobuf::lazy::Lazy::INIT;
-        unsafe { instance.get(Proof::new) }
+        unsafe {
+            instance.get(Proof::new)
+        }
     }
 }
 
@@ -476,18 +448,20 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x07ProofOp\x12\x0e\n\x04type\x18\x01\x20\x01(\tB\0\x12\r\n\x03key\x18\
     \x02\x20\x01(\x0cB\0\x12\x0e\n\x04data\x18\x03\x20\x01(\x0cB\0:\0\"?\n\
     \x05Proof\x124\n\x03ops\x18\x01\x20\x03(\x0b2!.tendermint.crypto.merkle.\
-    ProofOpB\x04\xc8\xde\x1f\0:\0B\x14\xd0\xe2\x1e\x01\xc8\xe2\x1e\x01\xf8\
-    \xe1\x1e\x01\xe0\xe2\x1e\x01\xa8\xe2\x1e\x01b\x06proto3\
+    ProofOpB\x04\xc8\xde\x1f\0:\0B\x14\xc8\xe2\x1e\x01\xe0\xe2\x1e\x01\xf8\
+    \xe1\x1e\x01\xa8\xe2\x1e\x01\xd0\xe2\x1e\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
-    ::protobuf::descriptor::FileDescriptorProto,
-> = ::protobuf::lazy::Lazy::INIT;
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy::INIT;
 
 fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
     ::protobuf::parse_from_bytes(file_descriptor_proto_data).unwrap()
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
+    unsafe {
+        file_descriptor_proto_lazy.get(|| {
+            parse_descriptor_proto()
+        })
+    }
 }
