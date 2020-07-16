@@ -66,6 +66,7 @@ compile_error!("Either feature `use-async-std` or `use-tokio` must be enabled fo
 mod application;
 mod proto;
 mod server;
+mod state;
 
 pub mod types;
 
