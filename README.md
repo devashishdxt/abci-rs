@@ -48,6 +48,11 @@ from `Server::run()`. `async-std` and `tokio` are two popular options. In `count
 
 To know more, go to `examples/` to see a sample ABCI application.
 
+## Documentation
+
+- [`master`](https://devashishdxt.github.io/abci-rs/abci/)
+- [`release`](https://docs.rs/abci-rs/)
+
 ### Features
 
 - `use-tokio`: Enables `tokio` backend for running ABCI TCP/UDS server
