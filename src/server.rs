@@ -37,10 +37,22 @@ where
     M: Mempool + 'static,
     I: Info + 'static,
 {
-    pub(crate) consensus: Arc<C>,
-    pub(crate) mempool: Arc<M>,
-    pub(crate) info: Arc<I>,
-    pub(crate) consensus_state: Arc<Mutex<ConsensusStateValidator>>,
+    /// Wrapping inner type in `Arc` so that it becomes clonable and can be shared between multiple
+    /// async tasks
+    pub(crate) inner: Arc<Inner<C, M, I>>,
+}
+
+/// Inner type that contains all the trait implementations
+pub(crate) struct Inner<C, M, I>
+where
+    C: Consensus + 'static,
+    M: Mempool + 'static,
+    I: Info + 'static,
+{
+    consensus: C,
+    mempool: M,
+    info: I,
+    consensus_state: Mutex<ConsensusStateValidator>,
 }
 
 impl<C, M, I> Server<C, M, I>
@@ -52,10 +64,12 @@ where
     /// Creates a new instance of [`Server`](struct.Server.html)
     pub fn new(consensus: C, mempool: M, info: I) -> Result<Self> {
         Ok(Self {
-            consensus: Arc::new(consensus),
-            mempool: Arc::new(mempool),
-            info: Arc::new(info),
-            consensus_state: Default::default(),
+            inner: Arc::new(Inner {
+                consensus,
+                mempool,
+                info,
+                consensus_state: Default::default(),
+            }),
         })
     }
 
@@ -113,30 +127,20 @@ where
     }
 
     #[instrument(skip(self, stream))]
-    fn handle_connection<S, P>(&self, mut stream: S, peer_addr: Option<P>)
+    pub(crate) fn handle_connection<S, P>(&self, mut stream: S, peer_addr: Option<P>)
     where
         S: Read + Write + Send + Unpin + 'static,
         P: std::fmt::Debug + Send + 'static,
     {
         info!("New peer connection");
 
-        let consensus = self.consensus.clone();
-        let mempool = self.mempool.clone();
-        let info = self.info.clone();
-        let consensus_state = self.consensus_state.clone();
+        let inner = self.inner.clone();
 
         spawn(async move {
             while let Ok(request) = decode(&mut stream).await {
                 match request {
                     Some(request) => {
-                        let response = process(
-                            consensus.clone(),
-                            mempool.clone(),
-                            info.clone(),
-                            consensus_state.clone(),
-                            request,
-                        )
-                        .await;
+                        let response = inner.process(request).await;
 
                         if let Err(err) = encode(response, &mut stream).await {
                             error!(message = "Error while writing to stream", %err, ?peer_addr);
@@ -154,83 +158,86 @@ where
     }
 }
 
-#[instrument(skip(consensus, mempool, info, consensus_state))]
-async fn process<C, M, I>(
-    consensus: Arc<C>,
-    mempool: Arc<M>,
-    info: Arc<I>,
-    consensus_state: Arc<Mutex<ConsensusStateValidator>>,
-    request: Request,
-) -> Response
+impl<C, M, I> Inner<C, M, I>
 where
     C: Consensus + 'static,
     M: Mempool + 'static,
     I: Info + 'static,
 {
-    let value = match request.value.unwrap() {
-        Request_oneof_value::echo(request) => {
-            let mut response = ResponseEcho::new();
-            response.message = info.echo(request.message).await;
-            Response_oneof_value::echo(response)
-        }
-        Request_oneof_value::flush(_) => {
-            consensus.flush().await;
-            Response_oneof_value::flush(ResponseFlush::new())
-        }
-        Request_oneof_value::info(request) => {
-            let info_response = info.info(request.into()).await;
-            consensus_state
-                .lock()
-                .await
-                .on_info_response(&info_response);
-            Response_oneof_value::info(info_response.into())
-        }
-        Request_oneof_value::set_option(request) => {
-            Response_oneof_value::set_option(info.set_option(request.into()).await.into())
-        }
-        Request_oneof_value::init_chain(request) => {
-            consensus_state.lock().await.on_init_chain_request();
-            Response_oneof_value::init_chain(consensus.init_chain(request.into()).await.into())
-        }
-        Request_oneof_value::query(request) => {
-            Response_oneof_value::query(info.query(request.into()).await.into())
-        }
-        Request_oneof_value::begin_block(request) => {
-            let request = request.into();
-            consensus_state
-                .lock()
-                .await
-                .on_begin_block_request(&request);
-            Response_oneof_value::begin_block(consensus.begin_block(request).await.into())
-        }
-        Request_oneof_value::check_tx(request) => {
-            Response_oneof_value::check_tx(mempool.check_tx(request.into()).await.into())
-        }
-        Request_oneof_value::deliver_tx(request) => {
-            consensus_state.lock().await.on_deliver_tx_request();
-            Response_oneof_value::deliver_tx(consensus.deliver_tx(request.into()).await.into())
-        }
-        Request_oneof_value::end_block(request) => {
-            let request = request.into();
-            consensus_state.lock().await.on_end_block_request(&request);
-            Response_oneof_value::end_block(consensus.end_block(request).await.into())
-        }
-        Request_oneof_value::commit(_) => {
-            let mut consensus_state = consensus_state.lock().await;
-            consensus_state.on_commit_request();
+    #[instrument(skip(self))]
+    pub(crate) async fn process(&self, request: Request) -> Response {
+        let value = match request.value.unwrap() {
+            Request_oneof_value::echo(request) => {
+                let mut response = ResponseEcho::new();
+                response.message = self.info.echo(request.message).await;
+                Response_oneof_value::echo(response)
+            }
+            Request_oneof_value::flush(_) => {
+                self.consensus.flush().await;
+                Response_oneof_value::flush(ResponseFlush::new())
+            }
+            Request_oneof_value::info(request) => {
+                let info_response = self.info.info(request.into()).await;
+                self.consensus_state
+                    .lock()
+                    .await
+                    .on_info_response(&info_response);
+                Response_oneof_value::info(info_response.into())
+            }
+            Request_oneof_value::set_option(request) => {
+                Response_oneof_value::set_option(self.info.set_option(request.into()).await.into())
+            }
+            Request_oneof_value::init_chain(request) => {
+                self.consensus_state.lock().await.on_init_chain_request();
+                Response_oneof_value::init_chain(
+                    self.consensus.init_chain(request.into()).await.into(),
+                )
+            }
+            Request_oneof_value::query(request) => {
+                Response_oneof_value::query(self.info.query(request.into()).await.into())
+            }
+            Request_oneof_value::begin_block(request) => {
+                let request = request.into();
+                self.consensus_state
+                    .lock()
+                    .await
+                    .on_begin_block_request(&request);
+                Response_oneof_value::begin_block(self.consensus.begin_block(request).await.into())
+            }
+            Request_oneof_value::check_tx(request) => {
+                Response_oneof_value::check_tx(self.mempool.check_tx(request.into()).await.into())
+            }
+            Request_oneof_value::deliver_tx(request) => {
+                self.consensus_state.lock().await.on_deliver_tx_request();
+                Response_oneof_value::deliver_tx(
+                    self.consensus.deliver_tx(request.into()).await.into(),
+                )
+            }
+            Request_oneof_value::end_block(request) => {
+                let request = request.into();
+                self.consensus_state
+                    .lock()
+                    .await
+                    .on_end_block_request(&request);
+                Response_oneof_value::end_block(self.consensus.end_block(request).await.into())
+            }
+            Request_oneof_value::commit(_) => {
+                let mut consensus_state = self.consensus_state.lock().await;
+                consensus_state.on_commit_request();
 
-            let response = consensus.commit().await;
-            consensus_state.on_commit_response(&response);
-            Response_oneof_value::commit(response.into())
-        }
-    };
+                let response = self.consensus.commit().await;
+                consensus_state.on_commit_response(&response);
+                Response_oneof_value::commit(response.into())
+            }
+        };
 
-    let mut response = Response::new();
-    response.value = Some(value);
+        let mut response = Response::new();
+        response.value = Some(value);
 
-    debug!(message = "Sending response", ?response);
+        debug!(message = "Sending response", ?response);
 
-    response
+        response
+    }
 }
 
 /// Address of ABCI Server

@@ -67,6 +67,8 @@ mod application;
 mod proto;
 mod server;
 mod state;
+#[cfg(test)]
+mod tests;
 
 pub mod types;
 

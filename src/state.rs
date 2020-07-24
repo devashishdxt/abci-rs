@@ -14,7 +14,7 @@ impl ConsensusStateValidator {
                 self.state = ConsensusState::NotInitialized;
             } else {
                 self.state = ConsensusState::WaitingForBlock {
-                    block_height,
+                    block_height: block_height + 1,
                     app_hash: info_response.last_block_app_hash.clone(),
                 };
             }
