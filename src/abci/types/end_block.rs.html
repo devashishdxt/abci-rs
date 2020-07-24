@@ -62,7 +62,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">RequestEndBlock</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">EndBlockRequest</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">request_end_block</span>: <span class="ident">RequestEndBlock</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">EndBlockRequest</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">request_end_block</span>: <span class="ident">RequestEndBlock</span>) <span class="op">-&gt;</span> <span class="ident">EndBlockRequest</span> {
         <span class="ident">EndBlockRequest</span> {
             <span class="ident">height</span>: <span class="ident">request_end_block</span>.<span class="ident">height</span>,
         }
@@ -80,13 +80,13 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">EndBlockResponse</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ResponseEndBlock</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">end_block_response</span>: <span class="ident">EndBlockResponse</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ResponseEndBlock</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">end_block_response</span>: <span class="ident">EndBlockResponse</span>) <span class="op">-&gt;</span> <span class="ident">ResponseEndBlock</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">response_end_block</span> <span class="op">=</span> <span class="ident">ResponseEndBlock</span>::<span class="ident">new</span>();
         <span class="ident">response_end_block</span>.<span class="ident">validator_updates</span> <span class="op">=</span> <span class="ident">end_block_response</span>
             .<span class="ident">validator_updates</span>
             .<span class="ident">into_iter</span>()
             .<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>)
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProtoValidatorUpdate</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProtoValidatorUpdate</span><span class="op">&gt;&gt;</span>()
             .<span class="ident">into</span>();
         <span class="ident">response_end_block</span>.<span class="ident">consensus_param_updates</span> <span class="op">=</span> <span class="ident">end_block_response</span>
             .<span class="ident">consensus_param_updates</span>
@@ -96,7 +96,7 @@
             .<span class="ident">events</span>
             .<span class="ident">into_iter</span>()
             .<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>)
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProtoEvent</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProtoEvent</span><span class="op">&gt;&gt;</span>()
             .<span class="ident">into</span>();
         <span class="ident">response_end_block</span>
     }

@@ -509,7 +509,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ConsensusParams</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtoConsensusParams</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">consensus_params</span>: <span class="ident">ConsensusParams</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtoConsensusParams</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">consensus_params</span>: <span class="ident">ConsensusParams</span>) <span class="op">-&gt;</span> <span class="ident">ProtoConsensusParams</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto_consensus_params</span> <span class="op">=</span> <span class="ident">ProtoConsensusParams</span>::<span class="ident">new</span>();
         <span class="ident">proto_consensus_params</span>.<span class="ident">block</span> <span class="op">=</span> <span class="ident">consensus_params</span>.<span class="ident">block</span>.<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>).<span class="ident">into</span>();
         <span class="ident">proto_consensus_params</span>.<span class="ident">evidence</span> <span class="op">=</span> <span class="ident">consensus_params</span>.<span class="ident">evidence</span>.<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>).<span class="ident">into</span>();
@@ -519,7 +519,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoConsensusParams</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ConsensusParams</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_consensus_params</span>: <span class="ident">ProtoConsensusParams</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ConsensusParams</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_consensus_params</span>: <span class="ident">ProtoConsensusParams</span>) <span class="op">-&gt;</span> <span class="ident">ConsensusParams</span> {
         <span class="ident">ConsensusParams</span> {
             <span class="ident">block</span>: <span class="ident">proto_consensus_params</span>.<span class="ident">block</span>.<span class="ident">into_option</span>().<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>),
             <span class="ident">evidence</span>: <span class="ident">proto_consensus_params</span>
@@ -548,7 +548,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">BlockParams</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtoBlockParams</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">block_params</span>: <span class="ident">BlockParams</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtoBlockParams</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">block_params</span>: <span class="ident">BlockParams</span>) <span class="op">-&gt;</span> <span class="ident">ProtoBlockParams</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto_block_params</span> <span class="op">=</span> <span class="ident">ProtoBlockParams</span>::<span class="ident">new</span>();
         <span class="ident">proto_block_params</span>.<span class="ident">max_bytes</span> <span class="op">=</span> <span class="ident">block_params</span>.<span class="ident">max_bytes</span>;
         <span class="ident">proto_block_params</span>.<span class="ident">max_gas</span> <span class="op">=</span> <span class="ident">block_params</span>.<span class="ident">max_gas</span>;
@@ -557,7 +557,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoBlockParams</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BlockParams</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_block_params</span>: <span class="ident">ProtoBlockParams</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BlockParams</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_block_params</span>: <span class="ident">ProtoBlockParams</span>) <span class="op">-&gt;</span> <span class="ident">BlockParams</span> {
         <span class="ident">BlockParams</span> {
             <span class="ident">max_bytes</span>: <span class="ident">proto_block_params</span>.<span class="ident">max_bytes</span>,
             <span class="ident">max_gas</span>: <span class="ident">proto_block_params</span>.<span class="ident">max_gas</span>,
@@ -582,7 +582,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">EvidenceParams</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtoEvidenceParams</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">evidence_params</span>: <span class="ident">EvidenceParams</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtoEvidenceParams</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">evidence_params</span>: <span class="ident">EvidenceParams</span>) <span class="op">-&gt;</span> <span class="ident">ProtoEvidenceParams</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto_evidence_params</span> <span class="op">=</span> <span class="ident">ProtoEvidenceParams</span>::<span class="ident">new</span>();
         <span class="ident">proto_evidence_params</span>.<span class="ident">max_age_num_blocks</span> <span class="op">=</span> <span class="ident">evidence_params</span>.<span class="ident">max_age_num_blocks</span>;
         <span class="ident">proto_evidence_params</span>.<span class="ident">max_age_duration</span> <span class="op">=</span> <span class="ident">evidence_params</span>
@@ -599,7 +599,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoEvidenceParams</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">EvidenceParams</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_evidence_params</span>: <span class="ident">ProtoEvidenceParams</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">EvidenceParams</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_evidence_params</span>: <span class="ident">ProtoEvidenceParams</span>) <span class="op">-&gt;</span> <span class="ident">EvidenceParams</span> {
         <span class="kw">let</span> <span class="ident">max_age_duration</span> <span class="op">=</span>
             <span class="ident">proto_evidence_params</span>
                 .<span class="ident">max_age_duration</span>
@@ -625,7 +625,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ValidatorParams</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtoValidatorParams</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">validator_params</span>: <span class="ident">ValidatorParams</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtoValidatorParams</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">validator_params</span>: <span class="ident">ValidatorParams</span>) <span class="op">-&gt;</span> <span class="ident">ProtoValidatorParams</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto_validator_params</span> <span class="op">=</span> <span class="ident">ProtoValidatorParams</span>::<span class="ident">new</span>();
         <span class="ident">proto_validator_params</span>.<span class="ident">pub_key_types</span> <span class="op">=</span> <span class="ident">validator_params</span>.<span class="ident">public_key_types</span>.<span class="ident">into</span>();
         <span class="ident">proto_validator_params</span>
@@ -633,7 +633,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoValidatorParams</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ValidatorParams</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_validator_params</span>: <span class="ident">ProtoValidatorParams</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ValidatorParams</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_validator_params</span>: <span class="ident">ProtoValidatorParams</span>) <span class="op">-&gt;</span> <span class="ident">ValidatorParams</span> {
         <span class="ident">ValidatorParams</span> {
             <span class="ident">public_key_types</span>: <span class="ident">proto_validator_params</span>.<span class="ident">pub_key_types</span>.<span class="ident">into_vec</span>(),
         }
@@ -649,7 +649,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ValidatorUpdate</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtoValidatorUpdate</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">validator_update</span>: <span class="ident">ValidatorUpdate</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtoValidatorUpdate</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">validator_update</span>: <span class="ident">ValidatorUpdate</span>) <span class="op">-&gt;</span> <span class="ident">ProtoValidatorUpdate</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto_validator_update</span> <span class="op">=</span> <span class="ident">ProtoValidatorUpdate</span>::<span class="ident">new</span>();
         <span class="ident">proto_validator_update</span>.<span class="ident">pub_key</span> <span class="op">=</span> <span class="ident">validator_update</span>.<span class="ident">public_key</span>.<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>).<span class="ident">into</span>();
         <span class="ident">proto_validator_update</span>.<span class="ident">power</span> <span class="op">=</span> <span class="ident">validator_update</span>.<span class="ident">power</span>;
@@ -658,7 +658,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoValidatorUpdate</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ValidatorUpdate</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_validator_update</span>: <span class="ident">ProtoValidatorUpdate</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ValidatorUpdate</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_validator_update</span>: <span class="ident">ProtoValidatorUpdate</span>) <span class="op">-&gt;</span> <span class="ident">ValidatorUpdate</span> {
         <span class="ident">ValidatorUpdate</span> {
             <span class="ident">public_key</span>: <span class="ident">proto_validator_update</span>.<span class="ident">pub_key</span>.<span class="ident">into_option</span>().<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>),
             <span class="ident">power</span>: <span class="ident">proto_validator_update</span>.<span class="ident">power</span>,
@@ -677,7 +677,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">PublicKey</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtoPublicKey</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">public_key</span>: <span class="ident">PublicKey</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtoPublicKey</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">public_key</span>: <span class="ident">PublicKey</span>) <span class="op">-&gt;</span> <span class="ident">ProtoPublicKey</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto_public_key</span> <span class="op">=</span> <span class="ident">ProtoPublicKey</span>::<span class="ident">new</span>();
         <span class="ident">proto_public_key</span>.<span class="ident">field_type</span> <span class="op">=</span> <span class="ident">public_key</span>.<span class="ident">public_key_type</span>;
         <span class="ident">proto_public_key</span>.<span class="ident">data</span> <span class="op">=</span> <span class="ident">public_key</span>.<span class="ident">data</span>;
@@ -686,7 +686,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoPublicKey</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">PublicKey</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_public_key</span>: <span class="ident">ProtoPublicKey</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PublicKey</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_public_key</span>: <span class="ident">ProtoPublicKey</span>) <span class="op">-&gt;</span> <span class="ident">PublicKey</span> {
         <span class="ident">PublicKey</span> {
             <span class="ident">public_key_type</span>: <span class="ident">proto_public_key</span>.<span class="ident">field_type</span>,
             <span class="ident">data</span>: <span class="ident">proto_public_key</span>.<span class="ident">data</span>,
@@ -706,13 +706,13 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Proof</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtoProof</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proof</span>: <span class="ident">Proof</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtoProof</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proof</span>: <span class="ident">Proof</span>) <span class="op">-&gt;</span> <span class="ident">ProtoProof</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto_proof</span> <span class="op">=</span> <span class="ident">ProtoProof</span>::<span class="ident">new</span>();
         <span class="ident">proto_proof</span>.<span class="ident">ops</span> <span class="op">=</span> <span class="ident">proof</span>
             .<span class="ident">ops</span>
             .<span class="ident">into_iter</span>()
             .<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>)
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProtoProofOp</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProtoProofOp</span><span class="op">&gt;&gt;</span>()
             .<span class="ident">into</span>();
         <span class="ident">proto_proof</span>
     }
@@ -729,7 +729,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProofOp</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtoProofOp</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proof_op</span>: <span class="ident">ProofOp</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtoProofOp</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proof_op</span>: <span class="ident">ProofOp</span>) <span class="op">-&gt;</span> <span class="ident">ProtoProofOp</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto_proof_op</span> <span class="op">=</span> <span class="ident">ProtoProofOp</span>::<span class="ident">new</span>();
         <span class="ident">proto_proof_op</span>.<span class="ident">field_type</span> <span class="op">=</span> <span class="ident">proof_op</span>.<span class="ident">proof_op_type</span>;
         <span class="ident">proto_proof_op</span>.<span class="ident">key</span> <span class="op">=</span> <span class="ident">proof_op</span>.<span class="ident">key</span>;
@@ -747,7 +747,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoVersion</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Version</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_version</span>: <span class="ident">ProtoVersion</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Version</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_version</span>: <span class="ident">ProtoVersion</span>) <span class="op">-&gt;</span> <span class="ident">Version</span> {
         <span class="ident">Version</span> {
             <span class="ident">block</span>: <span class="ident">proto_version</span>.<span class="ident">Block</span>,
             <span class="ident">app</span>: <span class="ident">proto_version</span>.<span class="ident">App</span>,
@@ -762,7 +762,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoPartSetHeader</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">PartSetHeader</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_part_set_header</span>: <span class="ident">ProtoPartSetHeader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PartSetHeader</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_part_set_header</span>: <span class="ident">ProtoPartSetHeader</span>) <span class="op">-&gt;</span> <span class="ident">PartSetHeader</span> {
         <span class="ident">PartSetHeader</span> {
             <span class="ident">total</span>: <span class="ident">proto_part_set_header</span>.<span class="ident">total</span>,
             <span class="ident">hash</span>: <span class="ident">proto_part_set_header</span>.<span class="ident">hash</span>,
@@ -777,7 +777,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoBlockId</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BlockId</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_block_id</span>: <span class="ident">ProtoBlockId</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BlockId</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_block_id</span>: <span class="ident">ProtoBlockId</span>) <span class="op">-&gt;</span> <span class="ident">BlockId</span> {
         <span class="ident">BlockId</span> {
             <span class="ident">hash</span>: <span class="ident">proto_block_id</span>.<span class="ident">hash</span>,
             <span class="ident">parts_header</span>: <span class="ident">proto_block_id</span>.<span class="ident">parts_header</span>.<span class="ident">into_option</span>().<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>),
@@ -820,7 +820,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoHeader</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Header</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_header</span>: <span class="ident">ProtoHeader</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Header</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_header</span>: <span class="ident">ProtoHeader</span>) <span class="op">-&gt;</span> <span class="ident">Header</span> {
         <span class="ident">Header</span> {
             <span class="ident">version</span>: <span class="ident">proto_header</span>.<span class="ident">version</span>.<span class="ident">into_option</span>().<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>),
             <span class="ident">chain_id</span>: <span class="ident">proto_header</span>.<span class="ident">chain_id</span>,
@@ -852,7 +852,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoValidator</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Validator</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_validator</span>: <span class="ident">ProtoValidator</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Validator</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_validator</span>: <span class="ident">ProtoValidator</span>) <span class="op">-&gt;</span> <span class="ident">Validator</span> {
         <span class="ident">Validator</span> {
             <span class="ident">address</span>: <span class="ident">proto_validator</span>.<span class="ident">address</span>,
             <span class="ident">power</span>: <span class="ident">proto_validator</span>.<span class="ident">power</span>,
@@ -869,7 +869,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoVoteInfo</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">VoteInfo</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_vote_info</span>: <span class="ident">ProtoVoteInfo</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">VoteInfo</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_vote_info</span>: <span class="ident">ProtoVoteInfo</span>) <span class="op">-&gt;</span> <span class="ident">VoteInfo</span> {
         <span class="ident">VoteInfo</span> {
             <span class="ident">validator</span>: <span class="ident">proto_vote_info</span>.<span class="ident">validator</span>.<span class="ident">into_option</span>().<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>),
             <span class="ident">signed_last_block</span>: <span class="ident">proto_vote_info</span>.<span class="ident">signed_last_block</span>,
@@ -887,7 +887,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoLastCommitInfo</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">LastCommitInfo</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_last_commit_info</span>: <span class="ident">ProtoLastCommitInfo</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LastCommitInfo</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_last_commit_info</span>: <span class="ident">ProtoLastCommitInfo</span>) <span class="op">-&gt;</span> <span class="ident">LastCommitInfo</span> {
         <span class="ident">LastCommitInfo</span> {
             <span class="ident">round</span>: <span class="ident">proto_last_commit_info</span>.<span class="ident">round</span>,
             <span class="ident">votes</span>: <span class="ident">proto_last_commit_info</span>
@@ -915,7 +915,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ProtoEvidence</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Evidence</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_evidence</span>: <span class="ident">ProtoEvidence</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Evidence</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">proto_evidence</span>: <span class="ident">ProtoEvidence</span>) <span class="op">-&gt;</span> <span class="ident">Evidence</span> {
         <span class="ident">Evidence</span> {
             <span class="ident">evidence_type</span>: <span class="ident">proto_evidence</span>.<span class="ident">field_type</span>,
             <span class="ident">validator</span>: <span class="ident">proto_evidence</span>.<span class="ident">validator</span>.<span class="ident">into_option</span>().<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>),
@@ -938,7 +938,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Pair</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtoPair</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">pair</span>: <span class="ident">Pair</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtoPair</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">pair</span>: <span class="ident">Pair</span>) <span class="op">-&gt;</span> <span class="ident">ProtoPair</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto_pair</span> <span class="op">=</span> <span class="ident">ProtoPair</span>::<span class="ident">new</span>();
         <span class="ident">proto_pair</span>.<span class="ident">key</span> <span class="op">=</span> <span class="ident">pair</span>.<span class="ident">key</span>;
         <span class="ident">proto_pair</span>.<span class="ident">value</span> <span class="op">=</span> <span class="ident">pair</span>.<span class="ident">value</span>;
@@ -955,14 +955,14 @@
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Event</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ProtoEvent</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">event</span>: <span class="ident">Event</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ProtoEvent</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">event</span>: <span class="ident">Event</span>) <span class="op">-&gt;</span> <span class="ident">ProtoEvent</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto_event</span> <span class="op">=</span> <span class="ident">ProtoEvent</span>::<span class="ident">new</span>();
         <span class="ident">proto_event</span>.<span class="ident">field_type</span> <span class="op">=</span> <span class="ident">event</span>.<span class="ident">event_type</span>;
         <span class="ident">proto_event</span>.<span class="ident">attributes</span> <span class="op">=</span> <span class="ident">event</span>
             .<span class="ident">attributes</span>
             .<span class="ident">into_iter</span>()
             .<span class="ident">map</span>(<span class="ident">Into</span>::<span class="ident">into</span>)
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProtoPair</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProtoPair</span><span class="op">&gt;&gt;</span>()
             .<span class="ident">into</span>();
         <span class="ident">proto_event</span>
     }
