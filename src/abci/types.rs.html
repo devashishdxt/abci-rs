@@ -83,6 +83,8 @@
 <span id="83">83</span>
 <span id="84">84</span>
 <span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="doccomment">//! Types used in ABCI</span>
@@ -104,6 +106,8 @@
         <span class="macro">include</span><span class="macro">!</span>(<span class="macro">concat</span><span class="macro">!</span>(<span class="macro">env</span><span class="macro">!</span>(<span class="string">&quot;OUT_DIR&quot;</span>), <span class="string">&quot;/tendermint.libs.kv.rs&quot;</span>));
     }
 }
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">prost_types</span>::{<span class="ident">Duration</span>, <span class="ident">Timestamp</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">abci</span>::<span class="ident">types</span>::{
     <span class="ident">BlockId</span>, <span class="ident">BlockParams</span>, <span class="ident">ConsensusParams</span>, <span class="ident">Event</span>, <span class="ident">Evidence</span>, <span class="ident">EvidenceParams</span>, <span class="ident">Header</span>, <span class="ident">LastCommitInfo</span>,
