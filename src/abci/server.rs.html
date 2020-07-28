@@ -256,13 +256,6 @@
 <span id="256">256</span>
 <span id="257">257</span>
 <span id="258">258</span>
-<span id="259">259</span>
-<span id="260">260</span>
-<span id="261">261</span>
-<span id="262">262</span>
-<span id="263">263</span>
-<span id="264">264</span>
-<span id="265">265</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
@@ -291,8 +284,14 @@
 <span class="kw">use</span> <span class="ident">tracing</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">info</span>, <span class="ident">instrument</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">proto</span>::{<span class="ident">abci</span>::<span class="kw-2">*</span>, <span class="ident">decode</span>, <span class="ident">encode</span>},
     <span class="ident">state</span>::<span class="ident">ConsensusStateValidator</span>,
+    <span class="ident">types</span>::{
+        <span class="ident">abci</span>::<span class="ident">types</span>::{
+            <span class="ident">Request</span>, <span class="ident">Response</span>,
+            {<span class="ident">request</span>::<span class="ident">Value</span> <span class="kw">as</span> <span class="ident">RequestValue</span>, <span class="ident">response</span>::<span class="ident">Value</span> <span class="kw">as</span> <span class="ident">ResponseValue</span>},
+        },
+        <span class="ident">decode</span>, <span class="ident">encode</span>,
+    },
     <span class="ident">Consensus</span>, <span class="ident">Info</span>, <span class="ident">Mempool</span>,
 };
 
@@ -433,71 +432,58 @@
     <span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="self">self</span>))]</span>
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="ident">Request</span>) <span class="op">-&gt;</span> <span class="ident">Response</span> {
         <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">value</span>.<span class="ident">unwrap</span>() {
-            <span class="ident">Request_oneof_value</span>::<span class="ident">echo</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">ResponseEcho</span>::<span class="ident">new</span>();
-                <span class="ident">response</span>.<span class="ident">message</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">info</span>.<span class="ident">echo</span>(<span class="ident">request</span>.<span class="ident">message</span>).<span class="kw">await</span>;
-                <span class="ident">Response_oneof_value</span>::<span class="ident">echo</span>(<span class="ident">response</span>)
+            <span class="ident">RequestValue</span>::<span class="ident">Echo</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> <span class="ident">ResponseValue</span>::<span class="ident">Echo</span>(<span class="self">self</span>.<span class="ident">info</span>.<span class="ident">echo</span>(<span class="ident">request</span>).<span class="kw">await</span>),
+            <span class="ident">RequestValue</span>::<span class="ident">Flush</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
+                <span class="ident">ResponseValue</span>::<span class="ident">Flush</span>(<span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">flush</span>(<span class="ident">request</span>).<span class="kw">await</span>)
             }
-            <span class="ident">Request_oneof_value</span>::<span class="ident">flush</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {
-                <span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">flush</span>().<span class="kw">await</span>;
-                <span class="ident">Response_oneof_value</span>::<span class="ident">flush</span>(<span class="ident">ResponseFlush</span>::<span class="ident">new</span>())
-            }
-            <span class="ident">Request_oneof_value</span>::<span class="ident">info</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">info_response</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">info</span>.<span class="ident">info</span>(<span class="ident">request</span>.<span class="ident">into</span>()).<span class="kw">await</span>;
+            <span class="ident">RequestValue</span>::<span class="ident">Info</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
+                <span class="kw">let</span> <span class="ident">info_response</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">info</span>.<span class="ident">info</span>(<span class="ident">request</span>).<span class="kw">await</span>;
                 <span class="self">self</span>.<span class="ident">consensus_state</span>
                     .<span class="ident">lock</span>()
                     .<span class="kw">await</span>
                     .<span class="ident">on_info_response</span>(<span class="kw-2">&amp;</span><span class="ident">info_response</span>);
-                <span class="ident">Response_oneof_value</span>::<span class="ident">info</span>(<span class="ident">info_response</span>.<span class="ident">into</span>())
+                <span class="ident">ResponseValue</span>::<span class="ident">Info</span>(<span class="ident">info_response</span>)
             }
-            <span class="ident">Request_oneof_value</span>::<span class="ident">set_option</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
-                <span class="ident">Response_oneof_value</span>::<span class="ident">set_option</span>(<span class="self">self</span>.<span class="ident">info</span>.<span class="ident">set_option</span>(<span class="ident">request</span>.<span class="ident">into</span>()).<span class="kw">await</span>.<span class="ident">into</span>())
+            <span class="ident">RequestValue</span>::<span class="ident">SetOption</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
+                <span class="ident">ResponseValue</span>::<span class="ident">SetOption</span>(<span class="self">self</span>.<span class="ident">info</span>.<span class="ident">set_option</span>(<span class="ident">request</span>).<span class="kw">await</span>)
             }
-            <span class="ident">Request_oneof_value</span>::<span class="ident">init_chain</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
+            <span class="ident">RequestValue</span>::<span class="ident">InitChain</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">consensus_state</span>.<span class="ident">lock</span>().<span class="kw">await</span>.<span class="ident">on_init_chain_request</span>();
-                <span class="ident">Response_oneof_value</span>::<span class="ident">init_chain</span>(
-                    <span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">init_chain</span>(<span class="ident">request</span>.<span class="ident">into</span>()).<span class="kw">await</span>.<span class="ident">into</span>(),
-                )
+                <span class="ident">ResponseValue</span>::<span class="ident">InitChain</span>(<span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">init_chain</span>(<span class="ident">request</span>).<span class="kw">await</span>)
             }
-            <span class="ident">Request_oneof_value</span>::<span class="ident">query</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
-                <span class="ident">Response_oneof_value</span>::<span class="ident">query</span>(<span class="self">self</span>.<span class="ident">info</span>.<span class="ident">query</span>(<span class="ident">request</span>.<span class="ident">into</span>()).<span class="kw">await</span>.<span class="ident">into</span>())
-            }
-            <span class="ident">Request_oneof_value</span>::<span class="ident">begin_block</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">request</span>.<span class="ident">into</span>();
+            <span class="ident">RequestValue</span>::<span class="ident">Query</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> <span class="ident">ResponseValue</span>::<span class="ident">Query</span>(<span class="self">self</span>.<span class="ident">info</span>.<span class="ident">query</span>(<span class="ident">request</span>).<span class="kw">await</span>),
+            <span class="ident">RequestValue</span>::<span class="ident">BeginBlock</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">consensus_state</span>
                     .<span class="ident">lock</span>()
                     .<span class="kw">await</span>
                     .<span class="ident">on_begin_block_request</span>(<span class="kw-2">&amp;</span><span class="ident">request</span>);
-                <span class="ident">Response_oneof_value</span>::<span class="ident">begin_block</span>(<span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">begin_block</span>(<span class="ident">request</span>).<span class="kw">await</span>.<span class="ident">into</span>())
+                <span class="ident">ResponseValue</span>::<span class="ident">BeginBlock</span>(<span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">begin_block</span>(<span class="ident">request</span>).<span class="kw">await</span>)
             }
-            <span class="ident">Request_oneof_value</span>::<span class="ident">check_tx</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
-                <span class="ident">Response_oneof_value</span>::<span class="ident">check_tx</span>(<span class="self">self</span>.<span class="ident">mempool</span>.<span class="ident">check_tx</span>(<span class="ident">request</span>.<span class="ident">into</span>()).<span class="kw">await</span>.<span class="ident">into</span>())
+            <span class="ident">RequestValue</span>::<span class="ident">CheckTx</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
+                <span class="ident">ResponseValue</span>::<span class="ident">CheckTx</span>(<span class="self">self</span>.<span class="ident">mempool</span>.<span class="ident">check_tx</span>(<span class="ident">request</span>).<span class="kw">await</span>)
             }
-            <span class="ident">Request_oneof_value</span>::<span class="ident">deliver_tx</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
+            <span class="ident">RequestValue</span>::<span class="ident">DeliverTx</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">consensus_state</span>.<span class="ident">lock</span>().<span class="kw">await</span>.<span class="ident">on_deliver_tx_request</span>();
-                <span class="ident">Response_oneof_value</span>::<span class="ident">deliver_tx</span>(
-                    <span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">deliver_tx</span>(<span class="ident">request</span>.<span class="ident">into</span>()).<span class="kw">await</span>.<span class="ident">into</span>(),
-                )
+                <span class="ident">ResponseValue</span>::<span class="ident">DeliverTx</span>(<span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">deliver_tx</span>(<span class="ident">request</span>).<span class="kw">await</span>)
             }
-            <span class="ident">Request_oneof_value</span>::<span class="ident">end_block</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
-                <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">request</span>.<span class="ident">into</span>();
+            <span class="ident">RequestValue</span>::<span class="ident">EndBlock</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
                 <span class="self">self</span>.<span class="ident">consensus_state</span>
                     .<span class="ident">lock</span>()
                     .<span class="kw">await</span>
                     .<span class="ident">on_end_block_request</span>(<span class="kw-2">&amp;</span><span class="ident">request</span>);
-                <span class="ident">Response_oneof_value</span>::<span class="ident">end_block</span>(<span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">end_block</span>(<span class="ident">request</span>).<span class="kw">await</span>.<span class="ident">into</span>())
+                <span class="ident">ResponseValue</span>::<span class="ident">EndBlock</span>(<span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">end_block</span>(<span class="ident">request</span>).<span class="kw">await</span>)
             }
-            <span class="ident">Request_oneof_value</span>::<span class="ident">commit</span>(<span class="kw">_</span>) <span class="op">=&gt;</span> {
+            <span class="ident">RequestValue</span>::<span class="ident">Commit</span>(<span class="ident">request</span>) <span class="op">=&gt;</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">consensus_state</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">consensus_state</span>.<span class="ident">lock</span>().<span class="kw">await</span>;
                 <span class="ident">consensus_state</span>.<span class="ident">on_commit_request</span>();
 
-                <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">commit</span>().<span class="kw">await</span>;
+                <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">commit</span>(<span class="ident">request</span>).<span class="kw">await</span>;
                 <span class="ident">consensus_state</span>.<span class="ident">on_commit_response</span>(<span class="kw-2">&amp;</span><span class="ident">response</span>);
-                <span class="ident">Response_oneof_value</span>::<span class="ident">commit</span>(<span class="ident">response</span>.<span class="ident">into</span>())
+                <span class="ident">ResponseValue</span>::<span class="ident">Commit</span>(<span class="ident">response</span>)
             }
         };
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">Response</span>::<span class="ident">new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">Response</span>::<span class="ident">default</span>();
         <span class="ident">response</span>.<span class="ident">value</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>);
 
         <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Sending response&quot;</span>, <span class="question-mark">?</span><span class="ident">response</span>);
