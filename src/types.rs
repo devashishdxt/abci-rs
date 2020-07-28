@@ -19,6 +19,8 @@ mod libs {
     }
 }
 
+pub use prost_types::{Duration, Timestamp};
+
 pub use self::abci::types::{
     BlockId, BlockParams, ConsensusParams, Event, Evidence, EvidenceParams, Header, LastCommitInfo,
     PartSetHeader, PubKey, RequestBeginBlock, RequestCheckTx, RequestCommit, RequestDeliverTx,
