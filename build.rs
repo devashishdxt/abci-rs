@@ -18,6 +18,7 @@ const FILES_TO_DOWNLOAD: [(&str, &str); 3] = [
 #[tokio::main]
 async fn main() {
     download_proto_files().await;
+    std::env::set_var("OUT_DIR", "src/proto");
     compile_protos(
         &[
             "src/proto/abci/types/abci.proto",

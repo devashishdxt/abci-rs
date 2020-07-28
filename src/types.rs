@@ -3,19 +3,19 @@
 pub(crate) mod abci {
     #[allow(clippy::large_enum_variant)]
     pub mod types {
-        include!(concat!(env!("OUT_DIR"), "/tendermint.abci.types.rs"));
+        include!("proto/tendermint.abci.types.rs");
     }
 }
 
 mod crypto {
     pub mod merkle {
-        include!(concat!(env!("OUT_DIR"), "/tendermint.crypto.merkle.rs"));
+        include!("proto/tendermint.crypto.merkle.rs");
     }
 }
 
 mod libs {
     pub mod kv {
-        include!(concat!(env!("OUT_DIR"), "/tendermint.libs.kv.rs"));
+        include!("proto/tendermint.libs.kv.rs");
     }
 }
 
