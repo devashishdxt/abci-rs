@@ -91,19 +91,19 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">abci</span> {
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">large_enum_variant</span>)]</span>
     <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">types</span> {
-        <span class="macro">include</span><span class="macro">!</span>(<span class="macro">concat</span><span class="macro">!</span>(<span class="macro">env</span><span class="macro">!</span>(<span class="string">&quot;OUT_DIR&quot;</span>), <span class="string">&quot;/tendermint.abci.types.rs&quot;</span>));
+        <span class="macro">include</span><span class="macro">!</span>(<span class="string">&quot;proto/tendermint.abci.types.rs&quot;</span>);
     }
 }
 
 <span class="kw">mod</span> <span class="ident">crypto</span> {
     <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">merkle</span> {
-        <span class="macro">include</span><span class="macro">!</span>(<span class="macro">concat</span><span class="macro">!</span>(<span class="macro">env</span><span class="macro">!</span>(<span class="string">&quot;OUT_DIR&quot;</span>), <span class="string">&quot;/tendermint.crypto.merkle.rs&quot;</span>));
+        <span class="macro">include</span><span class="macro">!</span>(<span class="string">&quot;proto/tendermint.crypto.merkle.rs&quot;</span>);
     }
 }
 
 <span class="kw">mod</span> <span class="ident">libs</span> {
     <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">kv</span> {
-        <span class="macro">include</span><span class="macro">!</span>(<span class="macro">concat</span><span class="macro">!</span>(<span class="macro">env</span><span class="macro">!</span>(<span class="string">&quot;OUT_DIR&quot;</span>), <span class="string">&quot;/tendermint.libs.kv.rs&quot;</span>));
+        <span class="macro">include</span><span class="macro">!</span>(<span class="string">&quot;proto/tendermint.libs.kv.rs&quot;</span>);
     }
 }
 
