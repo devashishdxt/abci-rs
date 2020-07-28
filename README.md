@@ -31,7 +31,7 @@ Add `abci-rs` in your `Cargo.toml`'s `dependencies` section:
 
 ```toml
 [dependencies]
-abci-rs = "0.9"
+abci-rs = "0.10"
 ```
 
 Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,
