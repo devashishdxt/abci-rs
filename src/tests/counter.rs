@@ -30,11 +30,11 @@ impl ConsensusConnection {
 
 #[async_trait]
 impl Consensus for ConsensusConnection {
-    async fn init_chain(&self, _init_chain_request: InitChainRequest) -> InitChainResponse {
+    async fn init_chain(&self, _init_chain_request: RequestInitChain) -> ResponseInitChain {
         Default::default()
     }
 
-    async fn begin_block(&self, _begin_block_request: BeginBlockRequest) -> BeginBlockResponse {
+    async fn begin_block(&self, _begin_block_request: RequestBeginBlock) -> ResponseBeginBlock {
         let committed_state = self.committed_state.lock().unwrap().clone();
 
         let mut current_state = self.current_state.lock().unwrap();
@@ -43,27 +43,40 @@ impl Consensus for ConsensusConnection {
         Default::default()
     }
 
-    async fn deliver_tx(&self, deliver_tx_request: DeliverTxRequest) -> Result<DeliverTxResponse> {
-        let new_counter = parse_bytes_to_counter(&deliver_tx_request.tx)?;
+    async fn deliver_tx(&self, deliver_tx_request: RequestDeliverTx) -> ResponseDeliverTx {
+        let new_counter = parse_bytes_to_counter(&deliver_tx_request.tx);
+
+        if new_counter.is_err() {
+            let mut error = ResponseDeliverTx::default();
+            error.code = 1;
+            error.codespace = "Parsing error".to_owned();
+            error.log = "Transaction should be 8 bytes long".to_owned();
+            error.info = "Transaction is big-endian encoding of 64-bit integer".to_owned();
+
+            return error;
+        }
+
+        let new_counter = new_counter.unwrap();
 
         let mut current_state_lock = self.current_state.lock().unwrap();
         let mut current_state = current_state_lock.as_mut().unwrap();
 
         if current_state.counter + 1 != new_counter {
-            return Err(Error {
-                code: 2,
-                codespace: "Validation error".to_owned(),
-                log: "Only consecutive integers are allowed".to_owned(),
-                info: "Numbers to counter app should be supplied in increasing order of consecutive integers staring from 1".to_owned(),
-            });
+            let mut error = ResponseDeliverTx::default();
+            error.code = 2;
+            error.codespace = "Validation error".to_owned();
+            error.log = "Only consecutive integers are allowed".to_owned();
+            error.info = "Numbers to counter app should be supplied in increasing order of consecutive integers staring from 1".to_owned();
+
+            return error;
         }
 
         current_state.counter = new_counter;
 
-        Ok(Default::default())
+        Default::default()
     }
 
-    async fn end_block(&self, end_block_request: EndBlockRequest) -> EndBlockResponse {
+    async fn end_block(&self, end_block_request: RequestEndBlock) -> ResponseEndBlock {
         let mut current_state_lock = self.current_state.lock().unwrap();
         let mut current_state = current_state_lock.as_mut().unwrap();
 
@@ -73,12 +86,12 @@ impl Consensus for ConsensusConnection {
         Default::default()
     }
 
-    async fn commit(&self) -> CommitResponse {
+    async fn commit(&self, _commit_request: RequestCommit) -> ResponseCommit {
         let current_state = self.current_state.lock().unwrap().as_ref().unwrap().clone();
         let mut committed_state = self.committed_state.lock().unwrap();
         *committed_state = current_state;
 
-        CommitResponse {
+        ResponseCommit {
             data: (*committed_state).app_hash.clone(),
             retain_height: 0,
         }
@@ -98,21 +111,34 @@ impl MempoolConnection {
 
 #[async_trait]
 impl Mempool for MempoolConnection {
-    async fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse> {
-        let new_counter = parse_bytes_to_counter(&check_tx_request.tx)?;
+    async fn check_tx(&self, check_tx_request: RequestCheckTx) -> ResponseCheckTx {
+        let new_counter = parse_bytes_to_counter(&check_tx_request.tx);
+
+        if new_counter.is_err() {
+            let mut error = ResponseCheckTx::default();
+            error.code = 1;
+            error.codespace = "Parsing error".to_owned();
+            error.log = "Transaction should be 8 bytes long".to_owned();
+            error.info = "Transaction is big-endian encoding of 64-bit integer".to_owned();
+
+            return error;
+        }
+
+        let new_counter = new_counter.unwrap();
 
         let state_lock = self.state.lock().unwrap();
         let state = state_lock.as_ref().unwrap();
 
         if state.counter + 1 != new_counter {
-            Err(Error {
-                code: 2,
-                codespace: "Validation error".to_owned(),
-                log: "Only consecutive integers are allowed".to_owned(),
-                info: "Numbers to counter app should be supplied in increasing order of consecutive integers staring from 1".to_owned(),
-            })
+            let mut error = ResponseCheckTx::default();
+            error.code = 2;
+            error.codespace = "Validation error".to_owned();
+            error.log = "Only consecutive integers are allowed".to_owned();
+            error.info = "Numbers to counter app should be supplied in increasing order of consecutive integers staring from 1".to_owned();
+
+            return error;
         } else {
-            Ok(Default::default())
+            Default::default()
         }
     }
 }
@@ -129,10 +155,10 @@ impl InfoConnection {
 
 #[async_trait]
 impl Info for InfoConnection {
-    async fn info(&self, _info_request: InfoRequest) -> InfoResponse {
+    async fn info(&self, _info_request: RequestInfo) -> ResponseInfo {
         let state = self.state.lock().unwrap();
 
-        InfoResponse {
+        ResponseInfo {
             data: Default::default(),
             version: Default::default(),
             app_version: Default::default(),
@@ -142,14 +168,9 @@ impl Info for InfoConnection {
     }
 }
 
-fn parse_bytes_to_counter(bytes: &[u8]) -> Result<u64> {
+fn parse_bytes_to_counter(bytes: &[u8]) -> Result<u64, ()> {
     if bytes.len() != 8 {
-        return Err(Error {
-            code: 1,
-            codespace: "Parsing error".to_owned(),
-            log: "Transaction should be 8 bytes long".to_owned(),
-            info: "Transaction is big-endian encoding of 64-bit integer".to_owned(),
-        });
+        return Err(());
     }
 
     let mut counter_bytes = [0; 8];

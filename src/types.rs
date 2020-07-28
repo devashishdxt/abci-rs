@@ -1,49 +1,85 @@
 #![allow(missing_docs)]
 //! Types used in ABCI
-mod begin_block;
-mod check_tx;
-mod commit;
-mod deliver_tx;
-mod end_block;
-mod info;
-mod init_chain;
-mod misc;
-mod query;
-mod set_option;
-
-pub use self::begin_block::*;
-pub use self::check_tx::*;
-pub use self::commit::*;
-pub use self::deliver_tx::*;
-pub use self::end_block::*;
-pub use self::info::*;
-pub use self::init_chain::*;
-pub use self::misc::*;
-pub use self::query::*;
-pub use self::set_option::*;
-
-use std::fmt;
-
-/// ABCI Error
-#[derive(Debug)]
-pub struct Error {
-    /// Error code
-    pub code: u32,
-    /// Namespace for error code
-    pub codespace: String,
-    /// Output of application's logger (may be non-deterministic)
-    pub log: String,
-    /// Additional information (may be non-deterministic)
-    pub info: String,
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Error #{} ({}): {}", self.code, self.codespace, self.log)
+pub(crate) mod abci {
+    #[allow(clippy::large_enum_variant)]
+    pub mod types {
+        include!(concat!(env!("OUT_DIR"), "/tendermint.abci.types.rs"));
     }
 }
 
-impl std::error::Error for Error {}
+mod crypto {
+    pub mod merkle {
+        include!(concat!(env!("OUT_DIR"), "/tendermint.crypto.merkle.rs"));
+    }
+}
 
-/// ABCI Result
-pub type Result<T> = std::result::Result<T, Error>;
+mod libs {
+    pub mod kv {
+        include!(concat!(env!("OUT_DIR"), "/tendermint.libs.kv.rs"));
+    }
+}
+
+pub use self::abci::types::{
+    BlockId, BlockParams, ConsensusParams, Event, Evidence, EvidenceParams, Header, LastCommitInfo,
+    PartSetHeader, PubKey, RequestBeginBlock, RequestCheckTx, RequestCommit, RequestDeliverTx,
+    RequestEcho, RequestEndBlock, RequestFlush, RequestInfo, RequestInitChain, RequestQuery,
+    RequestSetOption, ResponseBeginBlock, ResponseCheckTx, ResponseCommit, ResponseDeliverTx,
+    ResponseEcho, ResponseEndBlock, ResponseFlush, ResponseInfo, ResponseInitChain, ResponseQuery,
+    ResponseSetOption, Validator, ValidatorParams, ValidatorUpdate, Version, VoteInfo,
+};
+pub use self::crypto::merkle::*;
+pub use self::libs::kv::*;
+
+use std::{
+    convert::TryFrom,
+    io::{Error, ErrorKind, Result},
+};
+
+#[cfg(feature = "use-async-std")]
+use async_std::{
+    io::{Read, Write},
+    prelude::*,
+};
+#[cfg(feature = "use-tokio")]
+use tokio::io::{AsyncRead as Read, AsyncReadExt, AsyncWrite as Write, AsyncWriteExt};
+
+use integer_encoding::{VarIntAsyncReader, VarIntAsyncWriter};
+use prost::Message;
+
+/// Decodes a `Request` from stream
+pub(crate) async fn decode<M: Message + Default, R: Read + Unpin + Send>(
+    mut reader: R,
+) -> Result<Option<M>> {
+    let length: i64 = reader.read_varint_async().await?;
+
+    if length == 0 {
+        return Ok(None);
+    }
+
+    let mut bytes = vec![0; length as usize];
+    reader.take(length as u64).read(&mut bytes).await?;
+
+    <M>::decode(bytes.as_slice())
+        .map(Some)
+        .map_err(|e| Error::new(ErrorKind::InvalidData, e))
+}
+
+/// Encodes a `Response` to stream
+pub(crate) async fn encode<M: Message, W: Write + Unpin + Send>(
+    message: M,
+    mut writer: W,
+) -> Result<()> {
+    writer
+        .write_varint_async(
+            i64::try_from(message.encoded_len()).expect("Cannot convert from `i64` to `usize`"),
+        )
+        .await?;
+
+    let mut bytes = vec![];
+
+    message
+        .encode(&mut bytes)
+        .map_err(|e| Error::new(ErrorKind::Other, e))?;
+
+    writer.write_all(&bytes).await
+}

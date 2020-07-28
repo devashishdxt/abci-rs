@@ -6,7 +6,7 @@ pub struct ConsensusStateValidator {
 }
 
 impl ConsensusStateValidator {
-    pub fn on_info_response(&mut self, info_response: &InfoResponse) {
+    pub fn on_info_response(&mut self, info_response: &ResponseInfo) {
         if self.state == ConsensusState::NoInfo {
             let block_height = info_response.last_block_height;
 
@@ -29,7 +29,7 @@ impl ConsensusStateValidator {
         self.state = ConsensusState::InitChain;
     }
 
-    pub fn on_begin_block_request(&mut self, begin_block_request: &BeginBlockRequest) {
+    pub fn on_begin_block_request(&mut self, begin_block_request: &RequestBeginBlock) {
         let new_state = match self.state {
             ConsensusState::InitChain => {
                 let header = begin_block_request
@@ -88,7 +88,7 @@ impl ConsensusStateValidator {
         }
     }
 
-    pub fn on_end_block_request(&mut self, end_block_request: &EndBlockRequest) {
+    pub fn on_end_block_request(&mut self, end_block_request: &RequestEndBlock) {
         match self.state {
             ConsensusState::ExecutingBlock {
                 ref mut execution_state,
@@ -119,7 +119,7 @@ impl ConsensusStateValidator {
         }
     }
 
-    pub fn on_commit_response(&mut self, commit_response: &CommitResponse) {
+    pub fn on_commit_response(&mut self, commit_response: &ResponseCommit) {
         let new_state = match self.state {
             ConsensusState::ExecutingBlock {
                 execution_state: BlockExecutionState::Commit,

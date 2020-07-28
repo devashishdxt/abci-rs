@@ -64,7 +64,6 @@ compile_error!("Features `use-async-std` and `use-tokio` are mutually exclusive"
 compile_error!("Either feature `use-async-std` or `use-tokio` must be enabled for this crate");
 
 mod application;
-mod proto;
 mod server;
 mod state;
 #[cfg(test)]

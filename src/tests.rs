@@ -1,7 +1,7 @@
 mod counter;
 mod request_generator;
 
-use crate::proto::abci::*;
+use crate::types::abci::types::{response::Value as ResponseValue, Request, Response};
 
 #[tokio::test]
 async fn check_valid_abci_flow() {
@@ -10,7 +10,7 @@ async fn check_valid_abci_flow() {
     // First, tendermint calls `info` to get information about ABCI application
     let response = server.inner.process(request_generator::info()).await;
     assert!(response.value.is_some());
-    if let Response_oneof_value::info(info_response) = response.value.unwrap() {
+    if let ResponseValue::Info(info_response) = response.value.unwrap() {
         assert_eq!(0, info_response.last_block_height);
         assert!(info_response.last_block_app_hash.is_empty());
     } else {
@@ -43,7 +43,7 @@ async fn check_valid_abci_flow() {
     // Finally, tendermint will call `commit`
     let response = server.inner.process(request_generator::commit()).await;
     assert!(response.value.is_some());
-    if let Response_oneof_value::commit(commit_response) = response.value.unwrap() {
+    if let ResponseValue::Commit(commit_response) = response.value.unwrap() {
         assert_eq!(2u64.to_be_bytes().to_vec(), commit_response.data);
     } else {
         panic!("Commit request should generate commit response");
@@ -73,7 +73,7 @@ async fn check_valid_abci_flow() {
     // Finally, tendermint will call `commit`
     let response = server.inner.process(request_generator::commit()).await;
     assert!(response.value.is_some());
-    if let Response_oneof_value::commit(commit_response) = response.value.unwrap() {
+    if let ResponseValue::Commit(commit_response) = response.value.unwrap() {
         assert_eq!(4u64.to_be_bytes().to_vec(), commit_response.data);
     } else {
         panic!("Commit request should generate commit response");
@@ -87,7 +87,7 @@ async fn check_valid_abci_flow_with_init_state() {
     // First, tendermint calls `info` to get information about ABCI application
     let response = server.inner.process(request_generator::info()).await;
     assert!(response.value.is_some());
-    if let Response_oneof_value::info(info_response) = response.value.unwrap() {
+    if let ResponseValue::Info(info_response) = response.value.unwrap() {
         assert_eq!(2, info_response.last_block_height);
         assert_eq!(
             4u64.to_be_bytes().to_vec(),
@@ -122,7 +122,7 @@ async fn check_valid_abci_flow_with_init_state() {
     // Finally, tendermint will call `commit`
     let response = server.inner.process(request_generator::commit()).await;
     assert!(response.value.is_some());
-    if let Response_oneof_value::commit(commit_response) = response.value.unwrap() {
+    if let ResponseValue::Commit(commit_response) = response.value.unwrap() {
         assert_eq!(6u64.to_be_bytes().to_vec(), commit_response.data);
     } else {
         panic!("Commit request should generate commit response");
@@ -234,7 +234,7 @@ async fn call_after_startup(request: Request, state: Option<(u64, i64)>) -> Resp
     // First, tendermint calls `info` to get information about ABCI application
     let response = server.inner.process(request_generator::info()).await;
     assert!(response.value.is_some());
-    if let Response_oneof_value::info(info_response) = response.value.unwrap() {
+    if let ResponseValue::Info(info_response) = response.value.unwrap() {
         assert_eq!(block_height, info_response.last_block_height);
         assert_eq!(app_hash, info_response.last_block_app_hash);
     } else {
@@ -289,7 +289,7 @@ async fn call_after_begin_block(request: Request) -> Response {
     // First, tendermint calls `info` to get information about ABCI application
     let response = server.inner.process(request_generator::info()).await;
     assert!(response.value.is_some());
-    if let Response_oneof_value::info(info_response) = response.value.unwrap() {
+    if let ResponseValue::Info(info_response) = response.value.unwrap() {
         assert_eq!(0, info_response.last_block_height);
         assert!(info_response.last_block_app_hash.is_empty());
     } else {
@@ -360,7 +360,7 @@ async fn call_after_deliver_tx(request: Request) -> Response {
     // First, tendermint calls `info` to get information about ABCI application
     let response = server.inner.process(request_generator::info()).await;
     assert!(response.value.is_some());
-    if let Response_oneof_value::info(info_response) = response.value.unwrap() {
+    if let ResponseValue::Info(info_response) = response.value.unwrap() {
         assert_eq!(0, info_response.last_block_height);
         assert!(info_response.last_block_app_hash.is_empty());
     } else {
@@ -429,7 +429,7 @@ async fn call_after_end_block(request: Request) -> Response {
     // First, tendermint calls `info` to get information about ABCI application
     let response = server.inner.process(request_generator::info()).await;
     assert!(response.value.is_some());
-    if let Response_oneof_value::info(info_response) = response.value.unwrap() {
+    if let ResponseValue::Info(info_response) = response.value.unwrap() {
         assert_eq!(0, info_response.last_block_height);
         assert!(info_response.last_block_app_hash.is_empty());
     } else {
@@ -528,7 +528,7 @@ async fn call_after_commit(request: Request) -> Response {
     // First, tendermint calls `info` to get information about ABCI application
     let response = server.inner.process(request_generator::info()).await;
     assert!(response.value.is_some());
-    if let Response_oneof_value::info(info_response) = response.value.unwrap() {
+    if let ResponseValue::Info(info_response) = response.value.unwrap() {
         assert_eq!(0, info_response.last_block_height);
         assert!(info_response.last_block_app_hash.is_empty());
     } else {

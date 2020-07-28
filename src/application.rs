@@ -6,8 +6,10 @@ use crate::types::*;
 #[async_trait]
 pub trait Info: Send + Sync {
     /// Echo a string to test abci client/server implementation.
-    async fn echo(&self, message: String) -> String {
-        message
+    async fn echo(&self, echo_request: RequestEcho) -> ResponseEcho {
+        ResponseEcho {
+            message: echo_request.message,
+        }
     }
 
     /// Return information about the application state.
@@ -31,19 +33,19 @@ pub trait Info: Send + Sync {
     /// # Equivalent to
     ///
     /// ```rust,ignore
-    /// async fn info(&self, info_request: InfoRequest) -> InfoResponse
+    /// async fn info(&self, info_request: RequestInfo) -> ResponseInfo
     /// ```
-    async fn info(&self, info_request: InfoRequest) -> InfoResponse;
+    async fn info(&self, info_request: RequestInfo) -> ResponseInfo;
 
     /// Set non-consensus critical application specific options.
     ///
     /// # Equivalent to
     ///
     /// ```rust,ignore
-    /// async fn set_option(&self, set_option_request: SetOptionRequest) -> Result<SetOptionResponse>
+    /// async fn set_option(&self, set_option_request: RequestSetOption) -> ResponseSetOption
     /// ```
-    async fn set_option(&self, _set_option_request: SetOptionRequest) -> Result<SetOptionResponse> {
-        Ok(Default::default())
+    async fn set_option(&self, _set_option_request: RequestSetOption) -> ResponseSetOption {
+        Default::default()
     }
 
     /// Query for data from the application at current or past height.
@@ -51,10 +53,10 @@ pub trait Info: Send + Sync {
     /// # Equivalent to
     ///
     /// ```rust,ignore
-    /// async fn query(&self, query_request: QueryRequest) -> Result<QueryResponse>
+    /// async fn query(&self, query_request: RequestQuery) -> ResponseQuery
     /// ```
-    async fn query(&self, _query_request: QueryRequest) -> Result<QueryResponse> {
-        Ok(Default::default())
+    async fn query(&self, _query_request: RequestQuery) -> ResponseQuery {
+        Default::default()
     }
 }
 
@@ -81,36 +83,36 @@ pub trait Consensus: Send + Sync {
     /// # Equivalent to
     ///
     /// ```rust,ignore
-    /// async fn init_chain(&self, init_chain_request: InitChainRequest) -> InitChainResponse
+    /// async fn init_chain(&self, init_chain_request: RequestInitChain) -> ResponseInitChain
     /// ```
-    async fn init_chain(&self, init_chain_request: InitChainRequest) -> InitChainResponse;
+    async fn init_chain(&self, init_chain_request: RequestInitChain) -> ResponseInitChain;
 
     /// Signals the beginning of a new block. Called prior to any [`deliver_tx`](trait.Consensus.html#tymethod.deliver_tx)s.
     ///
     /// # Equivalent to
     ///
     /// ```rust,ignore
-    /// async fn begin_block(&self, begin_block_request: BeginBlockRequest) -> BeginBlockResponse
+    /// async fn begin_block(&self, begin_block_request: RequestBeginBlock) -> ResponseBeginBlock
     /// ```
-    async fn begin_block(&self, begin_block_request: BeginBlockRequest) -> BeginBlockResponse;
+    async fn begin_block(&self, begin_block_request: RequestBeginBlock) -> ResponseBeginBlock;
 
     /// Execute the transaction in full. The workhorse of the application.
     ///
     /// # Equivalent to
     ///
     /// ```rust,ignore
-    /// async fn deliver_tx(&self, deliver_tx_request: DeliverTxRequest) -> Result<DeliverTxResponse>
+    /// async fn deliver_tx(&self, deliver_tx_request: RequestDeliverTx) -> ResponseDeliverTx
     /// ```
-    async fn deliver_tx(&self, deliver_tx_request: DeliverTxRequest) -> Result<DeliverTxResponse>;
+    async fn deliver_tx(&self, deliver_tx_request: RequestDeliverTx) -> ResponseDeliverTx;
 
     /// Signals the end of a block. Called after all transactions, prior to each [`commit`](trait.Commit.html#tymethod.commit).
     ///
     /// # Equivalent to
     ///
     /// ```rust,ignore
-    /// async fn end_block(&self, end_block_request: EndBlockRequest) -> EndBlockResponse
+    /// async fn end_block(&self, end_block_request: RequestEndBlock) -> ResponseEndBlock
     /// ```
-    async fn end_block(&self, end_block_request: EndBlockRequest) -> EndBlockResponse;
+    async fn end_block(&self, end_block_request: RequestEndBlock) -> ResponseEndBlock;
 
     /// Persist the application state.
     ///
@@ -140,18 +142,20 @@ pub trait Consensus: Send + Sync {
     /// # Equivalent to
     ///
     /// ```rust,ignore
-    /// async fn commit(&self) -> CommitResponse
+    /// async fn commit(&self, commit_request: RequestCommit) -> ResponseCommit
     /// ```
-    async fn commit(&self) -> CommitResponse;
+    async fn commit(&self, commit_request: RequestCommit) -> ResponseCommit;
 
     /// Signals that messages queued on the client should be flushed to the server.
     ///
     /// # Equivalent to
     ///
     /// ```rust,ignore
-    /// async fn flush(&self)
+    /// async fn flush(&self, flush_request: RequestFlush) -> ResponseFlush
     /// ```
-    async fn flush(&self) {}
+    async fn flush(&self, _flush_request: RequestFlush) -> ResponseFlush {
+        Default::default()
+    }
 }
 
 /// Trait for managing tendermint's mempool.
@@ -190,7 +194,7 @@ pub trait Mempool: Send + Sync {
     /// # Equivalent to
     ///
     /// ```rust,ignore
-    /// async fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse>
+    /// async fn check_tx(&self, check_tx_request: RequestCheckTx) -> ResponseCheckTx
     /// ```
-    async fn check_tx(&self, check_tx_request: CheckTxRequest) -> Result<CheckTxResponse>;
+    async fn check_tx(&self, check_tx_request: RequestCheckTx) -> ResponseCheckTx;
 }

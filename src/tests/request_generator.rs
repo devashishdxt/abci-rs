@@ -1,14 +1,17 @@
-use crate::proto::abci::*;
+use crate::types::{
+    abci::types::{request::Value as RequestValue, Request},
+    *,
+};
 
 pub fn info() -> Request {
     let mut request = Request::default();
-    request.value = Some(Request_oneof_value::info(RequestInfo::default()));
+    request.value = Some(RequestValue::Info(RequestInfo::default()));
     request
 }
 
 pub fn init_chain() -> Request {
     let mut request = Request::default();
-    request.value = Some(Request_oneof_value::init_chain(Default::default()));
+    request.value = Some(RequestValue::InitChain(Default::default()));
     request
 }
 
@@ -22,7 +25,7 @@ pub fn begin_block(block_height: i64, app_hash: Vec<u8>) -> Request {
     begin_block_request.header = Some(header).into();
 
     let mut request = Request::default();
-    request.value = Some(Request_oneof_value::begin_block(begin_block_request));
+    request.value = Some(RequestValue::BeginBlock(begin_block_request));
 
     request
 }
@@ -32,7 +35,7 @@ pub fn deliver_tx(counter: u64) -> Request {
     deliver_tx_request.tx = counter.to_be_bytes().to_vec();
 
     let mut request = Request::default();
-    request.value = Some(Request_oneof_value::deliver_tx(deliver_tx_request));
+    request.value = Some(RequestValue::DeliverTx(deliver_tx_request));
 
     request
 }
@@ -42,13 +45,13 @@ pub fn end_block(block_height: i64) -> Request {
     end_block_request.height = block_height;
 
     let mut request = Request::default();
-    request.value = Some(Request_oneof_value::end_block(end_block_request));
+    request.value = Some(RequestValue::EndBlock(end_block_request));
 
     request
 }
 
 pub fn commit() -> Request {
     let mut request = Request::default();
-    request.value = Some(Request_oneof_value::commit(RequestCommit::default()));
+    request.value = Some(RequestValue::Commit(RequestCommit::default()));
     request
 }

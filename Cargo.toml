@@ -24,8 +24,10 @@ rustdoc-args = ["--cfg", "feature=\"doc\""]
 [dependencies]
 async-std = { version = "1.6", optional = true }
 async-trait = "0.1"
+bytes = "0.5"
 integer-encoding = { version = "1.1", optional = true }
-protobuf = "2.16"
+prost = "0.6"
+prost-types = "0.6"
 tokio = { version = "0.2", optional = true, features = ["io-util", "sync", "tcp", "stream", "rt-core", "uds"] }
 tracing = { version = "0.1", features = ["log"] }
 tracing-futures = "0.2"
@@ -34,11 +36,15 @@ tracing-futures = "0.2"
 tokio = { version = "0.2", features = ["macros"] }
 tracing-subscriber = "0.2"
 
+[build-dependencies]
+futures = "0.3"
+tokio = { version = "0.2", features = ["macros"] }
+reqwest = "0.10"
+bytes = "0.5"
+prost-build = "0.6"
+
 [features]
 default = ["use-tokio"]
 doc = []
 use-async-std = ["async-std", "integer-encoding/futures_async"]
 use-tokio = ["tokio", "integer-encoding/tokio_async"]
-
-[workspace]
-members = ["gen-proto"]

@@ -25,8 +25,14 @@ use tokio::{
 use tracing::{debug, error, info, instrument};
 
 use crate::{
-    proto::{abci::*, decode, encode},
     state::ConsensusStateValidator,
+    types::{
+        abci::types::{
+            Request, Response,
+            {request::Value as RequestValue, response::Value as ResponseValue},
+        },
+        decode, encode,
+    },
     Consensus, Info, Mempool,
 };
 
@@ -167,71 +173,58 @@ where
     #[instrument(skip(self))]
     pub(crate) async fn process(&self, request: Request) -> Response {
         let value = match request.value.unwrap() {
-            Request_oneof_value::echo(request) => {
-                let mut response = ResponseEcho::new();
-                response.message = self.info.echo(request.message).await;
-                Response_oneof_value::echo(response)
+            RequestValue::Echo(request) => ResponseValue::Echo(self.info.echo(request).await),
+            RequestValue::Flush(request) => {
+                ResponseValue::Flush(self.consensus.flush(request).await)
             }
-            Request_oneof_value::flush(_) => {
-                self.consensus.flush().await;
-                Response_oneof_value::flush(ResponseFlush::new())
-            }
-            Request_oneof_value::info(request) => {
-                let info_response = self.info.info(request.into()).await;
+            RequestValue::Info(request) => {
+                let info_response = self.info.info(request).await;
                 self.consensus_state
                     .lock()
                     .await
                     .on_info_response(&info_response);
-                Response_oneof_value::info(info_response.into())
+                ResponseValue::Info(info_response)
             }
-            Request_oneof_value::set_option(request) => {
-                Response_oneof_value::set_option(self.info.set_option(request.into()).await.into())
+            RequestValue::SetOption(request) => {
+                ResponseValue::SetOption(self.info.set_option(request).await)
             }
-            Request_oneof_value::init_chain(request) => {
+            RequestValue::InitChain(request) => {
                 self.consensus_state.lock().await.on_init_chain_request();
-                Response_oneof_value::init_chain(
-                    self.consensus.init_chain(request.into()).await.into(),
-                )
+                ResponseValue::InitChain(self.consensus.init_chain(request).await)
             }
-            Request_oneof_value::query(request) => {
-                Response_oneof_value::query(self.info.query(request.into()).await.into())
-            }
-            Request_oneof_value::begin_block(request) => {
-                let request = request.into();
+            RequestValue::Query(request) => ResponseValue::Query(self.info.query(request).await),
+            RequestValue::BeginBlock(request) => {
                 self.consensus_state
                     .lock()
                     .await
                     .on_begin_block_request(&request);
-                Response_oneof_value::begin_block(self.consensus.begin_block(request).await.into())
+                ResponseValue::BeginBlock(self.consensus.begin_block(request).await)
             }
-            Request_oneof_value::check_tx(request) => {
-                Response_oneof_value::check_tx(self.mempool.check_tx(request.into()).await.into())
+            RequestValue::CheckTx(request) => {
+                ResponseValue::CheckTx(self.mempool.check_tx(request).await)
             }
-            Request_oneof_value::deliver_tx(request) => {
+            RequestValue::DeliverTx(request) => {
                 self.consensus_state.lock().await.on_deliver_tx_request();
-                Response_oneof_value::deliver_tx(
-                    self.consensus.deliver_tx(request.into()).await.into(),
-                )
+                ResponseValue::DeliverTx(self.consensus.deliver_tx(request).await)
             }
-            Request_oneof_value::end_block(request) => {
-                let request = request.into();
+            RequestValue::EndBlock(request) => {
                 self.consensus_state
                     .lock()
                     .await
                     .on_end_block_request(&request);
-                Response_oneof_value::end_block(self.consensus.end_block(request).await.into())
+                ResponseValue::EndBlock(self.consensus.end_block(request).await)
             }
-            Request_oneof_value::commit(_) => {
+            RequestValue::Commit(request) => {
                 let mut consensus_state = self.consensus_state.lock().await;
                 consensus_state.on_commit_request();
 
-                let response = self.consensus.commit().await;
+                let response = self.consensus.commit(request).await;
                 consensus_state.on_commit_response(&response);
-                Response_oneof_value::commit(response.into())
+                ResponseValue::Commit(response)
             }
         };
 
-        let mut response = Response::new();
+        let mut response = Response::default();
         response.value = Some(value);
 
         debug!(message = "Sending response", ?response);
