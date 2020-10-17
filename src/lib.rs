@@ -64,8 +64,10 @@ compile_error!("Features `use-async-std` and `use-tokio` are mutually exclusive"
 compile_error!("Either feature `use-async-std` or `use-tokio` must be enabled for this crate");
 
 mod application;
+mod handler;
 mod server;
 mod state;
+mod tasks;
 #[cfg(test)]
 mod tests;
 
@@ -75,5 +77,5 @@ pub mod types;
 /// [`Info`](trait.Info.html) traits.
 pub use async_trait::async_trait;
 
-pub use self::application::{Consensus, Info, Mempool};
+pub use self::application::{Consensus, Info, Mempool, Snapshot};
 pub use self::server::{Address, Server};

@@ -6,6 +6,12 @@ use crate::types::*;
 #[async_trait]
 pub trait Info: Send + Sync {
     /// Echo a string to test abci client/server implementation.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn echo(&self, echo_request: RequestEcho) -> ResponseEcho
+    /// ```
     async fn echo(&self, echo_request: RequestEcho) -> ResponseEcho {
         ResponseEcho {
             message: echo_request.message,
@@ -58,6 +64,17 @@ pub trait Info: Send + Sync {
     async fn query(&self, _query_request: RequestQuery) -> ResponseQuery {
         Default::default()
     }
+
+    /// Signals that messages queued on the client should be flushed to the server.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn flush(&self, flush_request: RequestFlush) -> ResponseFlush
+    /// ```
+    async fn flush(&self, _flush_request: RequestFlush) -> ResponseFlush {
+        Default::default()
+    }
 }
 
 /// Trait for managing consensus of blockchain.
@@ -78,6 +95,19 @@ pub trait Info: Send + Sync {
 /// [`commit`]: trait.Consensus.html#tymethod.commit
 #[async_trait]
 pub trait Consensus: Send + Sync {
+    /// Echo a string to test abci client/server implementation.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn echo(&self, echo_request: RequestEcho) -> ResponseEcho
+    /// ```
+    async fn echo(&self, echo_request: RequestEcho) -> ResponseEcho {
+        ResponseEcho {
+            message: echo_request.message,
+        }
+    }
+
     /// Called once upon genesis. Usually used to establish initial (genesis) state.
     ///
     /// # Equivalent to
@@ -188,6 +218,19 @@ pub trait Consensus: Send + Sync {
 /// [`check_tx`]: trait.Mempool.html#method.check_tx
 #[async_trait]
 pub trait Mempool: Send + Sync {
+    /// Echo a string to test abci client/server implementation.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn echo(&self, echo_request: RequestEcho) -> ResponseEcho
+    /// ```
+    async fn echo(&self, echo_request: RequestEcho) -> ResponseEcho {
+        ResponseEcho {
+            message: echo_request.message,
+        }
+    }
+
     /// Guardian of the mempool: every node runs CheckTx before letting a transaction into its local mempool.
     /// Technically optional - not involved in processing blocks
     ///
@@ -197,4 +240,113 @@ pub trait Mempool: Send + Sync {
     /// async fn check_tx(&self, check_tx_request: RequestCheckTx) -> ResponseCheckTx
     /// ```
     async fn check_tx(&self, check_tx_request: RequestCheckTx) -> ResponseCheckTx;
+
+    /// Signals that messages queued on the client should be flushed to the server.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn flush(&self, flush_request: RequestFlush) -> ResponseFlush
+    /// ```
+    async fn flush(&self, _flush_request: RequestFlush) -> ResponseFlush {
+        Default::default()
+    }
+}
+
+/// Trait for serving and restoring tendermint's state sync snapshots.
+///
+/// # Details
+///
+/// State sync allows new nodes to rapidly bootstrap by discovering, fetching, and applying state
+/// machine snapshots instead of replaying historical blocks. For more details, see the state sync
+/// section.
+///
+/// When a new node is discovering snapshots in the P2P network, existing nodes will call
+/// [`list_snapshots`] on the application to retrieve any local state snapshots. The new node will
+/// offer these snapshots to its local application via [`offer_snapshot`].
+///
+/// Once the application accepts a snapshot and begins restoring it, Tendermint will fetch snapshot
+/// chunks from existing nodes via [`load_snapshot_chunk`] and apply them sequentially to the local
+/// application with `apply_snapshot_chunk`. When all chunks have been applied, the application
+/// `app_hash` is retrieved via an [`info`] query and compared to the blockchain's `app_hash`
+/// verified via light client.
+///
+/// [`list_snapshots`]: trait.StateSync.html#method.list_snapshots
+/// [`offer_snapshot`]: trait.StateSync.html#method.offer_snapshot
+/// [`load_snapshot_chunk`]: trait.StateSync.html#method.load_snapshot_chunk
+/// [`apply_snapshot_chunk`]: trait.StateSync.html#method.apply_snapshot_chunk
+/// [`info`]: trait.Info.html#tymethod.info
+#[async_trait]
+pub trait Snapshot: Send + Sync {
+    /// Echo a string to test abci client/server implementation.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn echo(&self, echo_request: RequestEcho) -> ResponseEcho
+    /// ```
+    async fn echo(&self, echo_request: RequestEcho) -> ResponseEcho {
+        ResponseEcho {
+            message: echo_request.message,
+        }
+    }
+
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn list_snapshots(&self, list_snapshots_request: RequestListSnapshots) -> ResponseListSnapshots
+    /// ```
+    async fn list_snapshots(
+        &self,
+        _list_snapshots_request: RequestListSnapshots,
+    ) -> ResponseListSnapshots {
+        Default::default()
+    }
+
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn offer_snapshot(&self: offer_snapshot_request: RequestOfferSnapshot) -> ResponseOfferSnapshot
+    /// ```
+    async fn offer_snapshot(
+        &self,
+        _offer_snapshot_request: RequestOfferSnapshot,
+    ) -> ResponseOfferSnapshot {
+        Default::default()
+    }
+
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn load_snapshot_chunk(&self, load_snapshot_chunk_request: RequestLoadSnapshotChunk) -> ResponseLoadSnapshotChunk
+    /// ```
+    async fn load_snapshot_chunk(
+        &self,
+        _load_snapshot_chunk_request: RequestLoadSnapshotChunk,
+    ) -> ResponseLoadSnapshotChunk {
+        Default::default()
+    }
+
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn apply_snapshot_chunk(&self: apply_snapshot_chunk_request: RequestApplySnapshotChunk) -> ResponseApplySnapshotChunk
+    /// ```
+    async fn apply_snapshot_chunk(
+        &self,
+        _apply_snapshot_chunk_request: RequestApplySnapshotChunk,
+    ) -> ResponseApplySnapshotChunk {
+        Default::default()
+    }
+
+    /// Signals that messages queued on the client should be flushed to the server.
+    ///
+    /// # Equivalent to
+    ///
+    /// ```rust,ignore
+    /// async fn flush(&self, flush_request: RequestFlush) -> ResponseFlush
+    /// ```
+    async fn flush(&self, _flush_request: RequestFlush) -> ResponseFlush {
+        Default::default()
+    }
 }

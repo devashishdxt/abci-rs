@@ -21,21 +21,25 @@ impl ConsensusStateValidator {
         }
     }
 
-    pub fn on_init_chain_request(&mut self) {
+    pub fn on_init_chain_request(&mut self) -> Result<(), String> {
         if self.state != ConsensusState::NotInitialized {
-            panic!("Received `InitChain` call when chain is already initialized");
+            return Err("Received `InitChain` call when chain is already initialized".to_string());
         }
 
         self.state = ConsensusState::InitChain;
+        Ok(())
     }
 
-    pub fn on_begin_block_request(&mut self, begin_block_request: &RequestBeginBlock) {
+    pub fn on_begin_block_request(
+        &mut self,
+        begin_block_request: &RequestBeginBlock,
+    ) -> Result<(), String> {
         let new_state = match self.state {
             ConsensusState::InitChain => {
                 let header = begin_block_request
                     .header
                     .as_ref()
-                    .expect("`BeginBlock` request does not contain a header");
+                    .ok_or("`BeginBlock` request does not contain a header")?;
 
                 ConsensusState::ExecutingBlock {
                     block_height: header.height,
@@ -51,20 +55,20 @@ impl ConsensusStateValidator {
                 let header = begin_block_request
                     .header
                     .as_ref()
-                    .expect("`BeginBlock` request does not contain a header");
+                    .ok_or("`BeginBlock` request does not contain a header")?;
 
                 if header.height != block_height {
-                    panic!(
+                    return Err(format!(
                         "Expected height {} in `BeginBlock` request. Got {}",
                         block_height, header.height
-                    );
+                    ));
                 }
 
                 if &header.app_hash != app_hash {
-                    panic!(
+                    return Err(format!(
                         "Expected app hash {:?} in `BeginBlock`. Got {:?}",
                         app_hash, header.app_hash
-                    );
+                    ));
                 }
 
                 ConsensusState::ExecutingBlock {
@@ -72,23 +76,36 @@ impl ConsensusStateValidator {
                     execution_state: BlockExecutionState::BeginBlock,
                 }
             }
-            _ => panic!("`BeginBlock` cannot be called after {:?}", self.state),
+            _ => {
+                return Err(format!(
+                    "`BeginBlock` cannot be called after {:?}",
+                    self.state
+                ))
+            }
         };
 
         self.state = new_state;
+
+        Ok(())
     }
 
-    pub fn on_deliver_tx_request(&mut self) {
+    pub fn on_deliver_tx_request(&mut self) -> Result<(), String> {
         match self.state {
             ConsensusState::ExecutingBlock {
                 ref mut execution_state,
                 ..
             } => execution_state.validate(BlockExecutionState::DeliverTx),
-            _ => panic!("`DeliverTx` cannot be called after {:?}", self.state),
+            _ => Err(format!(
+                "`DeliverTx` cannot be called after {:?}",
+                self.state
+            )),
         }
     }
 
-    pub fn on_end_block_request(&mut self, end_block_request: &RequestEndBlock) {
+    pub fn on_end_block_request(
+        &mut self,
+        end_block_request: &RequestEndBlock,
+    ) -> Result<(), String> {
         match self.state {
             ConsensusState::ExecutingBlock {
                 ref mut execution_state,
@@ -97,29 +114,32 @@ impl ConsensusStateValidator {
                 let block_height = *block_height;
 
                 if block_height != end_block_request.height {
-                    panic!(
+                    return Err(format!(
                         "Expected `EndBlock` for height {}. But received for {}",
                         block_height, end_block_request.height
-                    )
+                    ));
                 }
 
-                execution_state.validate(BlockExecutionState::EndBlock);
+                execution_state.validate(BlockExecutionState::EndBlock)
             }
-            _ => panic!("`EndBlock` cannot be called after {:?}", self.state),
+            _ => Err(format!(
+                "`EndBlock` cannot be called after {:?}",
+                self.state
+            )),
         }
     }
 
-    pub fn on_commit_request(&mut self) {
+    pub fn on_commit_request(&mut self) -> Result<(), String> {
         match self.state {
             ConsensusState::ExecutingBlock {
                 ref mut execution_state,
                 ..
             } => execution_state.validate(BlockExecutionState::Commit),
-            _ => panic!("`Commit` cannot be called after {:?}", self.state),
+            _ => Err(format!("`Commit` cannot be called after {:?}", self.state)),
         }
     }
 
-    pub fn on_commit_response(&mut self, commit_response: &ResponseCommit) {
+    pub fn on_commit_response(&mut self, commit_response: &ResponseCommit) -> Result<(), String> {
         let new_state = match self.state {
             ConsensusState::ExecutingBlock {
                 execution_state: BlockExecutionState::Commit,
@@ -128,10 +148,12 @@ impl ConsensusStateValidator {
                 block_height: block_height + 1,
                 app_hash: commit_response.data.clone(),
             },
-            _ => panic!("Received `CommitResponse` after {:?}", self.state),
+            _ => return Err(format!("Received `CommitResponse` after {:?}", self.state)),
         };
 
         self.state = new_state;
+
+        Ok(())
     }
 }
 
@@ -165,7 +187,7 @@ pub enum BlockExecutionState {
 }
 
 impl BlockExecutionState {
-    pub fn validate(&mut self, next: Self) {
+    pub fn validate(&mut self, next: Self) -> Result<(), String> {
         let is_valid = match (*self, next) {
             (Self::BeginBlock, Self::DeliverTx) => true,
             (Self::BeginBlock, Self::EndBlock) => true,
@@ -177,8 +199,9 @@ impl BlockExecutionState {
 
         if is_valid {
             *self = next;
+            Ok(())
         } else {
-            panic!("{:?} cannot be called after {:?}", next, self);
+            Err(format!("{:?} cannot be called after {:?}", next, self))
         }
     }
 }

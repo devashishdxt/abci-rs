@@ -1,7 +1,6 @@
-use crate::types::{
-    abci::types::{request::Value as RequestValue, Request},
-    *,
-};
+use tendermint_proto::abci::{request::Value as RequestValue, Request};
+
+use crate::types::*;
 
 pub fn info() -> Request {
     let mut request = Request::default();

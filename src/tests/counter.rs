@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use crate::{async_trait, types::*, Consensus, Info, Mempool, Server};
+use crate::{async_trait, types::*, Consensus, Info, Mempool, Server, Snapshot};
 
 /// Simple counter
 #[derive(Debug, Default, Clone)]
@@ -168,6 +168,11 @@ impl Info for InfoConnection {
     }
 }
 
+pub struct SnapshotConnection;
+
+#[async_trait]
+impl Snapshot for SnapshotConnection {}
+
 fn parse_bytes_to_counter(bytes: &[u8]) -> Result<u64, ()> {
     if bytes.len() != 8 {
         return Err(());
@@ -179,21 +184,23 @@ fn parse_bytes_to_counter(bytes: &[u8]) -> Result<u64, ()> {
     Ok(u64::from_be_bytes(counter_bytes))
 }
 
-pub fn server() -> Server<ConsensusConnection, MempoolConnection, InfoConnection> {
+pub fn server() -> Server<ConsensusConnection, MempoolConnection, InfoConnection, SnapshotConnection>
+{
     let committed_state: Arc<Mutex<CounterState>> = Default::default();
     let current_state: Arc<Mutex<Option<CounterState>>> = Default::default();
 
     let consensus = ConsensusConnection::new(committed_state.clone(), current_state.clone());
     let mempool = MempoolConnection::new(current_state.clone());
     let info = InfoConnection::new(committed_state.clone());
+    let snapshot = SnapshotConnection;
 
-    Server::new(consensus, mempool, info).expect("Unable to create ABCI server")
+    Server::new(consensus, mempool, info, snapshot)
 }
 
 pub fn server_with_state(
     counter: u64,
     block_height: i64,
-) -> Server<ConsensusConnection, MempoolConnection, InfoConnection> {
+) -> Server<ConsensusConnection, MempoolConnection, InfoConnection, SnapshotConnection> {
     let committed_state = Arc::new(Mutex::new(CounterState {
         block_height,
         counter,
@@ -204,6 +211,7 @@ pub fn server_with_state(
     let consensus = ConsensusConnection::new(committed_state.clone(), current_state.clone());
     let mempool = MempoolConnection::new(current_state.clone());
     let info = InfoConnection::new(committed_state.clone());
+    let snapshot = SnapshotConnection;
 
-    Server::new(consensus, mempool, info).expect("Unable to create ABCI server")
+    Server::new(consensus, mempool, info, snapshot)
 }

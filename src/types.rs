@@ -1,36 +1,22 @@
 #![allow(missing_docs)]
 //! Types used in ABCI
-pub(crate) mod abci {
-    #[allow(clippy::large_enum_variant)]
-    pub mod types {
-        include!("proto/tendermint.abci.types.rs");
-    }
-}
-
-mod crypto {
-    pub mod merkle {
-        include!("proto/tendermint.crypto.merkle.rs");
-    }
-}
-
-mod libs {
-    pub mod kv {
-        include!("proto/tendermint.libs.kv.rs");
-    }
-}
-
 pub use prost_types::{Duration, Timestamp};
-
-pub use self::abci::types::{
-    BlockId, BlockParams, ConsensusParams, Event, Evidence, EvidenceParams, Header, LastCommitInfo,
-    PartSetHeader, PubKey, RequestBeginBlock, RequestCheckTx, RequestCommit, RequestDeliverTx,
-    RequestEcho, RequestEndBlock, RequestFlush, RequestInfo, RequestInitChain, RequestQuery,
-    RequestSetOption, ResponseBeginBlock, ResponseCheckTx, ResponseCommit, ResponseDeliverTx,
-    ResponseEcho, ResponseEndBlock, ResponseFlush, ResponseInfo, ResponseInitChain, ResponseQuery,
-    ResponseSetOption, Validator, ValidatorParams, ValidatorUpdate, Version, VoteInfo,
+pub use tendermint_proto::{
+    abci::{
+        BlockParams, ConsensusParams, Event, EventAttribute, Evidence, LastCommitInfo,
+        RequestApplySnapshotChunk, RequestBeginBlock, RequestCheckTx, RequestCommit,
+        RequestDeliverTx, RequestEcho, RequestEndBlock, RequestFlush, RequestInfo,
+        RequestInitChain, RequestListSnapshots, RequestLoadSnapshotChunk, RequestOfferSnapshot,
+        RequestQuery, RequestSetOption, ResponseApplySnapshotChunk, ResponseBeginBlock,
+        ResponseCheckTx, ResponseCommit, ResponseDeliverTx, ResponseEcho, ResponseEndBlock,
+        ResponseFlush, ResponseInfo, ResponseInitChain, ResponseListSnapshots,
+        ResponseLoadSnapshotChunk, ResponseOfferSnapshot, ResponseQuery, ResponseSetOption,
+        Snapshot, Validator, ValidatorUpdate, VoteInfo,
+    },
+    crypto::{public_key::Sum, ProofOp, ProofOps, PublicKey},
+    types::{BlockId, EvidenceParams, Header, PartSetHeader, ValidatorParams, VersionParams},
+    version::Consensus,
 };
-pub use self::crypto::merkle::*;
-pub use self::libs::kv::*;
 
 use std::{
     convert::TryFrom,
