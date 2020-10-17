@@ -74,54 +74,26 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
-<span id="86">86</span>
-<span id="87">87</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="doccomment">//! Types used in ABCI</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">abci</span> {
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy</span>::<span class="ident">large_enum_variant</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">types</span> {
-        <span class="macro">include</span><span class="macro">!</span>(<span class="string">&quot;proto/tendermint.abci.types.rs&quot;</span>);
-    }
-}
-
-<span class="kw">mod</span> <span class="ident">crypto</span> {
-    <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">merkle</span> {
-        <span class="macro">include</span><span class="macro">!</span>(<span class="string">&quot;proto/tendermint.crypto.merkle.rs&quot;</span>);
-    }
-}
-
-<span class="kw">mod</span> <span class="ident">libs</span> {
-    <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">kv</span> {
-        <span class="macro">include</span><span class="macro">!</span>(<span class="string">&quot;proto/tendermint.libs.kv.rs&quot;</span>);
-    }
-}
-
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">prost_types</span>::{<span class="ident">Duration</span>, <span class="ident">Timestamp</span>};
-
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">abci</span>::<span class="ident">types</span>::{
-    <span class="ident">BlockId</span>, <span class="ident">BlockParams</span>, <span class="ident">ConsensusParams</span>, <span class="ident">Event</span>, <span class="ident">Evidence</span>, <span class="ident">EvidenceParams</span>, <span class="ident">Header</span>, <span class="ident">LastCommitInfo</span>,
-    <span class="ident">PartSetHeader</span>, <span class="ident">PubKey</span>, <span class="ident">RequestBeginBlock</span>, <span class="ident">RequestCheckTx</span>, <span class="ident">RequestCommit</span>, <span class="ident">RequestDeliverTx</span>,
-    <span class="ident">RequestEcho</span>, <span class="ident">RequestEndBlock</span>, <span class="ident">RequestFlush</span>, <span class="ident">RequestInfo</span>, <span class="ident">RequestInitChain</span>, <span class="ident">RequestQuery</span>,
-    <span class="ident">RequestSetOption</span>, <span class="ident">ResponseBeginBlock</span>, <span class="ident">ResponseCheckTx</span>, <span class="ident">ResponseCommit</span>, <span class="ident">ResponseDeliverTx</span>,
-    <span class="ident">ResponseEcho</span>, <span class="ident">ResponseEndBlock</span>, <span class="ident">ResponseFlush</span>, <span class="ident">ResponseInfo</span>, <span class="ident">ResponseInitChain</span>, <span class="ident">ResponseQuery</span>,
-    <span class="ident">ResponseSetOption</span>, <span class="ident">Validator</span>, <span class="ident">ValidatorParams</span>, <span class="ident">ValidatorUpdate</span>, <span class="ident">Version</span>, <span class="ident">VoteInfo</span>,
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">tendermint_proto</span>::{
+    <span class="ident">abci</span>::{
+        <span class="ident">BlockParams</span>, <span class="ident">ConsensusParams</span>, <span class="ident">Event</span>, <span class="ident">EventAttribute</span>, <span class="ident">Evidence</span>, <span class="ident">LastCommitInfo</span>,
+        <span class="ident">RequestApplySnapshotChunk</span>, <span class="ident">RequestBeginBlock</span>, <span class="ident">RequestCheckTx</span>, <span class="ident">RequestCommit</span>,
+        <span class="ident">RequestDeliverTx</span>, <span class="ident">RequestEcho</span>, <span class="ident">RequestEndBlock</span>, <span class="ident">RequestFlush</span>, <span class="ident">RequestInfo</span>,
+        <span class="ident">RequestInitChain</span>, <span class="ident">RequestListSnapshots</span>, <span class="ident">RequestLoadSnapshotChunk</span>, <span class="ident">RequestOfferSnapshot</span>,
+        <span class="ident">RequestQuery</span>, <span class="ident">RequestSetOption</span>, <span class="ident">ResponseApplySnapshotChunk</span>, <span class="ident">ResponseBeginBlock</span>,
+        <span class="ident">ResponseCheckTx</span>, <span class="ident">ResponseCommit</span>, <span class="ident">ResponseDeliverTx</span>, <span class="ident">ResponseEcho</span>, <span class="ident">ResponseEndBlock</span>,
+        <span class="ident">ResponseFlush</span>, <span class="ident">ResponseInfo</span>, <span class="ident">ResponseInitChain</span>, <span class="ident">ResponseListSnapshots</span>,
+        <span class="ident">ResponseLoadSnapshotChunk</span>, <span class="ident">ResponseOfferSnapshot</span>, <span class="ident">ResponseQuery</span>, <span class="ident">ResponseSetOption</span>,
+        <span class="ident">Snapshot</span>, <span class="ident">Validator</span>, <span class="ident">ValidatorUpdate</span>, <span class="ident">VoteInfo</span>,
+    },
+    <span class="ident">crypto</span>::{<span class="ident">public_key</span>::<span class="ident">Sum</span>, <span class="ident">ProofOp</span>, <span class="ident">ProofOps</span>, <span class="ident">PublicKey</span>},
+    <span class="ident">types</span>::{<span class="ident">BlockId</span>, <span class="ident">EvidenceParams</span>, <span class="ident">Header</span>, <span class="ident">PartSetHeader</span>, <span class="ident">ValidatorParams</span>, <span class="ident">VersionParams</span>},
+    <span class="ident">version</span>::<span class="ident">Consensus</span>,
 };
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">crypto</span>::<span class="ident">merkle</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">libs</span>::<span class="ident">kv</span>::<span class="kw-2">*</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">convert</span>::<span class="ident">TryFrom</span>,

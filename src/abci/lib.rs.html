@@ -80,6 +80,8 @@
 <span id="77">77</span>
 <span id="78">78</span>
 <span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>, <span class="ident">unsafe_code</span>)]</span>
 <span class="doccomment">//! A Rust crate for creating ABCI applications.</span>
@@ -147,8 +149,10 @@
 <span class="macro">compile_error</span><span class="macro">!</span>(<span class="string">&quot;Either feature `use-async-std` or `use-tokio` must be enabled for this crate&quot;</span>);
 
 <span class="kw">mod</span> <span class="ident">application</span>;
+<span class="kw">mod</span> <span class="ident">handler</span>;
 <span class="kw">mod</span> <span class="ident">server</span>;
 <span class="kw">mod</span> <span class="ident">state</span>;
+<span class="kw">mod</span> <span class="ident">tasks</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span>;
 
@@ -158,7 +162,7 @@
 <span class="doccomment">/// [`Info`](trait.Info.html) traits.</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">async_trait</span>::<span class="ident">async_trait</span>;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">application</span>::{<span class="ident">Consensus</span>, <span class="ident">Info</span>, <span class="ident">Mempool</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">application</span>::{<span class="ident">Consensus</span>, <span class="ident">Info</span>, <span class="ident">Mempool</span>, <span class="ident">Snapshot</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">server</span>::{<span class="ident">Address</span>, <span class="ident">Server</span>};
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "abci";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

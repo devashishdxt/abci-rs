@@ -185,6 +185,29 @@
 <span id="182">182</span>
 <span id="183">183</span>
 <span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">types</span>::<span class="kw-2">*</span>;
 
@@ -209,21 +232,25 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_init_chain_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_init_chain_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">state</span> <span class="op">!</span><span class="op">=</span> <span class="ident">ConsensusState</span>::<span class="ident">NotInitialized</span> {
-            <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Received `InitChain` call when chain is already initialized&quot;</span>);
+            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Received `InitChain` call when chain is already initialized&quot;</span>.<span class="ident">to_string</span>());
         }
 
         <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">ConsensusState</span>::<span class="ident">InitChain</span>;
+        <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_begin_block_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">begin_block_request</span>: <span class="kw-2">&amp;</span><span class="ident">RequestBeginBlock</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_begin_block_request</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">begin_block_request</span>: <span class="kw-2">&amp;</span><span class="ident">RequestBeginBlock</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">new_state</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
             <span class="ident">ConsensusState</span>::<span class="ident">InitChain</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">begin_block_request</span>
                     .<span class="ident">header</span>
                     .<span class="ident">as_ref</span>()
-                    .<span class="ident">expect</span>(<span class="string">&quot;`BeginBlock` request does not contain a header&quot;</span>);
+                    .<span class="ident">ok_or</span>(<span class="string">&quot;`BeginBlock` request does not contain a header&quot;</span>)<span class="question-mark">?</span>;
 
                 <span class="ident">ConsensusState</span>::<span class="ident">ExecutingBlock</span> {
                     <span class="ident">block_height</span>: <span class="ident">header</span>.<span class="ident">height</span>,
@@ -239,20 +266,20 @@
                 <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">begin_block_request</span>
                     .<span class="ident">header</span>
                     .<span class="ident">as_ref</span>()
-                    .<span class="ident">expect</span>(<span class="string">&quot;`BeginBlock` request does not contain a header&quot;</span>);
+                    .<span class="ident">ok_or</span>(<span class="string">&quot;`BeginBlock` request does not contain a header&quot;</span>)<span class="question-mark">?</span>;
 
                 <span class="kw">if</span> <span class="ident">header</span>.<span class="ident">height</span> <span class="op">!</span><span class="op">=</span> <span class="ident">block_height</span> {
-                    <span class="macro">panic</span><span class="macro">!</span>(
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(
                         <span class="string">&quot;Expected height {} in `BeginBlock` request. Got {}&quot;</span>,
                         <span class="ident">block_height</span>, <span class="ident">header</span>.<span class="ident">height</span>
-                    );
+                    ));
                 }
 
                 <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="ident">header</span>.<span class="ident">app_hash</span> <span class="op">!</span><span class="op">=</span> <span class="ident">app_hash</span> {
-                    <span class="macro">panic</span><span class="macro">!</span>(
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(
                         <span class="string">&quot;Expected app hash {:?} in `BeginBlock`. Got {:?}&quot;</span>,
                         <span class="ident">app_hash</span>, <span class="ident">header</span>.<span class="ident">app_hash</span>
-                    );
+                    ));
                 }
 
                 <span class="ident">ConsensusState</span>::<span class="ident">ExecutingBlock</span> {
@@ -260,23 +287,36 @@
                     <span class="ident">execution_state</span>: <span class="ident">BlockExecutionState</span>::<span class="ident">BeginBlock</span>,
                 }
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;`BeginBlock` cannot be called after {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">state</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(
+                    <span class="string">&quot;`BeginBlock` cannot be called after {:?}&quot;</span>,
+                    <span class="self">self</span>.<span class="ident">state</span>
+                ))
+            }
         };
 
         <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">new_state</span>;
+
+        <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_deliver_tx_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_deliver_tx_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
             <span class="ident">ConsensusState</span>::<span class="ident">ExecutingBlock</span> {
                 <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">execution_state</span>,
                 ..
             } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">execution_state</span>.<span class="ident">validate</span>(<span class="ident">BlockExecutionState</span>::<span class="ident">DeliverTx</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;`DeliverTx` cannot be called after {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">state</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(
+                <span class="string">&quot;`DeliverTx` cannot be called after {:?}&quot;</span>,
+                <span class="self">self</span>.<span class="ident">state</span>
+            )),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_end_block_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">end_block_request</span>: <span class="kw-2">&amp;</span><span class="ident">RequestEndBlock</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_end_block_request</span>(
+        <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+        <span class="ident">end_block_request</span>: <span class="kw-2">&amp;</span><span class="ident">RequestEndBlock</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
             <span class="ident">ConsensusState</span>::<span class="ident">ExecutingBlock</span> {
                 <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">execution_state</span>,
@@ -285,29 +325,32 @@
                 <span class="kw">let</span> <span class="ident">block_height</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">block_height</span>;
 
                 <span class="kw">if</span> <span class="ident">block_height</span> <span class="op">!</span><span class="op">=</span> <span class="ident">end_block_request</span>.<span class="ident">height</span> {
-                    <span class="macro">panic</span><span class="macro">!</span>(
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(
                         <span class="string">&quot;Expected `EndBlock` for height {}. But received for {}&quot;</span>,
                         <span class="ident">block_height</span>, <span class="ident">end_block_request</span>.<span class="ident">height</span>
-                    )
+                    ));
                 }
 
-                <span class="ident">execution_state</span>.<span class="ident">validate</span>(<span class="ident">BlockExecutionState</span>::<span class="ident">EndBlock</span>);
+                <span class="ident">execution_state</span>.<span class="ident">validate</span>(<span class="ident">BlockExecutionState</span>::<span class="ident">EndBlock</span>)
             }
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;`EndBlock` cannot be called after {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">state</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(
+                <span class="string">&quot;`EndBlock` cannot be called after {:?}&quot;</span>,
+                <span class="self">self</span>.<span class="ident">state</span>
+            )),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_commit_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_commit_request</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
             <span class="ident">ConsensusState</span>::<span class="ident">ExecutingBlock</span> {
                 <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">execution_state</span>,
                 ..
             } <span class="op">=</span><span class="op">&gt;</span> <span class="ident">execution_state</span>.<span class="ident">validate</span>(<span class="ident">BlockExecutionState</span>::<span class="ident">Commit</span>),
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;`Commit` cannot be called after {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">state</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;`Commit` cannot be called after {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">state</span>)),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_commit_response</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">commit_response</span>: <span class="kw-2">&amp;</span><span class="ident">ResponseCommit</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_commit_response</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">commit_response</span>: <span class="kw-2">&amp;</span><span class="ident">ResponseCommit</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">new_state</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
             <span class="ident">ConsensusState</span>::<span class="ident">ExecutingBlock</span> {
                 <span class="ident">execution_state</span>: <span class="ident">BlockExecutionState</span>::<span class="ident">Commit</span>,
@@ -316,10 +359,12 @@
                 <span class="ident">block_height</span>: <span class="ident">block_height</span> <span class="op">+</span> <span class="number">1</span>,
                 <span class="ident">app_hash</span>: <span class="ident">commit_response</span>.<span class="ident">data</span>.<span class="ident">clone</span>(),
             },
-            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Received `CommitResponse` after {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">state</span>),
+            <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;Received `CommitResponse` after {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">state</span>)),
         };
 
         <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">new_state</span>;
+
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
@@ -353,7 +398,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">BlockExecutionState</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">validate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">next</span>: <span class="self">Self</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">validate</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">next</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">is_valid</span> <span class="op">=</span> <span class="kw">match</span> (<span class="kw-2">*</span><span class="self">self</span>, <span class="ident">next</span>) {
             (<span class="self">Self</span>::<span class="ident">BeginBlock</span>, <span class="self">Self</span>::<span class="ident">DeliverTx</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
             (<span class="self">Self</span>::<span class="ident">BeginBlock</span>, <span class="self">Self</span>::<span class="ident">EndBlock</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
@@ -365,8 +410,9 @@
 
         <span class="kw">if</span> <span class="ident">is_valid</span> {
             <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span> <span class="ident">next</span>;
+            <span class="prelude-val">Ok</span>(())
         } <span class="kw">else</span> {
-            <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;{:?} cannot be called after {:?}&quot;</span>, <span class="ident">next</span>, <span class="self">self</span>);
+            <span class="prelude-val">Err</span>(<span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:?} cannot be called after {:?}&quot;</span>, <span class="ident">next</span>, <span class="self">self</span>))
         }
     }
 }
