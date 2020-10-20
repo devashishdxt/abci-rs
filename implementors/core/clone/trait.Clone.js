@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["abci"] = [{"text":"impl&lt;C, M, I, S&gt; Clone for Server&lt;C, M, I, S&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;C: Consensus + 'static,<br>&nbsp;&nbsp;&nbsp;&nbsp;M: Mempool + 'static,<br>&nbsp;&nbsp;&nbsp;&nbsp;I: Info + 'static,<br>&nbsp;&nbsp;&nbsp;&nbsp;S: Snapshot + 'static,&nbsp;</span>","synthetic":false,"types":[]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
