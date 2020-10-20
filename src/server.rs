@@ -43,6 +43,45 @@ where
     I: Info + 'static,
     S: Snapshot + 'static,
 {
+    inner: Inner<C, M, I, S>,
+}
+
+impl<C, M, I, S> Server<C, M, I, S>
+where
+    C: Consensus + 'static,
+    M: Mempool + 'static,
+    I: Info + 'static,
+    S: Snapshot + 'static,
+{
+    /// Creates a new instance of [`Server`](struct.Server.html)
+    pub fn new(consensus: C, mempool: M, info: I, snapshot: S) -> Self {
+        Self {
+            inner: Inner::new(consensus, mempool, info, snapshot),
+        }
+    }
+
+    /// Starts ABCI server
+    ///
+    /// # Note
+    ///
+    /// This is an `async` function and returns a `Future`. So, you'll need an executor to drive the `Future` returned
+    /// from this function. `async-std` and `tokio` are two popular options.
+    pub async fn run<T>(&self, addr: T) -> Result<()>
+    where
+        T: Into<Address>,
+    {
+        self.inner.run(addr).await
+    }
+}
+
+/// ABCI Server
+struct Inner<C, M, I, S>
+where
+    C: Consensus + 'static,
+    M: Mempool + 'static,
+    I: Info + 'static,
+    S: Snapshot + 'static,
+{
     consensus: Arc<C>,
     mempool: Arc<M>,
     info: Arc<I>,
@@ -50,7 +89,7 @@ where
     validator: Arc<Mutex<ConsensusStateValidator>>,
 }
 
-impl<C, M, I, S> Clone for Server<C, M, I, S>
+impl<C, M, I, S> Clone for Inner<C, M, I, S>
 where
     C: Consensus + 'static,
     M: Mempool + 'static,
@@ -68,14 +107,13 @@ where
     }
 }
 
-impl<C, M, I, S> Server<C, M, I, S>
+impl<C, M, I, S> Inner<C, M, I, S>
 where
     C: Consensus + 'static,
     M: Mempool + 'static,
     I: Info + 'static,
     S: Snapshot + 'static,
 {
-    /// Creates a new instance of [`Server`](struct.Server.html)
     pub fn new(consensus: C, mempool: M, info: I, snapshot: S) -> Self {
         Self {
             consensus: Arc::new(consensus),
@@ -86,13 +124,7 @@ where
         }
     }
 
-    /// Starts ABCI server
-    ///
-    /// # Note
-    ///
-    /// This is an `async` function and returns a `Future`. So, you'll need an executor to drive the `Future` returned
-    /// from this function. `async-std` and `tokio` are two popular options.
-    pub async fn run<T>(self, addr: T) -> Result<()>
+    pub async fn run<T>(&self, addr: T) -> Result<()>
     where
         T: Into<Address>,
     {
