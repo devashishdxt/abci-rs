@@ -3,7 +3,7 @@
 pub use prost_types::{Duration, Timestamp};
 pub use tendermint_proto::{
     abci::{
-        BlockParams, ConsensusParams, Event, EventAttribute, Evidence, LastCommitInfo,
+        BlockParams, CheckTxType, ConsensusParams, Event, EventAttribute, Evidence, LastCommitInfo,
         RequestApplySnapshotChunk, RequestBeginBlock, RequestCheckTx, RequestCommit,
         RequestDeliverTx, RequestEcho, RequestEndBlock, RequestFlush, RequestInfo,
         RequestInitChain, RequestListSnapshots, RequestLoadSnapshotChunk, RequestOfferSnapshot,

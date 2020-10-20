@@ -29,6 +29,20 @@ pub fn begin_block(block_height: i64, app_hash: Vec<u8>) -> Request {
     request
 }
 
+pub fn check_tx(counter: u64, recheck: bool) -> Request {
+    let mut check_tx_request = RequestCheckTx::default();
+    check_tx_request.tx = counter.to_be_bytes().to_vec();
+
+    if recheck {
+        check_tx_request.set_type(CheckTxType::Recheck);
+    }
+
+    let mut request = Request::default();
+    request.value = Some(RequestValue::CheckTx(check_tx_request));
+
+    request
+}
+
 pub fn deliver_tx(counter: u64) -> Request {
     let mut deliver_tx_request = RequestDeliverTx::default();
     deliver_tx_request.tx = counter.to_be_bytes().to_vec();

@@ -1,34 +1,24 @@
 mod counter;
-mod mock_stream;
 mod request_generator;
 
-pub use mock_stream::{MockListener, MockStream};
+use std::time::{Duration, Instant};
 
+use mock_io::tokio::{MockListener, MockStream};
 use tendermint_proto::abci::{
     response::Value as ResponseValue, Request, Response, ResponseException,
 };
 use tokio::spawn;
 
 use crate::{
-    types::{decode, encode},
+    types::{decode, encode, ResponseCheckTx},
     Address,
 };
 
 async fn initialize_server() -> (MockStream, MockStream) {
     let server = counter::server();
 
-    let (consensus_stream, consensus_stream_other) = MockStream::pair();
-    let (info_stream, info_stream_other) = MockStream::pair();
-
-    let (listener, stream_sender) = MockListener::new();
+    let (listener, handle) = MockListener::new();
     let address: Address = listener.into();
-
-    stream_sender
-        .send(info_stream_other)
-        .expect("Unable to send info stream to stream sender");
-    stream_sender
-        .send(consensus_stream_other)
-        .expect("Unable to send consensus stream to stream sender");
 
     spawn(async move {
         server
@@ -37,24 +27,17 @@ async fn initialize_server() -> (MockStream, MockStream) {
             .expect("Unable to start ABCI server");
     });
 
-    (info_stream, consensus_stream)
+    (
+        MockStream::connect(&handle).unwrap(),
+        MockStream::connect(&handle).unwrap(),
+    )
 }
 
 async fn initialize_server_with_state(counter: u64, block_height: i64) -> (MockStream, MockStream) {
     let server = counter::server_with_state(counter, block_height);
 
-    let (consensus_stream, consensus_stream_other) = MockStream::pair();
-    let (info_stream, info_stream_other) = MockStream::pair();
-
-    let (listener, stream_sender) = MockListener::new();
+    let (listener, handle) = MockListener::new();
     let address: Address = listener.into();
-
-    stream_sender
-        .send(info_stream_other)
-        .expect("Unable to send info stream to stream sender");
-    stream_sender
-        .send(consensus_stream_other)
-        .expect("Unable to send consensus stream to stream sender");
 
     spawn(async move {
         server
@@ -63,7 +46,56 @@ async fn initialize_server_with_state(counter: u64, block_height: i64) -> (MockS
             .expect("Unable to start ABCI server");
     });
 
-    (info_stream, consensus_stream)
+    (
+        MockStream::connect(&handle).unwrap(),
+        MockStream::connect(&handle).unwrap(),
+    )
+}
+
+#[tokio::test]
+async fn check_concurrent_check_tx_requests() {
+    let (mut info_stream, mut mempool_stream) = initialize_server().await;
+
+    // First, tendermint calls `info` to get information about ABCI application
+    let request = request_generator::info();
+    encode(request, &mut info_stream).await.unwrap();
+    let response: Response = decode(&mut info_stream).await.unwrap().unwrap();
+    assert!(response.value.is_some());
+    assert!(matches!(response.value.unwrap(), ResponseValue::Info(_)));
+
+    // Send one `check_tx` for mempool task scheduling
+    let request = request_generator::check_tx(1, false);
+    encode(request, &mut mempool_stream).await.unwrap();
+    let response: Response = decode(&mut mempool_stream).await.unwrap().unwrap();
+    assert!(response.value.is_some());
+    assert!(matches!(response.value.unwrap(), ResponseValue::CheckTx(_)));
+
+    // Sent two `check_tx` requests and check of both run concurrently
+    let start_time = Instant::now();
+
+    encode(request_generator::check_tx(1, true), &mut mempool_stream)
+        .await
+        .unwrap();
+    encode(request_generator::check_tx(2, true), &mut mempool_stream)
+        .await
+        .unwrap();
+    let response1: Response = decode(&mut mempool_stream).await.unwrap().unwrap();
+    let response2: Response = decode(&mut mempool_stream).await.unwrap().unwrap();
+
+    let duration = Instant::now() - start_time;
+
+    assert!(duration < Duration::from_secs(4));
+
+    assert!(response1.value.is_some());
+    assert!(matches!(
+        response1.value.unwrap(),
+        ResponseValue::CheckTx(ResponseCheckTx { data, .. }) if data == 1u64.to_be_bytes().to_vec()
+    ));
+    assert!(response2.value.is_some());
+    assert!(matches!(
+        response2.value.unwrap(),
+        ResponseValue::CheckTx(ResponseCheckTx { data, .. }) if data == 2u64.to_be_bytes().to_vec()
+    ));
 }
 
 #[tokio::test]

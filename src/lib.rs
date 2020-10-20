@@ -67,6 +67,7 @@ mod application;
 mod handler;
 mod server;
 mod state;
+mod stream_split;
 mod tasks;
 #[cfg(test)]
 mod tests;

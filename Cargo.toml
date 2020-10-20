@@ -22,6 +22,7 @@ rustdoc-args = ["--cfg", "feature=\"doc\""]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+async-channel = { version = "1.5", optional = true }
 async-std = { version = "1.6", optional = true }
 async-trait = "0.1"
 integer-encoding = { version = "2.1", optional = true }
@@ -33,10 +34,11 @@ tracing = { version = "0.1", features = ["log"] }
 tracing-futures = "0.2"
 
 [dev-dependencies]
-tokio = { version = "0.3", features = ["macros"] }
+mock-io = { version = "0.2", default-features = false, features = ["async-tokio"] }
+tokio = { version = "0.3", features = ["macros", "time"] }
 
 [features]
 default = ["use-tokio"]
 doc = []
-use-async-std = ["async-std", "integer-encoding/futures_async"]
+use-async-std = ["async-channel",  "async-std", "integer-encoding/futures_async"]
 use-tokio = ["tokio", "integer-encoding/tokio_async"]

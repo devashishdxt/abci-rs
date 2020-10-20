@@ -10,7 +10,10 @@ use async_std::{
     net::TcpListener,
     prelude::*,
     sync::Mutex,
+    task::spawn,
 };
+#[cfg(test)]
+use mock_io::tokio::MockListener;
 use tendermint_proto::abci::{request::Value as RequestValue, Request, Response};
 #[cfg(all(unix, feature = "use-tokio"))]
 use tokio::net::UnixListener;
@@ -18,15 +21,15 @@ use tokio::net::UnixListener;
 use tokio::{
     io::{AsyncRead as Read, AsyncWrite as Write},
     net::TcpListener,
+    spawn,
     sync::Mutex,
 };
 use tracing::{debug, error, info, instrument};
 
-#[cfg(test)]
-use crate::tests::MockListener;
 use crate::{
     handler::*,
     state::ConsensusStateValidator,
+    stream_split::StreamSplit,
     tasks::*,
     types::{decode, encode},
     Consensus, Info, Mempool, Snapshot,
@@ -45,6 +48,24 @@ where
     info: Arc<I>,
     snapshot: Arc<S>,
     validator: Arc<Mutex<ConsensusStateValidator>>,
+}
+
+impl<C, M, I, S> Clone for Server<C, M, I, S>
+where
+    C: Consensus + 'static,
+    M: Mempool + 'static,
+    I: Info + 'static,
+    S: Snapshot + 'static,
+{
+    fn clone(&self) -> Self {
+        Self {
+            consensus: self.consensus.clone(),
+            mempool: self.mempool.clone(),
+            info: self.info.clone(),
+            snapshot: self.snapshot.clone(),
+            validator: self.validator.clone(),
+        }
+    }
 }
 
 impl<C, M, I, S> Server<C, M, I, S>
@@ -71,7 +92,7 @@ where
     ///
     /// This is an `async` function and returns a `Future`. So, you'll need an executor to drive the `Future` returned
     /// from this function. `async-std` and `tokio` are two popular options.
-    pub async fn run<T>(&self, addr: T) -> Result<()>
+    pub async fn run<T>(self, addr: T) -> Result<()>
     where
         T: Into<Address>,
     {
@@ -89,7 +110,8 @@ where
                     while let Some(stream) = incoming.next().await {
                         let stream = stream?;
                         let peer_addr = stream.peer_addr().ok();
-                        self.handle_connection(stream, peer_addr).await;
+                        let this = self.clone();
+                        spawn(async move { this.handle_connection(stream, peer_addr).await });
                     }
 
                     Ok(())
@@ -99,7 +121,8 @@ where
                 {
                     loop {
                         let (stream, peer_addr) = listener.accept().await?;
-                        self.handle_connection(stream, Some(peer_addr)).await;
+                        let this = self.clone();
+                        spawn(async move { this.handle_connection(stream, Some(peer_addr)).await });
                     }
                 }
             }
@@ -120,7 +143,8 @@ where
                     while let Some(stream) = incoming.next().await {
                         let stream = stream?;
                         let peer_addr = stream.peer_addr().ok();
-                        self.handle_connection(stream, peer_addr).await;
+                        let this = self.clone();
+                        spawn(async move { this.handle_connection(stream, peer_addr).await });
                     }
 
                     Ok(())
@@ -130,14 +154,16 @@ where
                 {
                     loop {
                         let (stream, peer_addr) = listener.accept().await?;
-                        self.handle_connection(stream, Some(peer_addr)).await;
+                        let this = self.clone();
+                        spawn(async move { this.handle_connection(stream, Some(peer_addr)).await });
                     }
                 }
             }
             #[cfg(test)]
             Address::Mock(mut listener) => {
-                while let Some(stream) = listener.recv().await {
-                    self.handle_connection(stream, Some("test_peer")).await;
+                while let Ok(stream) = listener.accept().await {
+                    let this = self.clone();
+                    spawn(async move { this.handle_connection(stream, Some("test_peer")).await });
                 }
 
                 Ok(())
@@ -146,10 +172,10 @@ where
     }
 
     #[instrument(skip(self, stream))]
-    async fn handle_connection<D, P>(&self, mut stream: D, peer_addr: Option<P>)
+    async fn handle_connection<D, P>(self, mut stream: D, peer_addr: Option<P>)
     where
-        D: Read + Write + Send + Unpin + 'static,
-        P: std::fmt::Debug + Send + 'static,
+        D: Read + Write + StreamSplit + Send + Unpin + 'static,
+        P: std::fmt::Debug + Sync + Send + 'static,
     {
         info!("New peer connection");
 

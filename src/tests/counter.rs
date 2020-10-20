@@ -1,4 +1,6 @@
-use std::sync::{Arc, Mutex};
+use std::{sync::Arc, time::Duration};
+
+use tokio::{sync::Mutex, time::sleep};
 
 use crate::{async_trait, types::*, Consensus, Info, Mempool, Server, Snapshot};
 
@@ -35,9 +37,9 @@ impl Consensus for ConsensusConnection {
     }
 
     async fn begin_block(&self, _begin_block_request: RequestBeginBlock) -> ResponseBeginBlock {
-        let committed_state = self.committed_state.lock().unwrap().clone();
+        let committed_state = self.committed_state.lock().await.clone();
 
-        let mut current_state = self.current_state.lock().unwrap();
+        let mut current_state = self.current_state.lock().await;
         *current_state = Some(committed_state);
 
         Default::default()
@@ -58,7 +60,7 @@ impl Consensus for ConsensusConnection {
 
         let new_counter = new_counter.unwrap();
 
-        let mut current_state_lock = self.current_state.lock().unwrap();
+        let mut current_state_lock = self.current_state.lock().await;
         let mut current_state = current_state_lock.as_mut().unwrap();
 
         if current_state.counter + 1 != new_counter {
@@ -77,7 +79,7 @@ impl Consensus for ConsensusConnection {
     }
 
     async fn end_block(&self, end_block_request: RequestEndBlock) -> ResponseEndBlock {
-        let mut current_state_lock = self.current_state.lock().unwrap();
+        let mut current_state_lock = self.current_state.lock().await;
         let mut current_state = current_state_lock.as_mut().unwrap();
 
         current_state.block_height = end_block_request.height;
@@ -87,8 +89,8 @@ impl Consensus for ConsensusConnection {
     }
 
     async fn commit(&self, _commit_request: RequestCommit) -> ResponseCommit {
-        let current_state = self.current_state.lock().unwrap().as_ref().unwrap().clone();
-        let mut committed_state = self.committed_state.lock().unwrap();
+        let current_state = self.current_state.lock().await.as_ref().unwrap().clone();
+        let mut committed_state = self.committed_state.lock().await;
         *committed_state = current_state;
 
         ResponseCommit {
@@ -112,34 +114,15 @@ impl MempoolConnection {
 #[async_trait]
 impl Mempool for MempoolConnection {
     async fn check_tx(&self, check_tx_request: RequestCheckTx) -> ResponseCheckTx {
-        let new_counter = parse_bytes_to_counter(&check_tx_request.tx);
-
-        if new_counter.is_err() {
-            let mut error = ResponseCheckTx::default();
-            error.code = 1;
-            error.codespace = "Parsing error".to_owned();
-            error.log = "Transaction should be 8 bytes long".to_owned();
-            error.info = "Transaction is big-endian encoding of 64-bit integer".to_owned();
-
-            return error;
+        if let CheckTxType::Recheck = check_tx_request.r#type() {
+            sleep(Duration::from_secs(2)).await;
         }
 
-        let new_counter = new_counter.unwrap();
+        let new_counter = parse_bytes_to_counter(&check_tx_request.tx).unwrap();
 
-        let state_lock = self.state.lock().unwrap();
-        let state = state_lock.as_ref().unwrap();
-
-        if state.counter + 1 != new_counter {
-            let mut error = ResponseCheckTx::default();
-            error.code = 2;
-            error.codespace = "Validation error".to_owned();
-            error.log = "Only consecutive integers are allowed".to_owned();
-            error.info = "Numbers to counter app should be supplied in increasing order of consecutive integers staring from 1".to_owned();
-
-            return error;
-        } else {
-            Default::default()
-        }
+        let mut response = ResponseCheckTx::default();
+        response.data = new_counter.to_be_bytes().to_vec();
+        response
     }
 }
 
@@ -156,7 +139,7 @@ impl InfoConnection {
 #[async_trait]
 impl Info for InfoConnection {
     async fn info(&self, _info_request: RequestInfo) -> ResponseInfo {
-        let state = self.state.lock().unwrap();
+        let state = self.state.lock().await;
 
         ResponseInfo {
             data: Default::default(),
