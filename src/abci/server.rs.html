@@ -322,6 +322,32 @@
 <span id="319">319</span>
 <span id="320">320</span>
 <span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::<span class="ident">PathBuf</span>;
@@ -335,7 +361,10 @@
     <span class="ident">net</span>::<span class="ident">TcpListener</span>,
     <span class="ident">prelude</span>::<span class="kw-2">*</span>,
     <span class="ident">sync</span>::<span class="ident">Mutex</span>,
+    <span class="ident">task</span>::<span class="ident">spawn</span>,
 };
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">use</span> <span class="ident">mock_io</span>::<span class="ident">tokio</span>::<span class="ident">MockListener</span>;
 <span class="kw">use</span> <span class="ident">tendermint_proto</span>::<span class="ident">abci</span>::{<span class="ident">request</span>::<span class="ident">Value</span> <span class="kw">as</span> <span class="ident">RequestValue</span>, <span class="ident">Request</span>, <span class="ident">Response</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">unix</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>))]</span>
 <span class="kw">use</span> <span class="ident">tokio</span>::<span class="ident">net</span>::<span class="ident">UnixListener</span>;
@@ -343,15 +372,15 @@
 <span class="kw">use</span> <span class="ident">tokio</span>::{
     <span class="ident">io</span>::{<span class="ident">AsyncRead</span> <span class="kw">as</span> <span class="ident">Read</span>, <span class="ident">AsyncWrite</span> <span class="kw">as</span> <span class="ident">Write</span>},
     <span class="ident">net</span>::<span class="ident">TcpListener</span>,
+    <span class="ident">spawn</span>,
     <span class="ident">sync</span>::<span class="ident">Mutex</span>,
 };
 <span class="kw">use</span> <span class="ident">tracing</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">info</span>, <span class="ident">instrument</span>};
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tests</span>::<span class="ident">MockListener</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">handler</span>::<span class="kw-2">*</span>,
     <span class="ident">state</span>::<span class="ident">ConsensusStateValidator</span>,
+    <span class="ident">stream_split</span>::<span class="ident">StreamSplit</span>,
     <span class="ident">tasks</span>::<span class="kw-2">*</span>,
     <span class="ident">types</span>::{<span class="ident">decode</span>, <span class="ident">encode</span>},
     <span class="ident">Consensus</span>, <span class="ident">Info</span>, <span class="ident">Mempool</span>, <span class="ident">Snapshot</span>,
@@ -370,6 +399,24 @@
     <span class="ident">info</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>,
     <span class="ident">snapshot</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
     <span class="ident">validator</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">ConsensusStateValidator</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">M</span>, <span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">Server</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">M</span>, <span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">C</span>: <span class="ident">Consensus</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">M</span>: <span class="ident">Mempool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">I</span>: <span class="ident">Info</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">S</span>: <span class="ident">Snapshot</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+{
+    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span> {
+            <span class="ident">consensus</span>: <span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">clone</span>(),
+            <span class="ident">mempool</span>: <span class="self">self</span>.<span class="ident">mempool</span>.<span class="ident">clone</span>(),
+            <span class="ident">info</span>: <span class="self">self</span>.<span class="ident">info</span>.<span class="ident">clone</span>(),
+            <span class="ident">snapshot</span>: <span class="self">self</span>.<span class="ident">snapshot</span>.<span class="ident">clone</span>(),
+            <span class="ident">validator</span>: <span class="self">self</span>.<span class="ident">validator</span>.<span class="ident">clone</span>(),
+        }
+    }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">M</span>, <span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span> <span class="ident">Server</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">M</span>, <span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span>
@@ -396,7 +443,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This is an `async` function and returns a `Future`. So, you&#39;ll need an executor to drive the `Future` returned</span>
     <span class="doccomment">/// from this function. `async-std` and `tokio` are two popular options.</span>
-    <span class="kw">pub</span> <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Address</span><span class="op">&gt;</span>,
     {
@@ -414,7 +461,8 @@
                     <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="ident">incoming</span>.<span class="ident">next</span>().<span class="ident">await</span> {
                         <span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">stream</span><span class="question-mark">?</span>;
                         <span class="kw">let</span> <span class="ident">peer_addr</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">peer_addr</span>().<span class="ident">ok</span>();
-                        <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="ident">peer_addr</span>).<span class="ident">await</span>;
+                        <span class="kw">let</span> <span class="ident">this</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
+                        <span class="ident">spawn</span>(<span class="ident">async</span> <span class="kw">move</span> { <span class="ident">this</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="ident">peer_addr</span>).<span class="ident">await</span> });
                     }
 
                     <span class="prelude-val">Ok</span>(())
@@ -424,7 +472,8 @@
                 {
                     <span class="kw">loop</span> {
                         <span class="kw">let</span> (<span class="ident">stream</span>, <span class="ident">peer_addr</span>) <span class="op">=</span> <span class="ident">listener</span>.<span class="ident">accept</span>().<span class="ident">await</span><span class="question-mark">?</span>;
-                        <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="prelude-val">Some</span>(<span class="ident">peer_addr</span>)).<span class="ident">await</span>;
+                        <span class="kw">let</span> <span class="ident">this</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
+                        <span class="ident">spawn</span>(<span class="ident">async</span> <span class="kw">move</span> { <span class="ident">this</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="prelude-val">Some</span>(<span class="ident">peer_addr</span>)).<span class="ident">await</span> });
                     }
                 }
             }
@@ -445,7 +494,8 @@
                     <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="ident">incoming</span>.<span class="ident">next</span>().<span class="ident">await</span> {
                         <span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="ident">stream</span><span class="question-mark">?</span>;
                         <span class="kw">let</span> <span class="ident">peer_addr</span> <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">peer_addr</span>().<span class="ident">ok</span>();
-                        <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="ident">peer_addr</span>).<span class="ident">await</span>;
+                        <span class="kw">let</span> <span class="ident">this</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
+                        <span class="ident">spawn</span>(<span class="ident">async</span> <span class="kw">move</span> { <span class="ident">this</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="ident">peer_addr</span>).<span class="ident">await</span> });
                     }
 
                     <span class="prelude-val">Ok</span>(())
@@ -455,14 +505,16 @@
                 {
                     <span class="kw">loop</span> {
                         <span class="kw">let</span> (<span class="ident">stream</span>, <span class="ident">peer_addr</span>) <span class="op">=</span> <span class="ident">listener</span>.<span class="ident">accept</span>().<span class="ident">await</span><span class="question-mark">?</span>;
-                        <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="prelude-val">Some</span>(<span class="ident">peer_addr</span>)).<span class="ident">await</span>;
+                        <span class="kw">let</span> <span class="ident">this</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
+                        <span class="ident">spawn</span>(<span class="ident">async</span> <span class="kw">move</span> { <span class="ident">this</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="prelude-val">Some</span>(<span class="ident">peer_addr</span>)).<span class="ident">await</span> });
                     }
                 }
             }
             <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
             <span class="ident">Address</span>::<span class="ident">Mock</span>(<span class="kw-2">mut</span> <span class="ident">listener</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="ident">listener</span>.<span class="ident">recv</span>().<span class="ident">await</span> {
-                    <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;test_peer&quot;</span>)).<span class="ident">await</span>;
+                <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="ident">listener</span>.<span class="ident">accept</span>().<span class="ident">await</span> {
+                    <span class="kw">let</span> <span class="ident">this</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">clone</span>();
+                    <span class="ident">spawn</span>(<span class="ident">async</span> <span class="kw">move</span> { <span class="ident">this</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;test_peer&quot;</span>)).<span class="ident">await</span> });
                 }
 
                 <span class="prelude-val">Ok</span>(())
@@ -471,10 +523,10 @@
     }
 
     <span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">stream</span>))]</span>
-    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">handle_connection</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">stream</span>: <span class="ident">D</span>, <span class="ident">peer_addr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>)
+    <span class="ident">async</span> <span class="kw">fn</span> <span class="ident">handle_connection</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">P</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">stream</span>: <span class="ident">D</span>, <span class="ident">peer_addr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>)
     <span class="kw">where</span>
-        <span class="ident">D</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">P</span>: <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">D</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Write</span> <span class="op">+</span> <span class="ident">StreamSplit</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">P</span>: <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
         <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;New peer connection&quot;</span>);
 
