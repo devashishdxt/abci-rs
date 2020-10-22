@@ -43,7 +43,7 @@ where
     I: Info + 'static,
     S: Snapshot + 'static,
 {
-    inner: Inner<C, M, I, S>,
+    inner: Arc<Inner<C, M, I, S>>,
 }
 
 impl<C, M, I, S> Server<C, M, I, S>
@@ -56,7 +56,7 @@ where
     /// Creates a new instance of [`Server`](struct.Server.html)
     pub fn new(consensus: C, mempool: M, info: I, snapshot: S) -> Self {
         Self {
-            inner: Inner::new(consensus, mempool, info, snapshot),
+            inner: Arc::new(Inner::new(consensus, mempool, info, snapshot)),
         }
     }
 
@@ -89,24 +89,6 @@ where
     validator: Arc<Mutex<ConsensusStateValidator>>,
 }
 
-impl<C, M, I, S> Clone for Inner<C, M, I, S>
-where
-    C: Consensus + 'static,
-    M: Mempool + 'static,
-    I: Info + 'static,
-    S: Snapshot + 'static,
-{
-    fn clone(&self) -> Self {
-        Self {
-            consensus: self.consensus.clone(),
-            mempool: self.mempool.clone(),
-            info: self.info.clone(),
-            snapshot: self.snapshot.clone(),
-            validator: self.validator.clone(),
-        }
-    }
-}
-
 impl<C, M, I, S> Inner<C, M, I, S>
 where
     C: Consensus + 'static,
@@ -124,7 +106,7 @@ where
         }
     }
 
-    pub async fn run<T>(&self, addr: T) -> Result<()>
+    pub async fn run<T>(self: &Arc<Self>, addr: T) -> Result<()>
     where
         T: Into<Address>,
     {
@@ -204,7 +186,7 @@ where
     }
 
     #[instrument(skip(self, stream))]
-    async fn handle_connection<D, P>(self, mut stream: D, peer_addr: Option<P>)
+    async fn handle_connection<D, P>(self: Arc<Self>, mut stream: D, peer_addr: Option<P>)
     where
         D: Read + Write + StreamSplit + Send + Unpin + 'static,
         P: std::fmt::Debug + Sync + Send + 'static,
@@ -237,6 +219,10 @@ where
                                         handle_unknown_request(request_value)
                                     }
                                     ConnectionType::Consensus => {
+                                        if Arc::strong_count(&self.consensus) == 2 {
+                                            unreachable!("Consensus connection already initialized");
+                                        }
+
                                         handle_consensus_request(
                                             self.consensus.clone(),
                                             self.validator.clone(),
@@ -245,10 +231,18 @@ where
                                         .await
                                     }
                                     ConnectionType::Mempool => {
+                                        if Arc::strong_count(&self.mempool) == 2 {
+                                            unreachable!("Consensus connection already initialized");
+                                        }
+
                                         handle_mempool_request(self.mempool.clone(), request_value)
                                             .await
                                     }
                                     ConnectionType::Info => {
+                                        if Arc::strong_count(&self.info) == 2 {
+                                            unreachable!("Consensus connection already initialized");
+                                        }
+
                                         handle_info_request(
                                             self.info.clone(),
                                             self.validator.clone(),
@@ -257,6 +251,10 @@ where
                                         .await
                                     }
                                     ConnectionType::Snapshot => {
+                                        if Arc::strong_count(&self.snapshot) == 2 {
+                                            unreachable!("Consensus connection already initialized");
+                                        }
+
                                         handle_snapshot_request(
                                             self.snapshot.clone(),
                                             request_value,
