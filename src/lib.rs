@@ -8,11 +8,12 @@
 //! Tendermint calls the ABCI methods on the ABCI application by sending the `Request` messages and receiving the `Response`
 //! messages in return.
 //!
-//! ABCI methods are split across 3 separate ABCI connections:
+//! ABCI methods are split across four separate ABCI connections:
 //!
 //! - `Consensus` Connection: `InitChain`, `BeginBlock`, `DeliverTx`, `EndBlock`, `Commit`
 //! - `Mempool` Connection: `CheckTx`
 //! - `Info` Connection: `Info`, `SetOption`, `Query`
+//! - `Snapshot` Connection: `ListSnapshots`, `LoadSnapshotChunk`, `OfferSnapshot`, `ApplySnapshotChunk`
 //!
 //! Additionally, there is a `Flush` method that is called on every connection, and an `Echo` method that is just for
 //! debugging.
@@ -25,11 +26,11 @@
 //!
 //! ```toml
 //! [dependencies]
-//! abci-rs = "0.10"
+//! abci-rs = "0.11"
 //! ```
 //!
-//! Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,
-//! `Mempool` and `Info`.
+//! Each ABCI application has to implement four core traits corresponding to all four ABCI connections, `Consensus`,
+//! `Mempool`, `Info` and Snapshot.
 //!
 //! > Note: Implementations of these traits are expected to be `Send + Sync` and methods take immutable reference of `self`.
 //! So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.) constructs.
@@ -54,7 +55,7 @@
 //!
 //! ## Minimum Supported Versions
 //!
-//! - Tendermint: [`v0.33.6`](https://github.com/tendermint/tendermint/releases/tag/v0.33.6)
+//! - Tendermint: [`rc6/v0.34.0`](https://github.com/tendermint/tendermint/tree/rc6/v0.34.0)
 #![cfg_attr(feature = "doc", feature(doc_cfg))]
 
 #[cfg(all(feature = "use-async-std", feature = "use-tokio"))]
