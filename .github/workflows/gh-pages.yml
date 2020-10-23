@@ -20,6 +20,6 @@ jobs:
         command: doc
         args: --no-deps --features doc
     - uses: peaceiris/actions-gh-pages@v3
-      env:
-        github_token: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+      with:
+        deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
         publish_dir: ./target/doc
