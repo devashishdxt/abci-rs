@@ -74,12 +74,15 @@ async fn check_concurrent_check_tx_requests() {
     // in order
     let start_time = Instant::now();
 
+    // This request will take 2 seconds to execute (see `check_tx` implementation in `counter.rs`)
     encode(request_generator::check_tx(1, true), &mut mempool_stream)
         .await
         .unwrap();
+    // This request will take 2 seconds to execute (see `check_tx` implementation in `counter.rs`)
     encode(request_generator::check_tx(2, true), &mut mempool_stream)
         .await
         .unwrap();
+    // This request will get executed immediately (see `check_tx` implementation in `counter.rs`)
     encode(request_generator::check_tx(3, false), &mut mempool_stream)
         .await
         .unwrap();
@@ -89,6 +92,8 @@ async fn check_concurrent_check_tx_requests() {
 
     let duration = Instant::now() - start_time;
 
+    // To check if all the requests executed concurrently, we check if all the responses were
+    // returned within 4 seconds and in order.
     assert!(duration < Duration::from_secs(4));
 
     assert!(response1.value.is_some());

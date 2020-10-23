@@ -143,7 +143,7 @@ where
                     });
 
                     #[cfg(feature = "use-async-std")]
-                    sender.send(handle).await.expect("Channel receiver dropper");
+                    sender.send(handle).await.expect("Channel receiver dropped");
 
                     #[cfg(feature = "use-tokio")]
                     sender.send(handle).expect("Channel receiver dropped");
