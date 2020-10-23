@@ -43,6 +43,8 @@ where
     I: Info + 'static,
     S: Snapshot + 'static,
 {
+    /// Wrapping inner type in `Arc` so that it becomes clonable and can be shared between multiple
+    /// async tasks
     inner: Arc<Inner<C, M, I, S>>,
 }
 
@@ -70,11 +72,118 @@ where
     where
         T: Into<Address>,
     {
-        self.inner.run(addr).await
+        let addr = addr.into();
+
+        match addr {
+            Address::Tcp(addr) => {
+                let listener = TcpListener::bind(addr).await?;
+                info!(message = "Started ABCI server at", %addr);
+
+                #[cfg(feature = "use-async-std")]
+                {
+                    let mut incoming = listener.incoming();
+
+                    while let Some(stream) = incoming.next().await {
+                        let stream = stream?;
+                        let peer_addr = stream.peer_addr().ok();
+                        self.handle_connection(stream, peer_addr);
+                    }
+
+                    Ok(())
+                }
+
+                #[cfg(feature = "use-tokio")]
+                {
+                    loop {
+                        let (stream, peer_addr) = listener.accept().await?;
+                        self.handle_connection(stream, Some(peer_addr));
+                    }
+                }
+            }
+            #[cfg(unix)]
+            Address::Uds(path) => {
+                #[cfg(feature = "use-async-std")]
+                let listener = UnixListener::bind(&path).await?;
+
+                #[cfg(feature = "use-tokio")]
+                let listener = UnixListener::bind(&path)?;
+
+                info!(message = "Started ABCI server at", path = %path.display());
+
+                #[cfg(feature = "use-async-std")]
+                {
+                    let mut incoming = listener.incoming();
+
+                    while let Some(stream) = incoming.next().await {
+                        let stream = stream?;
+                        let peer_addr = stream.peer_addr().ok();
+                        self.handle_connection(stream, peer_addr);
+                    }
+
+                    Ok(())
+                }
+
+                #[cfg(feature = "use-tokio")]
+                {
+                    loop {
+                        let (stream, peer_addr) = listener.accept().await?;
+                        self.handle_connection(stream, Some(peer_addr));
+                    }
+                }
+            }
+            #[cfg(test)]
+            Address::Mock(mut listener) => {
+                while let Ok(stream) = listener.accept().await {
+                    self.handle_connection(stream, Some("test_peer"));
+                }
+
+                Ok(())
+            }
+        }
+    }
+
+    #[instrument(skip(self, stream))]
+    pub(crate) fn handle_connection<D, P>(&self, mut stream: D, peer_addr: Option<P>)
+    where
+        D: Read + Write + StreamSplit + Send + Unpin + 'static,
+        P: std::fmt::Debug + Send + Sync + 'static,
+    {
+        info!("New peer connection");
+
+        let inner = self.inner.clone();
+
+        spawn(async move {
+            loop {
+                match decode(&mut stream).await {
+                    Ok(request) => match request {
+                        Some(request) => {
+                            let (response, connection_type) = inner.process(request).await;
+
+                            if let Err(err) = encode(response, &mut stream).await {
+                                error!(message = "Error while writing to stream", %err, ?peer_addr);
+                            }
+
+                            if !connection_type.is_unknown() {
+                                inner.spawn_connection(stream, peer_addr, connection_type);
+                                break;
+                            }
+                        }
+                        None => debug!(message = "Received empty request", ?peer_addr),
+                    },
+                    Err(err) => {
+                        error!(
+                            message = "Error while receiving ABCI request from socket",
+                            ?peer_addr, %err
+                        );
+                        break;
+                    }
+                }
+            }
+        });
     }
 }
 
-/// ABCI Server
+/// Inner type that contains all the trait implementations
 struct Inner<C, M, I, S>
 where
     C: Consensus + 'static,
@@ -106,181 +215,22 @@ where
         }
     }
 
-    pub async fn run<T>(self: &Arc<Self>, addr: T) -> Result<()>
-    where
-        T: Into<Address>,
-    {
-        let addr = addr.into();
-
-        match addr {
-            Address::Tcp(addr) => {
-                let listener = TcpListener::bind(addr).await?;
-                info!(message = "Started ABCI server at", %addr);
-
-                #[cfg(feature = "use-async-std")]
-                {
-                    let mut incoming = listener.incoming();
-
-                    while let Some(stream) = incoming.next().await {
-                        let stream = stream?;
-                        let peer_addr = stream.peer_addr().ok();
-                        let this = self.clone();
-                        spawn(async move { this.handle_connection(stream, peer_addr).await });
-                    }
-
-                    Ok(())
-                }
-
-                #[cfg(feature = "use-tokio")]
-                {
-                    loop {
-                        let (stream, peer_addr) = listener.accept().await?;
-                        let this = self.clone();
-                        spawn(async move { this.handle_connection(stream, Some(peer_addr)).await });
-                    }
-                }
-            }
-            #[cfg(unix)]
-            Address::Uds(path) => {
-                #[cfg(feature = "use-async-std")]
-                let listener = UnixListener::bind(&path).await?;
-
-                #[cfg(feature = "use-tokio")]
-                let listener = UnixListener::bind(&path)?;
-
-                info!(message = "Started ABCI server at", path = %path.display());
-
-                #[cfg(feature = "use-async-std")]
-                {
-                    let mut incoming = listener.incoming();
-
-                    while let Some(stream) = incoming.next().await {
-                        let stream = stream?;
-                        let peer_addr = stream.peer_addr().ok();
-                        let this = self.clone();
-                        spawn(async move { this.handle_connection(stream, peer_addr).await });
-                    }
-
-                    Ok(())
-                }
-
-                #[cfg(feature = "use-tokio")]
-                {
-                    loop {
-                        let (stream, peer_addr) = listener.accept().await?;
-                        let this = self.clone();
-                        spawn(async move { this.handle_connection(stream, Some(peer_addr)).await });
-                    }
-                }
-            }
-            #[cfg(test)]
-            Address::Mock(mut listener) => {
-                while let Ok(stream) = listener.accept().await {
-                    let this = self.clone();
-                    spawn(async move { this.handle_connection(stream, Some("test_peer")).await });
-                }
-
-                Ok(())
-            }
-        }
-    }
-
     #[instrument(skip(self, stream))]
-    async fn handle_connection<D, P>(self: Arc<Self>, mut stream: D, peer_addr: Option<P>)
-    where
+    fn spawn_connection<D, P>(
+        &self,
+        stream: D,
+        peer_addr: Option<P>,
+        connection_type: ConnectionType,
+    ) where
         D: Read + Write + StreamSplit + Send + Unpin + 'static,
         P: std::fmt::Debug + Sync + Send + 'static,
     {
-        info!("New peer connection");
-
-        let mut connection_type: ConnectionType = Default::default();
-
-        while connection_type.is_unknown() {
-            let request: Result<Option<Request>> = decode(&mut stream).await;
-
-            match request {
-                Ok(request) => match request {
-                    None => debug!(message = "Received empty request", ?peer_addr),
-                    Some(request) => {
-                        let response = match request.value {
-                            None => {
-                                debug!(
-                                    message = "Received empty value in request",
-                                    ?peer_addr,
-                                    ?request
-                                );
-                                Response::default()
-                            }
-                            Some(request_value) => {
-                                connection_type = ConnectionType::from(&request_value);
-
-                                match connection_type {
-                                    ConnectionType::Unknown => {
-                                        handle_unknown_request(request_value)
-                                    }
-                                    ConnectionType::Consensus => {
-                                        if Arc::strong_count(&self.consensus) == 2 {
-                                            unreachable!("Consensus connection already initialized");
-                                        }
-
-                                        handle_consensus_request(
-                                            self.consensus.clone(),
-                                            self.validator.clone(),
-                                            request_value,
-                                        )
-                                        .await
-                                    }
-                                    ConnectionType::Mempool => {
-                                        if Arc::strong_count(&self.mempool) == 2 {
-                                            unreachable!("Consensus connection already initialized");
-                                        }
-
-                                        handle_mempool_request(self.mempool.clone(), request_value)
-                                            .await
-                                    }
-                                    ConnectionType::Info => {
-                                        if Arc::strong_count(&self.info) == 2 {
-                                            unreachable!("Consensus connection already initialized");
-                                        }
-
-                                        handle_info_request(
-                                            self.info.clone(),
-                                            self.validator.clone(),
-                                            request_value,
-                                        )
-                                        .await
-                                    }
-                                    ConnectionType::Snapshot => {
-                                        if Arc::strong_count(&self.snapshot) == 2 {
-                                            unreachable!("Consensus connection already initialized");
-                                        }
-
-                                        handle_snapshot_request(
-                                            self.snapshot.clone(),
-                                            request_value,
-                                        )
-                                        .await
-                                    }
-                                }
-                            }
-                        };
-
-                        if let Err(err) = encode(response, &mut stream).await {
-                            error!(message = "Error while writing to stream", %err, ?peer_addr);
-                        }
-                    }
-                },
-                Err(err) => {
-                    error!(message = "Error while receiving ABCI request from socket", ?peer_addr, %err);
-                    break;
-                }
-            }
-        }
+        debug!("Spawning a new connection task");
 
         match connection_type {
-            ConnectionType::Unknown => {
-                unreachable!("Connection type cannot be unknown after exiting the loop")
-            }
+            ConnectionType::Unknown => unreachable!(
+                "Connection type cannot be unknown when spawning a task for a connection type"
+            ),
             ConnectionType::Consensus => spawn_consensus_task(
                 stream,
                 peer_addr,
@@ -293,6 +243,48 @@ where
             }
             ConnectionType::Snapshot => {
                 spawn_snapshot_task(stream, peer_addr, self.snapshot.clone())
+            }
+        }
+    }
+
+    #[instrument(skip(self))]
+    async fn process(&self, request: Request) -> (Response, ConnectionType) {
+        match request.value {
+            None => {
+                debug!(message = "Received empty value in request", ?request);
+
+                (Response::default(), ConnectionType::default())
+            }
+            Some(request_value) => {
+                let connection_type = ConnectionType::from(&request_value);
+
+                let response = match connection_type {
+                    ConnectionType::Unknown => handle_unknown_request(request_value),
+                    ConnectionType::Consensus => {
+                        handle_consensus_request(
+                            self.consensus.clone(),
+                            self.validator.clone(),
+                            request_value,
+                        )
+                        .await
+                    }
+                    ConnectionType::Mempool => {
+                        handle_mempool_request(self.mempool.clone(), request_value).await
+                    }
+                    ConnectionType::Info => {
+                        handle_info_request(
+                            self.info.clone(),
+                            self.validator.clone(),
+                            request_value,
+                        )
+                        .await
+                    }
+                    ConnectionType::Snapshot => {
+                        handle_snapshot_request(self.snapshot.clone(), request_value).await
+                    }
+                };
+
+                (response, connection_type)
             }
         }
     }
@@ -345,7 +337,7 @@ enum ConnectionType {
 impl ConnectionType {
     /// Returns true of connection type is unknown
     fn is_unknown(&self) -> bool {
-        ConnectionType::Unknown == *self
+        matches!(self, Self::Unknown)
     }
 }
 

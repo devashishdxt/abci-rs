@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration, net::SocketAddr};
+use std::{net::SocketAddr, sync::Arc, time::Duration};
 
 use abci::{async_trait, types::*, Consensus, Info, Mempool, Server, Snapshot};
 use tokio::{sync::Mutex, time::sleep};
@@ -176,7 +176,9 @@ async fn main() -> std::io::Result<()> {
     set_global_default(subscriber).unwrap();
 
     let server = server();
-    server.run("127.0.0.1:26658".parse::<SocketAddr>().unwrap()).await
+    server
+        .run("127.0.0.1:26658".parse::<SocketAddr>().unwrap())
+        .await
 }
 
 pub fn server() -> Server<ConsensusConnection, MempoolConnection, InfoConnection, SnapshotConnection>
