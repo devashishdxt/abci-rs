@@ -76,7 +76,7 @@ async fn check_concurrent_check_tx_requests() {
     encode(request_generator::check_tx(1, true), &mut mempool_stream)
         .await
         .unwrap();
-    encode(request_generator::check_tx(2, true), &mut mempool_stream)
+    encode(request_generator::check_tx(2, false), &mut mempool_stream)
         .await
         .unwrap();
     let response1: Response = decode(&mut mempool_stream).await.unwrap().unwrap();
