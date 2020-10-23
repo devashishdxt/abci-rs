@@ -1,17 +1,18 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `abci` crate."><meta name="keywords" content="rust, rustlang, rust-lang, abci"><title>abci - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../abci/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><p class="location">Crate abci</p><div class="block version"><p>Version 0.10.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all abci's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li></ul></div><p class="location"></p><script>window.sidebarCurrent = {name: "abci", ty: "mod", relpath: "../"};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
-                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/abci/lib.rs.html#1-82" title="goto source code">[src]</a></span><span class="in-band">Crate <a class="mod" href="">abci</a></span></h1><div class="docblock"><p>A Rust crate for creating ABCI applications.</p>
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../abci/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><p class="location">Crate abci</p><div class="block version"><p>Version 0.11.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all abci's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li></ul></div><p class="location"></p><script>window.sidebarCurrent = {name: "abci", ty: "mod", relpath: "../"};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/abci/lib.rs.html#1-83" title="goto source code">[src]</a></span><span class="in-band">Crate <a class="mod" href="">abci</a></span></h1><div class="docblock"><p>A Rust crate for creating ABCI applications.</p>
 <h2 id="abci-overview" class="section-header"><a href="#abci-overview">ABCI Overview</a></h2>
 <p>ABCI is the interface between Tendermint (a state-machine replication engine) and your application (the actual state
 machine). It consists of a set of methods, where each method has a corresponding <code>Request</code> and <code>Response</code> message type.
 Tendermint calls the ABCI methods on the ABCI application by sending the <code>Request</code> messages and receiving the <code>Response</code>
 messages in return.</p>
-<p>ABCI methods are split across 3 separate ABCI connections:</p>
+<p>ABCI methods are split across four separate ABCI connections:</p>
 <ul>
 <li><code>Consensus</code> Connection: <code>InitChain</code>, <code>BeginBlock</code>, <code>DeliverTx</code>, <code>EndBlock</code>, <code>Commit</code></li>
 <li><code>Mempool</code> Connection: <code>CheckTx</code></li>
 <li><code>Info</code> Connection: <code>Info</code>, <code>SetOption</code>, <code>Query</code></li>
+<li><code>Snapshot</code> Connection: <code>ListSnapshots</code>, <code>LoadSnapshotChunk</code>, <code>OfferSnapshot</code>, <code>ApplySnapshotChunk</code></li>
 </ul>
 <p>Additionally, there is a <code>Flush</code> method that is called on every connection, and an <code>Echo</code> method that is just for
 debugging.</p>
@@ -19,10 +20,10 @@ debugging.</p>
 <h2 id="usage" class="section-header"><a href="#usage">Usage</a></h2>
 <p>Add <code>abci-rs</code> in your <code>Cargo.toml</code>'s <code>dependencies</code> section:</p>
 <pre><code class="language-toml">[dependencies]
-abci-rs = &quot;0.10&quot;
+abci-rs = &quot;0.11&quot;
 </code></pre>
-<p>Each ABCI application has to implement three core traits corresponding to all three ABCI connections, <code>Consensus</code>,
-<code>Mempool</code> and <code>Info</code>.</p>
+<p>Each ABCI application has to implement four core traits corresponding to all four ABCI connections, <code>Consensus</code>,
+<code>Mempool</code>, <code>Info</code> and Snapshot.</p>
 <blockquote>
 <p>Note: Implementations of these traits are expected to be <code>Send + Sync</code> and methods take immutable reference of <code>self</code>.
 So, internal mutability must be handled using thread safe (<code>Arc</code>, <code>Mutex</code>, etc.) constructs.</p>
@@ -51,7 +52,7 @@ Compilation will fail if either both of them are enabled or none of them are ena
 </blockquote>
 <h2 id="minimum-supported-versions" class="section-header"><a href="#minimum-supported-versions">Minimum Supported Versions</a></h2>
 <ul>
-<li>Tendermint: <a href="https://github.com/tendermint/tendermint/releases/tag/v0.33.6"><code>v0.33.6</code></a></li>
+<li>Tendermint: <a href="https://github.com/tendermint/tendermint/tree/rc6/v0.34.0"><code>rc6/v0.34.0</code></a></li>
 </ul>
 </div><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
 <table><tr class="module-item"><td><a class="mod" href="types/index.html" title="abci::types mod">types</a></td><td class="docblock-short"><p>Types used in ABCI</p>

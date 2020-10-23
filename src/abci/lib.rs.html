@@ -83,6 +83,7 @@
 <span id="80">80</span>
 <span id="81">81</span>
 <span id="82">82</span>
+<span id="83">83</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>, <span class="ident">unsafe_code</span>)]</span>
 <span class="doccomment">//! A Rust crate for creating ABCI applications.</span>
@@ -94,11 +95,12 @@
 <span class="doccomment">//! Tendermint calls the ABCI methods on the ABCI application by sending the `Request` messages and receiving the `Response`</span>
 <span class="doccomment">//! messages in return.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! ABCI methods are split across 3 separate ABCI connections:</span>
+<span class="doccomment">//! ABCI methods are split across four separate ABCI connections:</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! - `Consensus` Connection: `InitChain`, `BeginBlock`, `DeliverTx`, `EndBlock`, `Commit`</span>
 <span class="doccomment">//! - `Mempool` Connection: `CheckTx`</span>
 <span class="doccomment">//! - `Info` Connection: `Info`, `SetOption`, `Query`</span>
+<span class="doccomment">//! - `Snapshot` Connection: `ListSnapshots`, `LoadSnapshotChunk`, `OfferSnapshot`, `ApplySnapshotChunk`</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Additionally, there is a `Flush` method that is called on every connection, and an `Echo` method that is just for</span>
 <span class="doccomment">//! debugging.</span>
@@ -111,11 +113,11 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```toml</span>
 <span class="doccomment">//! [dependencies]</span>
-<span class="doccomment">//! abci-rs = &quot;0.10&quot;</span>
+<span class="doccomment">//! abci-rs = &quot;0.11&quot;</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! Each ABCI application has to implement three core traits corresponding to all three ABCI connections, `Consensus`,</span>
-<span class="doccomment">//! `Mempool` and `Info`.</span>
+<span class="doccomment">//! Each ABCI application has to implement four core traits corresponding to all four ABCI connections, `Consensus`,</span>
+<span class="doccomment">//! `Mempool`, `Info` and Snapshot.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! &gt; Note: Implementations of these traits are expected to be `Send + Sync` and methods take immutable reference of `self`.</span>
 <span class="doccomment">//! So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.) constructs.</span>
@@ -140,7 +142,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Minimum Supported Versions</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! - Tendermint: [`v0.33.6`](https://github.com/tendermint/tendermint/releases/tag/v0.33.6)</span>
+<span class="doccomment">//! - Tendermint: [`rc6/v0.34.0`](https://github.com/tendermint/tendermint/tree/rc6/v0.34.0)</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;doc&quot;</span>, <span class="ident">feature</span>(<span class="ident">doc_cfg</span>))]</span>
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>))]</span>
