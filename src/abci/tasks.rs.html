@@ -380,7 +380,7 @@
                     });
 
                     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>)]</span>
-                    <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">handle</span>).<span class="ident">await</span>.<span class="ident">expect</span>(<span class="string">&quot;Channel receiver dropper&quot;</span>);
+                    <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">handle</span>).<span class="ident">await</span>.<span class="ident">expect</span>(<span class="string">&quot;Channel receiver dropped&quot;</span>);
 
                     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>)]</span>
                     <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">handle</span>).<span class="ident">expect</span>(<span class="string">&quot;Channel receiver dropped&quot;</span>);
