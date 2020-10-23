@@ -70,17 +70,22 @@ async fn check_concurrent_check_tx_requests() {
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::CheckTx(_)));
 
-    // Sent two `check_tx` requests and check of both run concurrently
+    // Sent three `check_tx` requests and check if all run concurrently and responses are received
+    // in order
     let start_time = Instant::now();
 
     encode(request_generator::check_tx(1, true), &mut mempool_stream)
         .await
         .unwrap();
-    encode(request_generator::check_tx(2, false), &mut mempool_stream)
+    encode(request_generator::check_tx(2, true), &mut mempool_stream)
+        .await
+        .unwrap();
+    encode(request_generator::check_tx(3, false), &mut mempool_stream)
         .await
         .unwrap();
     let response1: Response = decode(&mut mempool_stream).await.unwrap().unwrap();
     let response2: Response = decode(&mut mempool_stream).await.unwrap().unwrap();
+    let response3: Response = decode(&mut mempool_stream).await.unwrap().unwrap();
 
     let duration = Instant::now() - start_time;
 
@@ -95,6 +100,11 @@ async fn check_concurrent_check_tx_requests() {
     assert!(matches!(
         response2.value.unwrap(),
         ResponseValue::CheckTx(ResponseCheckTx { data, .. }) if data == 2u64.to_be_bytes().to_vec()
+    ));
+    assert!(response3.value.is_some());
+    assert!(matches!(
+        response3.value.unwrap(),
+        ResponseValue::CheckTx(ResponseCheckTx { data, .. }) if data == 3u64.to_be_bytes().to_vec()
     ));
 }
 
