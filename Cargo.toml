@@ -28,13 +28,13 @@ integer-encoding = { version = "2.1", optional = true }
 prost = "0.6"
 prost-types = "0.6"
 tendermint-proto = "0.17.0-rc1"
-tokio = { version = "0.3", optional = true, features = ["io-util", "sync", "net", "stream", "rt"] }
+tokio = { version = "1.1", optional = true, features = ["io-util", "sync", "net", "stream", "rt"] }
 tracing = { version = "0.1", features = ["log"] }
 tracing-futures = "0.2"
 
 [dev-dependencies]
 mock-io = { version = "0.2", default-features = false, features = ["async-tokio"] }
-tokio = { version = "0.3", features = ["macros", "rt-multi-thread", "time"] }
+tokio = { version = "1.1", features = ["macros", "rt-multi-thread", "time"] }
 tracing-subscriber = { version = "0.2", default-features = false, features = ["fmt", "ansi"] }
 
 [features]
