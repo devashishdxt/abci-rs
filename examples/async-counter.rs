@@ -1,8 +1,13 @@
-use std::{sync::Arc, time::Duration};
+use std::{net::SocketAddr, sync::Arc, time::Duration};
 
+use abci::{
+    async_api::{Consensus, Info, Mempool, Server, Snapshot},
+    async_trait,
+    types::*,
+};
 use tokio::{sync::Mutex, time::sleep};
-
-use crate::{async_trait, types::*, Consensus, Info, Mempool, Server, Snapshot};
+use tracing::{subscriber::set_global_default, Level};
+use tracing_subscriber::FmtSubscriber;
 
 /// Simple counter
 #[derive(Debug, Default, Clone)]
@@ -167,28 +172,22 @@ fn parse_bytes_to_counter(bytes: &[u8]) -> Result<u64, ()> {
     Ok(u64::from_be_bytes(counter_bytes))
 }
 
+#[tokio::main]
+async fn main() -> std::io::Result<()> {
+    let subscriber = FmtSubscriber::builder()
+        .with_max_level(Level::DEBUG)
+        .finish();
+    set_global_default(subscriber).unwrap();
+
+    let server = server();
+    server
+        .run("127.0.0.1:26658".parse::<SocketAddr>().unwrap())
+        .await
+}
+
 pub fn server() -> Server<ConsensusConnection, MempoolConnection, InfoConnection, SnapshotConnection>
 {
     let committed_state: Arc<Mutex<CounterState>> = Default::default();
-    let current_state: Arc<Mutex<Option<CounterState>>> = Default::default();
-
-    let consensus = ConsensusConnection::new(committed_state.clone(), current_state.clone());
-    let mempool = MempoolConnection::new(current_state.clone());
-    let info = InfoConnection::new(committed_state.clone());
-    let snapshot = SnapshotConnection;
-
-    Server::new(consensus, mempool, info, snapshot)
-}
-
-pub fn server_with_state(
-    counter: u64,
-    block_height: i64,
-) -> Server<ConsensusConnection, MempoolConnection, InfoConnection, SnapshotConnection> {
-    let committed_state = Arc::new(Mutex::new(CounterState {
-        block_height,
-        counter,
-        app_hash: counter.to_be_bytes().to_vec(),
-    }));
     let current_state: Arc<Mutex<Option<CounterState>>> = Default::default();
 
     let consensus = ConsensusConnection::new(committed_state.clone(), current_state.clone());

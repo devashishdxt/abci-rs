@@ -1,6 +1,6 @@
 use crate::types::*;
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default)]
 pub struct ConsensusStateValidator {
     state: ConsensusState,
 }
@@ -129,6 +129,7 @@ impl ConsensusStateValidator {
         }
     }
 
+    #[inline]
     pub fn on_commit_request(&mut self) -> Result<(), String> {
         match self.state {
             ConsensusState::ExecutingBlock {
@@ -188,14 +189,14 @@ pub enum BlockExecutionState {
 
 impl BlockExecutionState {
     pub fn validate(&mut self, next: Self) -> Result<(), String> {
-        let is_valid = match (*self, next) {
-            (Self::BeginBlock, Self::DeliverTx) => true,
-            (Self::BeginBlock, Self::EndBlock) => true,
-            (Self::DeliverTx, Self::DeliverTx) => true,
-            (Self::DeliverTx, Self::EndBlock) => true,
-            (Self::EndBlock, Self::Commit) => true,
-            _ => false,
-        };
+        let is_valid = matches!(
+            (*self, next),
+            (Self::BeginBlock, Self::DeliverTx)
+                | (Self::BeginBlock, Self::EndBlock)
+                | (Self::DeliverTx, Self::DeliverTx)
+                | (Self::DeliverTx, Self::EndBlock)
+                | (Self::EndBlock, Self::Commit)
+        );
 
         if is_valid {
             *self = next;

@@ -14,6 +14,7 @@ edition = "2018"
 
 [lib]
 name = "abci"
+path = "src/lib.rs"
 
 [package.metadata.docs.rs]
 features = ["doc"]
@@ -21,24 +22,28 @@ features = ["doc"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-async-channel = { version = "1.5", optional = true }
-async-std = { version = "1.6", optional = true }
+async-std = { version = "1.9", features = ["unstable"], optional = true }
 async-trait = "0.1"
-integer-encoding = { version = "2.1", optional = true }
-prost = "0.6"
-prost-types = "0.6"
-tendermint-proto = "0.17.0-rc1"
-tokio = { version = "0.3", optional = true, features = ["io-util", "sync", "net", "stream", "rt"] }
+bytes = "1.0"
+cfg-if = "1.0"
+integer-encoding = "3.0"
+prost = "0.7"
+prost-types = "0.7"
+smol = { version = "1.2", optional = true }
+tendermint-proto = { git = "https://github.com/informalsystems/tendermint-rs" }
+tokio = { version = "1.1", features = ["io-util", "net", "rt", "rt-multi-thread", "sync"], optional = true }
 tracing = { version = "0.1", features = ["log"] }
 tracing-futures = "0.2"
 
 [dev-dependencies]
-mock-io = { version = "0.2", default-features = false, features = ["async-tokio"] }
-tokio = { version = "0.3", features = ["macros", "rt-multi-thread", "time"] }
 tracing-subscriber = { version = "0.2", default-features = false, features = ["fmt", "ansi"] }
+tokio = { version = "1.1", features = ["macros", "time"] }
 
 [features]
-default = ["use-tokio"]
+default = ["async-api", "sync-api", "use-tokio"]
 doc = []
-use-async-std = ["async-channel",  "async-std", "integer-encoding/futures_async"]
-use-tokio = ["tokio", "integer-encoding/tokio_async"]
+async-api = []
+sync-api = []
+use-async-std = ["async-std"]
+use-smol = ["smol"]
+use-tokio = ["tokio"]
