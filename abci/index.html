@@ -1,13 +1,13 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `abci` crate."><meta name="keywords" content="rust, rustlang, rust-lang, abci"><title>abci - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `abci` crate."><meta name="keywords" content="rust, rustlang, rust-lang, abci"><title>abci - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../abci/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><p class="location">Crate abci</p><div class="block version"><p>Version 0.11.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all abci's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li></ul></div><p class="location"></p><script>window.sidebarCurrent = {name: "abci", ty: "mod", relpath: "../"};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
-                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/abci/lib.rs.html#1-83" title="goto source code">[src]</a></span><span class="in-band">Crate <a class="mod" href="">abci</a></span></h1><div class="docblock"><p>A Rust crate for creating ABCI applications.</p>
-<h2 id="abci-overview" class="section-header"><a href="#abci-overview">ABCI Overview</a></h2>
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../abci/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><p class="location">Crate abci</p><div class="block version"><p>Version 0.11.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all abci's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#enums">Enums</a></li></ul></div><p class="location"></p><div id="sidebar-vars" data-name="abci" data-ty="mod" data-relpath="../"></div></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/abci/lib.rs.html#1-97" title="goto source code">[src]</a></span><span class="in-band">Crate <a class="mod" href="">abci</a></span></h1><div class="docblock"><p>A Rust crate for creating ABCI applications.</p>
+<h1 id="abci-overview" class="section-header"><a href="#abci-overview">ABCI Overview</a></h1>
 <p>ABCI is the interface between Tendermint (a state-machine replication engine) and your application (the actual state
-machine). It consists of a set of methods, where each method has a corresponding <code>Request</code> and <code>Response</code> message type.
-Tendermint calls the ABCI methods on the ABCI application by sending the <code>Request</code> messages and receiving the <code>Response</code>
-messages in return.</p>
-<p>ABCI methods are split across four separate ABCI connections:</p>
+machine). It consists of a set of methods, where each method has a corresponding <code>Request</code> and <code>Response</code> message
+type. Tendermint calls the ABCI methods on the ABCI application by sending the <code>Request</code> messages and receiving the
+<code>Response</code> messages in return.</p>
+<p>ABCI methods are split across 4 separate ABCI connections:</p>
 <ul>
 <li><code>Consensus</code> Connection: <code>InitChain</code>, <code>BeginBlock</code>, <code>DeliverTx</code>, <code>EndBlock</code>, <code>Commit</code></li>
 <li><code>Mempool</code> Connection: <code>CheckTx</code></li>
@@ -17,55 +17,37 @@ messages in return.</p>
 <p>Additionally, there is a <code>Flush</code> method that is called on every connection, and an <code>Echo</code> method that is just for
 debugging.</p>
 <p>To know more about ABCI protocol specifications, go to official ABCI <a href="https://tendermint.com/docs/spec/abci/">documentation</a>.</p>
-<h2 id="usage" class="section-header"><a href="#usage">Usage</a></h2>
+<h1 id="usage" class="section-header"><a href="#usage">Usage</a></h1>
 <p>Add <code>abci-rs</code> in your <code>Cargo.toml</code>'s <code>dependencies</code> section:</p>
 <pre><code class="language-toml">[dependencies]
 abci-rs = &quot;0.11&quot;
 </code></pre>
 <p>Each ABCI application has to implement four core traits corresponding to all four ABCI connections, <code>Consensus</code>,
-<code>Mempool</code>, <code>Info</code> and Snapshot.</p>
+<code>Mempool</code>, <code>Info</code> and <code>Snapshot</code>.</p>
 <blockquote>
-<p>Note: Implementations of these traits are expected to be <code>Send + Sync</code> and methods take immutable reference of <code>self</code>.
-So, internal mutability must be handled using thread safe (<code>Arc</code>, <code>Mutex</code>, etc.) constructs.</p>
+<p>Note: Implementations of these traits are expected to be <code>Send + Sync</code> and methods take immutable reference of
+<code>self</code>. So, internal mutability must be handled using thread safe (<code>Arc</code>, <code>Mutex</code>, etc.) constructs.</p>
 </blockquote>
-<p>After implementing all three above mentioned <code>trait</code>s, you can create a <code>Server</code> object and use <code>Server::run()</code>to start
-ABCI application.</p>
-<p><code>Server::run()</code> is an <code>async</code> function and returns a <code>Future</code>. So, you'll need an executor to drive <code>Future</code> returned
-from <code>Server::run()</code>. <code>async-std</code> and <code>tokio</code> are two popular options. In <code>counter</code> example, we use <code>tokio</code>'s executor.</p>
-<p>To know more, go to <code>examples/</code> to see a sample ABCI application.</p>
-<h3 id="features" class="section-header"><a href="#features">Features</a></h3>
+<h2 id="synchronous-and-asynchronous-apis" class="section-header"><a href="#synchronous-and-asynchronous-apis">Synchronous and asynchronous APIs</a></h2>
+<p><code>abci-rs</code> supports both, synchronous and asynchronous APIs (using <code>sync-api</code> and <code>async-api</code> cargo features). At
+least one of these features should be enabled. By default, both, <code>sync-api</code> and <code>async-api</code>, features are enabled.</p>
+<h2 id="async-runtimes" class="section-header"><a href="#async-runtimes">Async runtimes</a></h2>
+<p><code>abci-rs</code> also supports multiple async runtimes. These different runtimes can be enabled by using cargo features
+<code>use-async-std</code>, <code>use-smol</code> or <code>use-tokio</code>. Only one runtime can be enabled at a time. Compilation will fail more
+than one runtime is enabled of none of them are enabled. By default, <code>use-tokio</code> feature is enabled.</p>
+<h2 id="examples" class="section-header"><a href="#examples">Examples</a></h2>
+<p>Example ABCI applications can be found in <code>examples/sync-counter.rs</code> (using <code>sync_api</code>) and <code>examples/async-counter.rs</code>
+(using <code>async_api</code>).</p>
+<h1 id="minimum-supported-versions" class="section-header"><a href="#minimum-supported-versions">Minimum Supported Versions</a></h1>
 <ul>
-<li><code>use-tokio</code>: Enables <code>tokio</code> backend for running ABCI TCP/UDS server
-<ul>
-<li><strong>Enabled</strong> by default.</li>
-</ul>
-</li>
-<li><code>use-async-std</code>: Enables <code>async-std</code> backend for running ABCI TCP/UDS server
-<ul>
-<li><strong>Disabled</strong> by default.</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>Note: Features <code>use-tokio</code> and <code>use-async-std</code> are mutually exclusive, i.e., only one of them can be enabled at a time.
-Compilation will fail if either both of them are enabled or none of them are enabled.</p>
-</blockquote>
-<h2 id="minimum-supported-versions" class="section-header"><a href="#minimum-supported-versions">Minimum Supported Versions</a></h2>
-<ul>
-<li>Tendermint: <a href="https://github.com/tendermint/tendermint/tree/rc6/v0.34.0"><code>rc6/v0.34.0</code></a></li>
+<li>Tendermint: <a href="https://github.com/tendermint/tendermint/releases/tag/v0.34.3"><code>v0.34.3</code></a></li>
 </ul>
 </div><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
-<table><tr class="module-item"><td><a class="mod" href="types/index.html" title="abci::types mod">types</a></td><td class="docblock-short"><p>Types used in ABCI</p>
-</td></tr></table><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2>
-<table><tr class="module-item"><td><a class="struct" href="struct.Server.html" title="abci::Server struct">Server</a></td><td class="docblock-short"><p>ABCI Server</p>
+<table><tr class="module-item"><td><a class="mod" href="async_api/index.html" title="abci::async_api mod">async_api</a></td><td class="docblock-short"><span class="stab portability" title="This is supported on crate feature `async-api` only"><code>async-api</code></span><p>Asynchronous ABCI server API implementation</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="sync_api/index.html" title="abci::sync_api mod">sync_api</a></td><td class="docblock-short"><span class="stab portability" title="This is supported on crate feature `sync-api` only"><code>sync-api</code></span><p>Synchronous ABCI server API implementation</p>
+</td></tr><tr class="module-item"><td><a class="mod" href="types/index.html" title="abci::types mod">types</a></td><td class="docblock-short"><p>Types used in ABCI</p>
 </td></tr></table><h2 id="enums" class="section-header"><a href="#enums">Enums</a></h2>
 <table><tr class="module-item"><td><a class="enum" href="enum.Address.html" title="abci::Address enum">Address</a></td><td class="docblock-short"><p>Address of ABCI Server</p>
-</td></tr></table><h2 id="traits" class="section-header"><a href="#traits">Traits</a></h2>
-<table><tr class="module-item"><td><a class="trait" href="trait.Consensus.html" title="abci::Consensus trait">Consensus</a></td><td class="docblock-short"><p>Trait for managing consensus of blockchain.</p>
-</td></tr><tr class="module-item"><td><a class="trait" href="trait.Info.html" title="abci::Info trait">Info</a></td><td class="docblock-short"><p>Trait for initialization and for queries from the user.</p>
-</td></tr><tr class="module-item"><td><a class="trait" href="trait.Mempool.html" title="abci::Mempool trait">Mempool</a></td><td class="docblock-short"><p>Trait for managing tendermint's mempool.</p>
-</td></tr><tr class="module-item"><td><a class="trait" href="trait.Snapshot.html" title="abci::Snapshot trait">Snapshot</a></td><td class="docblock-short"><p>Trait for serving and restoring tendermint's state sync snapshots.</p>
 </td></tr></table><h2 id="attributes" class="section-header"><a href="#attributes">Attribute Macros</a></h2>
-<table><tr class="module-item"><td><a class="attr" href="attr.async_trait.html" title="abci::async_trait attr">async_trait</a></td><td class="docblock-short"><p>Utility macro for implementing <a href="trait.Consensus.html"><code>Consensus</code></a>, <a href="trait.Mempool.html"><code>Mempool</code></a> and
-<a href="trait.Info.html"><code>Info</code></a> traits.</p>
-</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "abci";</script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>
+<table><tr class="module-item"><td><a class="attr" href="attr.async_trait.html" title="abci::async_trait attr">async_trait</a></td><td class="docblock-short"><span class="stab portability" title="This is supported on crate feature `async-api` only"><code>async-api</code></span></td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="abci"></div>
+    <script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

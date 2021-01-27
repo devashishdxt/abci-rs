@@ -1,6 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/tasks.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>tasks.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/tasks.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>tasks.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
-<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../abci/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../abci/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
                 <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -234,53 +234,317 @@
 <span id="231">231</span>
 <span id="232">232</span>
 <span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">sync</span>::<span class="ident">Arc</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">async_channel</span>::<span class="ident">unbounded</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">async_std</span>::{
+    <span class="ident">channel</span>::{<span class="ident">unbounded</span> <span class="kw">as</span> <span class="ident">unbounded_channel</span>, <span class="ident">Receiver</span>, <span class="ident">Sender</span>},
     <span class="ident">io</span>::{<span class="ident">Read</span>, <span class="ident">Write</span>},
     <span class="ident">sync</span>::<span class="ident">Mutex</span>,
-    <span class="ident">task</span>::<span class="ident">spawn</span>,
+    <span class="ident">task</span>::{<span class="ident">spawn</span>, <span class="ident">JoinHandle</span>},
+};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>)]</span>
+<span class="kw">use</span> <span class="ident">smol</span>::{
+    <span class="ident">channel</span>::{<span class="ident">unbounded</span> <span class="kw">as</span> <span class="ident">unbounded_channel</span>, <span class="ident">Receiver</span>, <span class="ident">Sender</span>},
+    <span class="ident">io</span>::{<span class="ident">AsyncRead</span> <span class="kw">as</span> <span class="ident">Read</span>, <span class="ident">AsyncWrite</span> <span class="kw">as</span> <span class="ident">Write</span>},
+    <span class="ident">lock</span>::<span class="ident">Mutex</span>,
+    <span class="ident">spawn</span>, <span class="ident">Task</span> <span class="kw">as</span> <span class="ident">JoinHandle</span>,
 };
 <span class="kw">use</span> <span class="ident">tendermint_proto</span>::<span class="ident">abci</span>::{<span class="ident">Request</span>, <span class="ident">Response</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>)]</span>
 <span class="kw">use</span> <span class="ident">tokio</span>::{
     <span class="ident">io</span>::{<span class="ident">AsyncRead</span> <span class="kw">as</span> <span class="ident">Read</span>, <span class="ident">AsyncWrite</span> <span class="kw">as</span> <span class="ident">Write</span>},
     <span class="ident">spawn</span>,
-    <span class="ident">sync</span>::{<span class="ident">mpsc</span>::<span class="ident">unbounded_channel</span>, <span class="ident">Mutex</span>},
+    <span class="ident">sync</span>::{
+        <span class="ident">mpsc</span>::{<span class="ident">unbounded_channel</span>, <span class="ident">UnboundedReceiver</span> <span class="kw">as</span> <span class="ident">Receiver</span>, <span class="ident">UnboundedSender</span> <span class="kw">as</span> <span class="ident">Sender</span>},
+        <span class="ident">Mutex</span>,
+    },
+    <span class="ident">task</span>::<span class="ident">JoinHandle</span>,
 };
-<span class="kw">use</span> <span class="ident">tracing</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">instrument</span>};
+<span class="kw">use</span> <span class="ident">tracing</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">info</span>, <span class="ident">instrument</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">async_api</span>::{<span class="ident">Consensus</span>, <span class="ident">Info</span>, <span class="ident">Mempool</span>, <span class="ident">Snapshot</span>},
     <span class="ident">handler</span>::<span class="kw-2">*</span>,
     <span class="ident">state</span>::<span class="ident">ConsensusStateValidator</span>,
-    <span class="ident">stream_split</span>::<span class="ident">StreamSplit</span>,
-    <span class="ident">types</span>::{<span class="ident">decode</span>, <span class="ident">encode</span>},
-    <span class="ident">Consensus</span>, <span class="ident">Info</span>, <span class="ident">Mempool</span>, <span class="ident">Snapshot</span>,
+    <span class="ident">utils</span>::{<span class="ident">StreamReader</span>, <span class="ident">StreamWriter</span>},
 };
 
-<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream</span>, <span class="ident">consensus</span>))]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn_consensus_task</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">P</span>, <span class="ident">C</span><span class="op">&gt;</span>(
-    <span class="kw-2">mut</span> <span class="ident">stream</span>: <span class="ident">D</span>,
-    <span class="ident">peer_addr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+<span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">spawn</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>: <span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="ident">cfg_if</span>::<span class="macro">cfg_if</span><span class="macro">!</span> {
+            <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>))]</span> {
+                <span class="ident">spawn</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>)
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>)]</span> {
+                <span class="ident">spawn</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>)
+                    .<span class="ident">detach</span>()
+            } <span class="kw">else</span> {
+                <span class="macro">unreachable</span><span class="macro">!</span>()
+            }
+        }
+    };
+}
+
+<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>, <span class="ident">consensus</span>))]</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn_consensus_task</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">W</span>, <span class="ident">C</span><span class="op">&gt;</span>(
+    <span class="ident">stream_reader</span>: <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
+    <span class="ident">stream_writer</span>: <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
+    <span class="ident">peer_addr</span>: <span class="ident">String</span>,
     <span class="ident">consensus</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
     <span class="ident">validator</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">ConsensusStateValidator</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 ) <span class="kw">where</span>
-    <span class="ident">D</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">P</span>: <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">R</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">W</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="ident">C</span>: <span class="ident">Consensus</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">spawn</span>(<span class="ident">async</span> <span class="kw">move</span> {
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">request</span>) <span class="op">=</span> <span class="ident">decode</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">stream</span>).<span class="ident">await</span> {
-            <span class="kw">match</span> <span class="ident">request</span> {
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty request&quot;</span>, <span class="question-mark">?</span><span class="ident">peer_addr</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">request</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    <span class="macro">info</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Spawning consensus task&quot;</span>);
+
+    <span class="macro">spawn</span><span class="macro">!</span>(<span class="kw">async</span> <span class="kw">move</span> {
+        <span class="ident">consensus_task</span>(
+            <span class="ident">stream_reader</span>,
+            <span class="ident">stream_writer</span>,
+            <span class="ident">peer_addr</span>,
+            <span class="ident">consensus</span>.<span class="ident">as_ref</span>(),
+            <span class="ident">validator</span>,
+        )
+        .<span class="kw">await</span>
+    });
+}
+
+<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>, <span class="ident">consensus</span>))]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">consensus_task</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">W</span>, <span class="ident">C</span><span class="op">&gt;</span>(
+    <span class="kw-2">mut</span> <span class="ident">stream_reader</span>: <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
+    <span class="kw-2">mut</span> <span class="ident">stream_writer</span>: <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
+    <span class="ident">peer_addr</span>: <span class="ident">String</span>,
+    <span class="ident">consensus</span>: <span class="kw-2">&amp;</span><span class="ident">C</span>,
+    <span class="ident">validator</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">ConsensusStateValidator</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+) <span class="kw">where</span>
+    <span class="ident">R</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+    <span class="ident">W</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+    <span class="ident">C</span>: <span class="ident">Consensus</span>,
+{
+    <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">request</span>) <span class="op">=</span> <span class="ident">stream_reader</span>.<span class="ident">read</span>().<span class="kw">await</span> {
+        <span class="kw">match</span> <span class="ident">request</span> {
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty request&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">request</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">request</span>: <span class="ident">Request</span> <span class="op">=</span> <span class="ident">request</span>;
+
+                <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">value</span> {
+                    <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty value in request&quot;</span>, <span class="question-mark">?</span><span class="ident">request</span>);
+                        <span class="ident">Response</span>::<span class="ident">default</span>()
+                    }
+                    <span class="prelude-val">Some</span>(<span class="ident">request_value</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">handle_consensus_request</span>(<span class="ident">consensus</span>, <span class="ident">validator</span>.<span class="ident">clone</span>(), <span class="ident">request_value</span>).<span class="kw">await</span>
+                    }
+                };
+
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">stream_writer</span>.<span class="ident">write</span>(<span class="ident">response</span>).<span class="kw">await</span> {
+                    <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while writing to stream&quot;</span>, <span class="op">%</span><span class="ident">err</span>);
+                }
+            }
+        }
+    }
+}
+
+<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>, <span class="ident">mempool</span>))]</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn_mempool_task</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">W</span>, <span class="ident">M</span><span class="op">&gt;</span>(
+    <span class="ident">stream_reader</span>: <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
+    <span class="ident">stream_writer</span>: <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
+    <span class="ident">peer_addr</span>: <span class="ident">String</span>,
+    <span class="ident">mempool</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
+) <span class="kw">where</span>
+    <span class="ident">R</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">W</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">M</span>: <span class="ident">Mempool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+{
+    <span class="macro">info</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Spawning mempool tasks&quot;</span>);
+
+    <span class="kw">let</span> (<span class="ident">handle_sender</span>, <span class="ident">handle_receiver</span>) <span class="op">=</span> <span class="ident">unbounded_channel</span>();
+    <span class="kw">let</span> <span class="ident">peer_addr_clone</span> <span class="op">=</span> <span class="ident">peer_addr</span>.<span class="ident">clone</span>();
+
+    <span class="macro">spawn</span><span class="macro">!</span>(
+        <span class="kw">async</span> <span class="kw">move</span> { <span class="ident">mempool_writer_task</span>(<span class="ident">stream_writer</span>, <span class="ident">peer_addr_clone</span>, <span class="ident">handle_receiver</span>).<span class="kw">await</span> }
+    );
+
+    <span class="macro">spawn</span><span class="macro">!</span>(
+        <span class="kw">async</span> <span class="kw">move</span> { <span class="ident">mempool_reader_task</span>(<span class="ident">stream_reader</span>, <span class="ident">peer_addr</span>, <span class="ident">mempool</span>, <span class="ident">handle_sender</span>).<span class="kw">await</span> }
+    );
+}
+
+<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream_writer</span>, <span class="ident">handle_receiver</span>))]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">mempool_writer_task</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>(
+    <span class="kw-2">mut</span> <span class="ident">stream_writer</span>: <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
+    <span class="ident">peer_addr</span>: <span class="ident">String</span>,
+    <span class="ident">handle_receiver</span>: <span class="ident">Receiver</span><span class="op">&lt;</span><span class="ident">JoinHandle</span><span class="op">&lt;</span><span class="ident">Response</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+) <span class="kw">where</span>
+    <span class="ident">W</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+{
+    <span class="ident">cfg_if</span>::<span class="macro">cfg_if</span><span class="macro">!</span> {
+        <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>))]</span> {
+            <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">handle</span>) <span class="op">=</span> <span class="ident">handle_receiver</span>.<span class="ident">recv</span>().<span class="kw">await</span> {
+                <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">handle</span>.<span class="kw">await</span>;
+
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">stream_writer</span>.<span class="ident">write</span>(<span class="ident">response</span>).<span class="kw">await</span> {
+                    <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while writing to stream&quot;</span>, <span class="op">%</span><span class="ident">err</span>);
+                }
+            }
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>)]</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">handle_receiver</span> <span class="op">=</span> <span class="ident">handle_receiver</span>;
+
+            <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">handle</span>) <span class="op">=</span> <span class="ident">handle_receiver</span>.<span class="ident">recv</span>().<span class="kw">await</span> {
+                <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">handle</span>.<span class="kw">await</span>;
+
+                <span class="kw">match</span> <span class="ident">response</span> {
+                    <span class="prelude-val">Ok</span>(<span class="ident">response</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">stream_writer</span>.<span class="ident">write</span>(<span class="ident">response</span>).<span class="kw">await</span> {
+                            <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while writing to stream&quot;</span>, <span class="op">%</span><span class="ident">err</span>);
+                        }
+                    }
+                    <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Mempool request execution not completed&quot;</span>, <span class="question-mark">?</span><span class="ident">err</span>),
+                }
+            }
+        } <span class="kw">else</span> {
+            <span class="macro">unreachable</span><span class="macro">!</span>()
+        }
+    }
+}
+
+<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream_reader</span>, <span class="ident">mempool</span>, <span class="ident">handle_sender</span>))]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">mempool_reader_task</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">M</span><span class="op">&gt;</span>(
+    <span class="kw-2">mut</span> <span class="ident">stream_reader</span>: <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
+    <span class="ident">peer_addr</span>: <span class="ident">String</span>,
+    <span class="ident">mempool</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
+    <span class="ident">handle_sender</span>: <span class="ident">Sender</span><span class="op">&lt;</span><span class="ident">JoinHandle</span><span class="op">&lt;</span><span class="ident">Response</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+) <span class="kw">where</span>
+    <span class="ident">R</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+    <span class="ident">M</span>: <span class="ident">Mempool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+{
+    <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">request</span>) <span class="op">=</span> <span class="ident">stream_reader</span>.<span class="ident">read</span>().<span class="kw">await</span> {
+        <span class="kw">match</span> <span class="ident">request</span> {
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty request&quot;</span>)
+            }
+            <span class="prelude-val">Some</span>(<span class="ident">request</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">peer_addr</span> <span class="op">=</span> <span class="ident">peer_addr</span>.<span class="ident">clone</span>();
+                <span class="kw">let</span> <span class="ident">mempool</span> <span class="op">=</span> <span class="ident">mempool</span>.<span class="ident">clone</span>();
+
+                <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">spawn</span>(<span class="kw">async</span> <span class="kw">move</span> {
                     <span class="kw">let</span> <span class="ident">request</span>: <span class="ident">Request</span> <span class="op">=</span> <span class="ident">request</span>;
 
-                    <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">value</span> {
+                    <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">value</span> {
                         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
                             <span class="macro">debug</span><span class="macro">!</span>(
                                 <span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty value in request&quot;</span>,
@@ -290,183 +554,142 @@
                             <span class="ident">Response</span>::<span class="ident">default</span>()
                         }
                         <span class="prelude-val">Some</span>(<span class="ident">request_value</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="ident">handle_consensus_request</span>(
-                                <span class="ident">consensus</span>.<span class="ident">clone</span>(),
-                                <span class="ident">validator</span>.<span class="ident">clone</span>(),
-                                <span class="ident">request_value</span>,
-                            )
-                            .<span class="ident">await</span>
+                            <span class="ident">handle_mempool_request</span>(<span class="ident">mempool</span>.<span class="ident">as_ref</span>(), <span class="ident">request_value</span>).<span class="kw">await</span>
                         }
-                    };
+                    }
+                });
 
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">encode</span>(<span class="ident">response</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">stream</span>).<span class="ident">await</span> {
-                        <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while writing to stream&quot;</span>, <span class="op">%</span><span class="ident">err</span>, <span class="question-mark">?</span><span class="ident">peer_addr</span>);
+                <span class="ident">cfg_if</span>::<span class="macro">cfg_if</span><span class="macro">!</span> {
+                    <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>))]</span> {
+                        <span class="ident">handle_sender</span>
+                            .<span class="ident">send</span>(<span class="ident">handle</span>)
+                            .<span class="kw">await</span>
+                            .<span class="ident">expect</span>(<span class="string">&quot;Channel receiver dropped&quot;</span>);
+                    } <span class="kw">else</span> <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>)]</span> {
+                        <span class="ident">handle_sender</span>
+                            .<span class="ident">send</span>(<span class="ident">handle</span>)
+                            .<span class="ident">expect</span>(<span class="string">&quot;Channel receiver dropped&quot;</span>);
+                    } <span class="kw">else</span> {
+                        <span class="macro">unreachable</span><span class="macro">!</span>()
                     }
                 }
             }
         }
-    });
+    }
 }
 
-<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream</span>, <span class="ident">mempool</span>))]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn_mempool_task</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">P</span>, <span class="ident">M</span><span class="op">&gt;</span>(<span class="ident">stream</span>: <span class="ident">D</span>, <span class="ident">peer_addr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>, <span class="ident">mempool</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>)
-<span class="kw">where</span>
-    <span class="ident">D</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Write</span> <span class="op">+</span> <span class="ident">StreamSplit</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">P</span>: <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">M</span>: <span class="ident">Mempool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-{
-    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">reader</span>, <span class="kw-2">mut</span> <span class="ident">writer</span>) <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">split_stream</span>();
-
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>)]</span>
-    <span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">unbounded</span>();
-
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>)]</span>
-    <span class="kw">let</span> (<span class="ident">sender</span>, <span class="kw-2">mut</span> <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">unbounded_channel</span>();
-
-    <span class="kw">let</span> <span class="ident">peer_addr</span> <span class="op">=</span> <span class="ident">Arc</span>::<span class="ident">new</span>(<span class="ident">peer_addr</span>);
-    <span class="kw">let</span> <span class="ident">peer_address</span> <span class="op">=</span> <span class="ident">peer_addr</span>.<span class="ident">clone</span>();
-
-    <span class="ident">spawn</span>(<span class="ident">async</span> <span class="kw">move</span> {
-        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>)]</span>
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">handle</span>) <span class="op">=</span> <span class="ident">receiver</span>.<span class="ident">recv</span>().<span class="ident">await</span> {
-            <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">handle</span>.<span class="ident">await</span>;
-
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">encode</span>(<span class="ident">response</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">writer</span>).<span class="ident">await</span> {
-                <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while writing to stream&quot;</span>, <span class="op">%</span><span class="ident">err</span>, <span class="question-mark">?</span><span class="ident">peer_addr</span>);
-            }
-        }
-
-        <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>)]</span>
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">handle</span>) <span class="op">=</span> <span class="ident">receiver</span>.<span class="ident">recv</span>().<span class="ident">await</span> {
-            <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">handle</span>.<span class="ident">await</span>;
-
-            <span class="kw">match</span> <span class="ident">response</span> {
-                <span class="prelude-val">Ok</span>(<span class="ident">response</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">encode</span>(<span class="ident">response</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">writer</span>).<span class="ident">await</span> {
-                        <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while writing to stream&quot;</span>, <span class="op">%</span><span class="ident">err</span>, <span class="question-mark">?</span><span class="ident">peer_addr</span>);
-                    }
-                }
-                <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Mempool request execution not completed&quot;</span>, <span class="question-mark">?</span><span class="ident">err</span>),
-            }
-        }
-    });
-
-    <span class="ident">spawn</span>(<span class="ident">async</span> <span class="kw">move</span> {
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">request</span>) <span class="op">=</span> <span class="ident">decode</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">reader</span>).<span class="ident">await</span> {
-            <span class="kw">match</span> <span class="ident">request</span> {
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty request&quot;</span>, <span class="ident">peer_addr</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">peer_address</span>.<span class="ident">clone</span>())
-                }
-                <span class="prelude-val">Some</span>(<span class="ident">request</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">peer_addr</span> <span class="op">=</span> <span class="ident">peer_address</span>.<span class="ident">clone</span>();
-                    <span class="kw">let</span> <span class="ident">mempool</span> <span class="op">=</span> <span class="ident">mempool</span>.<span class="ident">clone</span>();
-
-                    <span class="kw">let</span> <span class="ident">handle</span> <span class="op">=</span> <span class="ident">spawn</span>(<span class="ident">async</span> <span class="kw">move</span> {
-                        <span class="kw">let</span> <span class="ident">request</span>: <span class="ident">Request</span> <span class="op">=</span> <span class="ident">request</span>;
-
-                        <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">value</span> {
-                            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                                <span class="macro">debug</span><span class="macro">!</span>(
-                                    <span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty value in request&quot;</span>,
-                                    <span class="question-mark">?</span><span class="ident">peer_addr</span>,
-                                    <span class="question-mark">?</span><span class="ident">request</span>
-                                );
-                                <span class="ident">Response</span>::<span class="ident">default</span>()
-                            }
-                            <span class="prelude-val">Some</span>(<span class="ident">request_value</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                                <span class="ident">handle_mempool_request</span>(<span class="ident">mempool</span>, <span class="ident">request_value</span>).<span class="ident">await</span>
-                            }
-                        }
-                    });
-
-                    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>)]</span>
-                    <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">handle</span>).<span class="ident">await</span>.<span class="ident">expect</span>(<span class="string">&quot;Channel receiver dropped&quot;</span>);
-
-                    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>)]</span>
-                    <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">handle</span>).<span class="ident">expect</span>(<span class="string">&quot;Channel receiver dropped&quot;</span>);
-                }
-            }
-        }
-    });
-}
-
-<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream</span>, <span class="ident">info</span>))]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn_info_task</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">P</span>, <span class="ident">I</span><span class="op">&gt;</span>(
-    <span class="kw-2">mut</span> <span class="ident">stream</span>: <span class="ident">D</span>,
-    <span class="ident">peer_addr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>,
+<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>, <span class="ident">info</span>))]</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn_info_task</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">W</span>, <span class="ident">I</span><span class="op">&gt;</span>(
+    <span class="ident">stream_reader</span>: <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
+    <span class="ident">stream_writer</span>: <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
+    <span class="ident">peer_addr</span>: <span class="ident">String</span>,
     <span class="ident">info</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>,
     <span class="ident">validator</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">ConsensusStateValidator</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 ) <span class="kw">where</span>
-    <span class="ident">D</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">P</span>: <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">R</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">W</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="ident">I</span>: <span class="ident">Info</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">spawn</span>(<span class="ident">async</span> <span class="kw">move</span> {
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">request</span>) <span class="op">=</span> <span class="ident">decode</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">stream</span>).<span class="ident">await</span> {
-            <span class="kw">match</span> <span class="ident">request</span> {
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty request&quot;</span>, <span class="question-mark">?</span><span class="ident">peer_addr</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">request</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">request</span>: <span class="ident">Request</span> <span class="op">=</span> <span class="ident">request</span>;
+    <span class="macro">info</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Spawning info task&quot;</span>);
 
-                    <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">value</span> {
-                        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="macro">debug</span><span class="macro">!</span>(
-                                <span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty value in request&quot;</span>,
-                                <span class="question-mark">?</span><span class="ident">peer_addr</span>,
-                                <span class="question-mark">?</span><span class="ident">request</span>
-                            );
-                            <span class="ident">Response</span>::<span class="ident">default</span>()
-                        }
-                        <span class="prelude-val">Some</span>(<span class="ident">request_value</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="ident">handle_info_request</span>(<span class="ident">info</span>.<span class="ident">clone</span>(), <span class="ident">validator</span>.<span class="ident">clone</span>(), <span class="ident">request_value</span>)
-                                .<span class="ident">await</span>
-                        }
-                    };
-
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">encode</span>(<span class="ident">response</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">stream</span>).<span class="ident">await</span> {
-                        <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while writing to stream&quot;</span>, <span class="op">%</span><span class="ident">err</span>, <span class="question-mark">?</span><span class="ident">peer_addr</span>);
-                    }
-                }
-            }
-        }
+    <span class="macro">spawn</span><span class="macro">!</span>(<span class="kw">async</span> <span class="kw">move</span> {
+        <span class="ident">info_task</span>(
+            <span class="ident">stream_reader</span>,
+            <span class="ident">stream_writer</span>,
+            <span class="ident">peer_addr</span>,
+            <span class="ident">info</span>.<span class="ident">as_ref</span>(),
+            <span class="ident">validator</span>,
+        )
+        .<span class="kw">await</span>
     });
 }
 
-<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream</span>, <span class="ident">snapshot</span>))]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn_snapshot_task</span><span class="op">&lt;</span><span class="ident">D</span>, <span class="ident">P</span>, <span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">stream</span>: <span class="ident">D</span>, <span class="ident">peer_addr</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>, <span class="ident">snapshot</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>)
-<span class="kw">where</span>
-    <span class="ident">D</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">P</span>: <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>, <span class="ident">info</span>))]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">info_task</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">W</span>, <span class="ident">I</span><span class="op">&gt;</span>(
+    <span class="kw-2">mut</span> <span class="ident">stream_reader</span>: <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
+    <span class="kw-2">mut</span> <span class="ident">stream_writer</span>: <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
+    <span class="ident">peer_addr</span>: <span class="ident">String</span>,
+    <span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">I</span>,
+    <span class="ident">validator</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">ConsensusStateValidator</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+) <span class="kw">where</span>
+    <span class="ident">R</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+    <span class="ident">W</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+    <span class="ident">I</span>: <span class="ident">Info</span>,
+{
+    <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">request</span>) <span class="op">=</span> <span class="ident">stream_reader</span>.<span class="ident">read</span>().<span class="kw">await</span> {
+        <span class="kw">match</span> <span class="ident">request</span> {
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty request&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">request</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">request</span>: <span class="ident">Request</span> <span class="op">=</span> <span class="ident">request</span>;
+
+                <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">value</span> {
+                    <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty value in request&quot;</span>, <span class="question-mark">?</span><span class="ident">request</span>);
+                        <span class="ident">Response</span>::<span class="ident">default</span>()
+                    }
+                    <span class="prelude-val">Some</span>(<span class="ident">request_value</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="ident">handle_info_request</span>(<span class="ident">info</span>, <span class="ident">validator</span>.<span class="ident">clone</span>(), <span class="ident">request_value</span>).<span class="kw">await</span>
+                    }
+                };
+
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">stream_writer</span>.<span class="ident">write</span>(<span class="ident">response</span>).<span class="kw">await</span> {
+                    <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while writing to stream&quot;</span>, <span class="op">%</span><span class="ident">err</span>);
+                }
+            }
+        }
+    }
+}
+
+<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>, <span class="ident">snapshot</span>))]</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">spawn_snapshot_task</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">W</span>, <span class="ident">S</span><span class="op">&gt;</span>(
+    <span class="ident">stream_reader</span>: <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
+    <span class="ident">stream_writer</span>: <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
+    <span class="ident">peer_addr</span>: <span class="ident">String</span>,
+    <span class="ident">snapshot</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
+) <span class="kw">where</span>
+    <span class="ident">R</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="ident">W</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     <span class="ident">S</span>: <span class="ident">Snapshot</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">spawn</span>(<span class="ident">async</span> <span class="kw">move</span> {
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">request</span>) <span class="op">=</span> <span class="ident">decode</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">stream</span>).<span class="ident">await</span> {
-            <span class="kw">match</span> <span class="ident">request</span> {
-                <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty request&quot;</span>, <span class="question-mark">?</span><span class="ident">peer_addr</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">request</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                    <span class="kw">let</span> <span class="ident">request</span>: <span class="ident">Request</span> <span class="op">=</span> <span class="ident">request</span>;
+    <span class="macro">info</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Spawning snapshot task&quot;</span>);
 
-                    <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">value</span> {
-                        <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="macro">debug</span><span class="macro">!</span>(
-                                <span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty value in request&quot;</span>,
-                                <span class="question-mark">?</span><span class="ident">peer_addr</span>,
-                                <span class="question-mark">?</span><span class="ident">request</span>
-                            );
-                            <span class="ident">Response</span>::<span class="ident">default</span>()
-                        }
-                        <span class="prelude-val">Some</span>(<span class="ident">request_value</span>) <span class="op">=</span><span class="op">&gt;</span> {
-                            <span class="ident">handle_snapshot_request</span>(<span class="ident">snapshot</span>.<span class="ident">clone</span>(), <span class="ident">request_value</span>).<span class="ident">await</span>
-                        }
-                    };
+    <span class="macro">spawn</span><span class="macro">!</span>(<span class="kw">async</span> <span class="kw">move</span> {
+        <span class="ident">snapshot_task</span>(<span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>, <span class="ident">peer_addr</span>, <span class="ident">snapshot</span>.<span class="ident">as_ref</span>()).<span class="kw">await</span>
+    });
+}
 
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">encode</span>(<span class="ident">response</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">stream</span>).<span class="ident">await</span> {
-                        <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while writing to stream&quot;</span>, <span class="op">%</span><span class="ident">err</span>, <span class="question-mark">?</span><span class="ident">peer_addr</span>);
+<span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>, <span class="ident">snapshot</span>))]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">snapshot_task</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">W</span>, <span class="ident">S</span><span class="op">&gt;</span>(
+    <span class="kw-2">mut</span> <span class="ident">stream_reader</span>: <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
+    <span class="kw-2">mut</span> <span class="ident">stream_writer</span>: <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
+    <span class="ident">peer_addr</span>: <span class="ident">String</span>,
+    <span class="ident">snapshot</span>: <span class="kw-2">&amp;</span><span class="ident">S</span>,
+) <span class="kw">where</span>
+    <span class="ident">R</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+    <span class="ident">W</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+    <span class="ident">S</span>: <span class="ident">Snapshot</span>,
+{
+    <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">request</span>) <span class="op">=</span> <span class="ident">stream_reader</span>.<span class="ident">read</span>().<span class="kw">await</span> {
+        <span class="kw">match</span> <span class="ident">request</span> {
+            <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty request&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="ident">request</span>) <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">request</span>: <span class="ident">Request</span> <span class="op">=</span> <span class="ident">request</span>;
+
+                <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">value</span> {
+                    <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> {
+                        <span class="macro">debug</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty value in request&quot;</span>, <span class="question-mark">?</span><span class="ident">request</span>);
+                        <span class="ident">Response</span>::<span class="ident">default</span>()
                     }
+                    <span class="prelude-val">Some</span>(<span class="ident">request_value</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">handle_snapshot_request</span>(<span class="ident">snapshot</span>, <span class="ident">request_value</span>).<span class="kw">await</span>,
+                };
+
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">stream_writer</span>.<span class="ident">write</span>(<span class="ident">response</span>).<span class="kw">await</span> {
+                    <span class="macro">error</span><span class="macro">!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while writing to stream&quot;</span>, <span class="op">%</span><span class="ident">err</span>);
                 }
             }
         }
-    });
+    }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "abci";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="abci"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
