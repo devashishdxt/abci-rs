@@ -5,6 +5,8 @@ use async_std::{
     io::{Read, Write},
     net::TcpStream,
 };
+#[cfg(test)]
+use mock_io::tokio::{MockStream, ReadHalf as MockReadHalf, WriteHalf as MockWriteHalf};
 #[cfg(all(unix, feature = "use-smol"))]
 use smol::net::unix::UnixStream;
 #[cfg(feature = "use-smol")]
@@ -71,5 +73,15 @@ impl StreamSplit for UnixStream {
 
     fn split_stream(self) -> (Self::Reader, Self::Writer) {
         self.into_split()
+    }
+}
+
+#[cfg(test)]
+impl StreamSplit for MockStream {
+    type Reader = MockReadHalf;
+    type Writer = MockWriteHalf;
+
+    fn split_stream(self) -> (Self::Reader, Self::Writer) {
+        self.split()
     }
 }

@@ -85,6 +85,8 @@ mod stream_split;
 #[cfg_attr(feature = "doc", doc(cfg(feature = "sync-api")))]
 pub mod sync_api;
 mod tasks;
+#[cfg(test)]
+mod tests;
 pub mod types;
 mod utils;
 

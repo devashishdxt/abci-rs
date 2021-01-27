@@ -36,6 +36,7 @@ tracing = { version = "0.1", features = ["log"] }
 tracing-futures = "0.2"
 
 [dev-dependencies]
+mock-io = { version = "0.3", default-features = false, features = ["async-tokio"] }
 tracing-subscriber = { version = "0.2", default-features = false, features = ["fmt", "ansi"] }
 tokio = { version = "1.1", features = ["macros", "time"] }
 

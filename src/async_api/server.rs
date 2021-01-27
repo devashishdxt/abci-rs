@@ -123,6 +123,14 @@ where
                     self.handle_connection(stream, format!("{:?}", peer_addr));
                 }
             }
+            #[cfg(test)]
+            Address::Mock(mut listener) => {
+                while let Ok(stream) = listener.accept().await {
+                    self.handle_connection(stream, "test_peer".to_string());
+                }
+
+                Ok(())
+            }
         }
     }
 
