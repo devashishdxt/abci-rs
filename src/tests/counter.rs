@@ -2,7 +2,11 @@ use std::{sync::Arc, time::Duration};
 
 use tokio::{sync::Mutex, time::sleep};
 
-use crate::{async_trait, types::*, async_api::{Consensus, Info, Mempool, Server, Snapshot}};
+use crate::{
+    async_api::{Consensus, Info, Mempool, Server, Snapshot},
+    async_trait,
+    types::*,
+};
 
 /// Simple counter
 #[derive(Debug, Default, Clone)]

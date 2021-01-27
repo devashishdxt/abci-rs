@@ -37,8 +37,8 @@ tracing-futures = "0.2"
 
 [dev-dependencies]
 mock-io = { version = "0.3", default-features = false, features = ["async-tokio"] }
-tracing-subscriber = { version = "0.2", default-features = false, features = ["fmt", "ansi"] }
 tokio = { version = "1.1", features = ["macros", "time"] }
+tracing-subscriber = { version = "0.2", default-features = false, features = ["fmt", "ansi"] }
 
 [features]
 default = ["async-api", "sync-api", "use-tokio"]
