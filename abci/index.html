@@ -33,8 +33,8 @@ abci-rs = &quot;0.11&quot;
 least one of these features should be enabled. By default, both, <code>sync-api</code> and <code>async-api</code>, features are enabled.</p>
 <h2 id="async-runtimes" class="section-header"><a href="#async-runtimes">Async runtimes</a></h2>
 <p><code>abci-rs</code> also supports multiple async runtimes. These different runtimes can be enabled by using cargo features
-<code>use-async-std</code>, <code>use-smol</code> or <code>use-tokio</code>. Only one runtime can be enabled at a time. Compilation will fail more
-than one runtime is enabled of none of them are enabled. By default, <code>use-tokio</code> feature is enabled.</p>
+<code>use-async-std</code>, <code>use-smol</code> or <code>use-tokio</code>. Only one runtime can be enabled at a time. Compilation will fail if more
+than one runtime is enabled or none of them are enabled. By default, <code>use-tokio</code> feature is enabled.</p>
 <h2 id="examples" class="section-header"><a href="#examples">Examples</a></h2>
 <p>Example ABCI applications can be found in <code>examples/sync-counter.rs</code> (using <code>sync_api</code>) and <code>examples/async-counter.rs</code>
 (using <code>async_api</code>).</p>
