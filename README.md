@@ -49,8 +49,8 @@ least one of these features should be enabled. By default, both, `sync-api` and 
 ### Async runtimes
 
 `abci-rs` also supports multiple async runtimes. These different runtimes can be enabled by using cargo features
-`use-async-std`, `use-smol` or `use-tokio`. Only one runtime can be enabled at a time. Compilation will fail more
-than one runtime is enabled of none of them are enabled. By default, `use-tokio` feature is enabled.
+`use-async-std`, `use-smol` or `use-tokio`. Only one runtime can be enabled at a time. Compilation will fail if more
+than one runtime is enabled or none of them are enabled. By default, `use-tokio` feature is enabled.
 
 ### Examples
 
