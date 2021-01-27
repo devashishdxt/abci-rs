@@ -9,10 +9,7 @@ use tendermint_proto::abci::{
 };
 use tokio::spawn;
 
-use crate::{
-    types::{decode, encode, ResponseCheckTx},
-    Address,
-};
+use crate::{types::ResponseCheckTx, utils::get_stream_pair, Address};
 
 async fn initialize_server() -> (MockStream, MockStream) {
     let server = counter::server();
@@ -54,19 +51,22 @@ async fn initialize_server_with_state(counter: u64, block_height: i64) -> (MockS
 
 #[tokio::test]
 async fn check_concurrent_check_tx_requests() {
-    let (mut info_stream, mut mempool_stream) = initialize_server().await;
+    let (info_stream, mempool_stream) = initialize_server().await;
+
+    let (mut info_stream_reader, mut info_stream_writer) = get_stream_pair(info_stream);
+    let (mut mempool_stream_reader, mut mempool_stream_writer) = get_stream_pair(mempool_stream);
 
     // First, tendermint calls `info` to get information about ABCI application
     let request = request_generator::info();
-    encode(request, &mut info_stream).await.unwrap();
-    let response: Response = decode(&mut info_stream).await.unwrap().unwrap();
+    info_stream_writer.write(request).await.unwrap();
+    let response: Response = info_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Info(_)));
 
     // Send one `check_tx` for mempool task scheduling
     let request = request_generator::check_tx(1, false);
-    encode(request, &mut mempool_stream).await.unwrap();
-    let response: Response = decode(&mut mempool_stream).await.unwrap().unwrap();
+    mempool_stream_writer.write(request).await.unwrap();
+    let response: Response = mempool_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::CheckTx(_)));
 
@@ -75,20 +75,23 @@ async fn check_concurrent_check_tx_requests() {
     let start_time = Instant::now();
 
     // This request will take 2 seconds to execute (see `check_tx` implementation in `counter.rs`)
-    encode(request_generator::check_tx(1, true), &mut mempool_stream)
+    mempool_stream_writer
+        .write(request_generator::check_tx(1, true))
         .await
         .unwrap();
     // This request will take 2 seconds to execute (see `check_tx` implementation in `counter.rs`)
-    encode(request_generator::check_tx(2, true), &mut mempool_stream)
+    mempool_stream_writer
+        .write(request_generator::check_tx(2, true))
         .await
         .unwrap();
     // This request will get executed immediately (see `check_tx` implementation in `counter.rs`)
-    encode(request_generator::check_tx(3, false), &mut mempool_stream)
+    mempool_stream_writer
+        .write(request_generator::check_tx(3, true))
         .await
         .unwrap();
-    let response1: Response = decode(&mut mempool_stream).await.unwrap().unwrap();
-    let response2: Response = decode(&mut mempool_stream).await.unwrap().unwrap();
-    let response3: Response = decode(&mut mempool_stream).await.unwrap().unwrap();
+    let response1: Response = mempool_stream_reader.read().await.unwrap().unwrap();
+    let response2: Response = mempool_stream_reader.read().await.unwrap().unwrap();
+    let response3: Response = mempool_stream_reader.read().await.unwrap().unwrap();
 
     let duration = Instant::now() - start_time;
 
@@ -115,12 +118,14 @@ async fn check_concurrent_check_tx_requests() {
 
 #[tokio::test]
 async fn check_task_scheduling() {
-    let (mut info_stream, _) = initialize_server().await;
+    let (info_stream, _) = initialize_server().await;
+
+    let (mut info_stream_reader, mut info_stream_writer) = get_stream_pair(info_stream);
 
     // First, tendermint calls `info` to get information about ABCI application
     let request = request_generator::info();
-    encode(request, &mut info_stream).await.unwrap();
-    let response: Response = decode(&mut info_stream).await.unwrap().unwrap();
+    info_stream_writer.write(request).await.unwrap();
+    let response: Response = info_stream_reader.read().await.unwrap().unwrap();
 
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Info(_)));
@@ -130,8 +135,8 @@ async fn check_task_scheduling() {
     //
     // Note: We'll use info connection to send `init_chain`. This should return an exception.
     let request = request_generator::init_chain();
-    encode(request, &mut info_stream).await.unwrap();
-    let response: Response = decode(&mut info_stream).await.unwrap().unwrap();
+    info_stream_writer.write(request).await.unwrap();
+    let response: Response = info_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -142,12 +147,16 @@ async fn check_task_scheduling() {
 
 #[tokio::test]
 async fn check_valid_abci_flow() {
-    let (mut info_stream, mut consensus_stream) = initialize_server().await;
+    let (info_stream, consensus_stream) = initialize_server().await;
+
+    let (mut info_stream_reader, mut info_stream_writer) = get_stream_pair(info_stream);
+    let (mut consensus_stream_reader, mut consensus_stream_writer) =
+        get_stream_pair(consensus_stream);
 
     // First, tendermint calls `info` to get information about ABCI application
     let request = request_generator::info();
-    encode(request, &mut info_stream).await.unwrap();
-    let response: Response = decode(&mut info_stream).await.unwrap().unwrap();
+    info_stream_writer.write(request).await.unwrap();
+    let response: Response = info_stream_reader.read().await.unwrap().unwrap();
 
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Info(_)));
@@ -155,8 +164,8 @@ async fn check_valid_abci_flow() {
     // Because the `block_height` returned by `info` call is `0`, tendermint will next call
     // `init_chain`
     let request = request_generator::init_chain();
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -165,8 +174,8 @@ async fn check_valid_abci_flow() {
 
     // Next, tendermint will call `begin_block` with `block_height = 1`
     let request = request_generator::begin_block(1, Default::default());
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -175,8 +184,8 @@ async fn check_valid_abci_flow() {
 
     // Next, tendermint may call multiple `deliver_tx`
     let request = request_generator::deliver_tx(1);
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -184,8 +193,8 @@ async fn check_valid_abci_flow() {
     ));
 
     let request = request_generator::deliver_tx(2);
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -194,8 +203,8 @@ async fn check_valid_abci_flow() {
 
     // After all the transactions are delivered, tendermint will call `end_block`
     let request = request_generator::end_block(1);
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -204,15 +213,15 @@ async fn check_valid_abci_flow() {
 
     // Finally, tendermint will call `commit`
     let request = request_generator::commit();
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Commit(_)));
 
     // Next, tendermint will call `begin_block` with `block_height = 2`
     let request = request_generator::begin_block(2, 2u64.to_be_bytes().to_vec());
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -221,8 +230,8 @@ async fn check_valid_abci_flow() {
 
     // Next, tendermint may call multiple `deliver_tx`
     let request = request_generator::deliver_tx(3);
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -230,8 +239,8 @@ async fn check_valid_abci_flow() {
     ));
 
     let request = request_generator::deliver_tx(4);
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -240,8 +249,8 @@ async fn check_valid_abci_flow() {
 
     // After all the transactions are delivered, tendermint will call `end_block`
     let request = request_generator::end_block(2);
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -250,20 +259,24 @@ async fn check_valid_abci_flow() {
 
     // Finally, tendermint will call `commit`
     let request = request_generator::commit();
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Commit(_)));
 }
 
 #[tokio::test]
 async fn check_valid_abci_flow_with_init_state() {
-    let (mut info_stream, mut consensus_stream) = initialize_server_with_state(4, 2).await;
+    let (info_stream, consensus_stream) = initialize_server_with_state(4, 2).await;
+
+    let (mut info_stream_reader, mut info_stream_writer) = get_stream_pair(info_stream);
+    let (mut consensus_stream_reader, mut consensus_stream_writer) =
+        get_stream_pair(consensus_stream);
 
     // First, tendermint calls `info` to get information about ABCI application
     let request = request_generator::info();
-    encode(request, &mut info_stream).await.unwrap();
-    let response: Response = decode(&mut info_stream).await.unwrap().unwrap();
+    info_stream_writer.write(request).await.unwrap();
+    let response: Response = info_stream_reader.read().await.unwrap().unwrap();
 
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Info(_)));
@@ -271,8 +284,8 @@ async fn check_valid_abci_flow_with_init_state() {
     // Because the `block_height` returned by `info` call is `2`, tendermint will next call
     // `begin_block` with `block_height = 3`
     let request = request_generator::begin_block(3, 4u64.to_be_bytes().to_vec());
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -281,8 +294,8 @@ async fn check_valid_abci_flow_with_init_state() {
 
     // Next, tendermint may call multiple `deliver_tx`
     let request = request_generator::deliver_tx(5);
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -290,8 +303,8 @@ async fn check_valid_abci_flow_with_init_state() {
     ));
 
     let request = request_generator::deliver_tx(6);
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -300,8 +313,8 @@ async fn check_valid_abci_flow_with_init_state() {
 
     // After all the transactions are delivered, tendermint will call `end_block`
     let request = request_generator::end_block(3);
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -310,28 +323,32 @@ async fn check_valid_abci_flow_with_init_state() {
 
     // Finally, tendermint will call `commit`
     let request = request_generator::commit();
-    encode(request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Commit(_)));
 }
 
 async fn call_after_startup(request: Request, state: Option<(u64, i64)>) -> Response {
-    let (mut info_stream, mut consensus_stream) = match state {
+    let (info_stream, consensus_stream) = match state {
         None => initialize_server().await,
         Some((counter, block_height)) => initialize_server_with_state(counter, block_height).await,
     };
 
+    let (mut info_stream_reader, mut info_stream_writer) = get_stream_pair(info_stream);
+    let (mut consensus_stream_reader, mut consensus_stream_writer) =
+        get_stream_pair(consensus_stream);
+
     // First, tendermint calls `info` to get information about ABCI application
     let info_request = request_generator::info();
-    encode(info_request, &mut info_stream).await.unwrap();
-    let response: Response = decode(&mut info_stream).await.unwrap().unwrap();
+    info_stream_writer.write(info_request).await.unwrap();
+    let response: Response = info_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Info(_)));
 
     // Send provided request
-    encode(request, &mut consensus_stream).await.unwrap();
-    decode(&mut consensus_stream).await.unwrap().unwrap()
+    consensus_stream_writer.write(request).await.unwrap();
+    consensus_stream_reader.read().await.unwrap().unwrap()
 }
 
 #[tokio::test]
@@ -488,22 +505,27 @@ async fn cannot_call_begin_block_with_different_app_hash_after_startup_with_stat
 }
 
 async fn call_after_begin_block(request: Request) -> Response {
-    let (mut info_stream, mut consensus_stream) = initialize_server().await;
+    let (info_stream, consensus_stream) = initialize_server().await;
+
+    let (mut info_stream_reader, mut info_stream_writer) = get_stream_pair(info_stream);
+    let (mut consensus_stream_reader, mut consensus_stream_writer) =
+        get_stream_pair(consensus_stream);
 
     // First, tendermint calls `info` to get information about ABCI application
     let info_request = request_generator::info();
-    encode(info_request, &mut info_stream).await.unwrap();
-    let response: Response = decode(&mut info_stream).await.unwrap().unwrap();
+    info_stream_writer.write(info_request).await.unwrap();
+    let response: Response = info_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Info(_)));
 
     // Because the `block_height` returned by `info` call is `0`, tendermint will next call
     // `init_chain`
     let init_chain_request = request_generator::init_chain();
-    encode(init_chain_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(init_chain_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -512,10 +534,11 @@ async fn call_after_begin_block(request: Request) -> Response {
 
     // Next, tendermint will call `begin_block` with `block_height = 1`
     let begin_block_request = request_generator::begin_block(1, Default::default());
-    encode(begin_block_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(begin_block_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -523,8 +546,8 @@ async fn call_after_begin_block(request: Request) -> Response {
     ));
 
     // Send provided request
-    encode(request, &mut consensus_stream).await.unwrap();
-    decode(&mut consensus_stream).await.unwrap().unwrap()
+    consensus_stream_writer.write(request).await.unwrap();
+    consensus_stream_reader.read().await.unwrap().unwrap()
 }
 
 #[tokio::test]
@@ -597,22 +620,27 @@ async fn can_call_end_block_after_begin_block() {
 }
 
 async fn call_after_deliver_tx(request: Request) -> Response {
-    let (mut info_stream, mut consensus_stream) = initialize_server().await;
+    let (info_stream, consensus_stream) = initialize_server().await;
+
+    let (mut info_stream_reader, mut info_stream_writer) = get_stream_pair(info_stream);
+    let (mut consensus_stream_reader, mut consensus_stream_writer) =
+        get_stream_pair(consensus_stream);
 
     // First, tendermint calls `info` to get information about ABCI application
     let info_request = request_generator::info();
-    encode(info_request, &mut info_stream).await.unwrap();
-    let response: Response = decode(&mut info_stream).await.unwrap().unwrap();
+    info_stream_writer.write(info_request).await.unwrap();
+    let response: Response = info_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Info(_)));
 
     // Because the `block_height` returned by `info` call is `0`, tendermint will next call
     // `init_chain`
     let init_chain_request = request_generator::init_chain();
-    encode(init_chain_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(init_chain_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -621,10 +649,11 @@ async fn call_after_deliver_tx(request: Request) -> Response {
 
     // Next, tendermint will call `begin_block` with `block_height = 1`
     let begin_block_request = request_generator::begin_block(1, Default::default());
-    encode(begin_block_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(begin_block_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -633,10 +662,11 @@ async fn call_after_deliver_tx(request: Request) -> Response {
 
     // Next, tendermint will call `deliver_tx`
     let deliver_tx_request = request_generator::deliver_tx(1);
-    encode(deliver_tx_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(deliver_tx_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -644,8 +674,8 @@ async fn call_after_deliver_tx(request: Request) -> Response {
     ));
 
     // Send provided request
-    encode(request, &mut consensus_stream).await.unwrap();
-    decode(&mut consensus_stream).await.unwrap().unwrap()
+    consensus_stream_writer.write(request).await.unwrap();
+    consensus_stream_reader.read().await.unwrap().unwrap()
 }
 
 #[tokio::test]
@@ -721,22 +751,27 @@ async fn can_call_end_block_after_deliver_tx() {
 }
 
 async fn call_after_end_block(request: Request) -> Response {
-    let (mut info_stream, mut consensus_stream) = initialize_server().await;
+    let (info_stream, consensus_stream) = initialize_server().await;
+
+    let (mut info_stream_reader, mut info_stream_writer) = get_stream_pair(info_stream);
+    let (mut consensus_stream_reader, mut consensus_stream_writer) =
+        get_stream_pair(consensus_stream);
 
     // First, tendermint calls `info` to get information about ABCI application
     let info_request = request_generator::info();
-    encode(info_request, &mut info_stream).await.unwrap();
-    let response: Response = decode(&mut info_stream).await.unwrap().unwrap();
+    info_stream_writer.write(info_request).await.unwrap();
+    let response: Response = info_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Info(_)));
 
     // Because the `block_height` returned by `info` call is `0`, tendermint will next call
     // `init_chain`
     let init_chain_request = request_generator::init_chain();
-    encode(init_chain_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(init_chain_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -745,10 +780,11 @@ async fn call_after_end_block(request: Request) -> Response {
 
     // Next, tendermint will call `begin_block` with `block_height = 1`
     let begin_block_request = request_generator::begin_block(1, Default::default());
-    encode(begin_block_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(begin_block_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -757,10 +793,11 @@ async fn call_after_end_block(request: Request) -> Response {
 
     // Next, tendermint will call `deliver_tx`
     let deliver_tx_request = request_generator::deliver_tx(1);
-    encode(deliver_tx_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(deliver_tx_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -769,10 +806,11 @@ async fn call_after_end_block(request: Request) -> Response {
 
     // Next, tendermint will call `end_block`
     let end_block_request = request_generator::end_block(1);
-    encode(end_block_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(end_block_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -780,8 +818,8 @@ async fn call_after_end_block(request: Request) -> Response {
     ));
 
     // Send provided request
-    encode(request, &mut consensus_stream).await.unwrap();
-    decode(&mut consensus_stream).await.unwrap().unwrap()
+    consensus_stream_writer.write(request).await.unwrap();
+    consensus_stream_reader.read().await.unwrap().unwrap()
 }
 
 #[tokio::test]
@@ -844,22 +882,27 @@ async fn can_call_commit_after_end_block() {
 }
 
 async fn call_after_commit(request: Request) -> Response {
-    let (mut info_stream, mut consensus_stream) = initialize_server().await;
+    let (info_stream, consensus_stream) = initialize_server().await;
+
+    let (mut info_stream_reader, mut info_stream_writer) = get_stream_pair(info_stream);
+    let (mut consensus_stream_reader, mut consensus_stream_writer) =
+        get_stream_pair(consensus_stream);
 
     // First, tendermint calls `info` to get information about ABCI application
     let info_request = request_generator::info();
-    encode(info_request, &mut info_stream).await.unwrap();
-    let response: Response = decode(&mut info_stream).await.unwrap().unwrap();
+    info_stream_writer.write(info_request).await.unwrap();
+    let response: Response = info_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Info(_)));
 
     // Because the `block_height` returned by `info` call is `0`, tendermint will next call
     // `init_chain`
     let init_chain_request = request_generator::init_chain();
-    encode(init_chain_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(init_chain_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -868,10 +911,11 @@ async fn call_after_commit(request: Request) -> Response {
 
     // Next, tendermint will call `begin_block` with `block_height = 1`
     let begin_block_request = request_generator::begin_block(1, Default::default());
-    encode(begin_block_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(begin_block_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -880,10 +924,11 @@ async fn call_after_commit(request: Request) -> Response {
 
     // Next, tendermint will call `deliver_tx`
     let deliver_tx_request = request_generator::deliver_tx(1);
-    encode(deliver_tx_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(deliver_tx_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -892,10 +937,11 @@ async fn call_after_commit(request: Request) -> Response {
 
     // Next, tendermint will call `end_block`
     let end_block_request = request_generator::end_block(1);
-    encode(end_block_request, &mut consensus_stream)
+    consensus_stream_writer
+        .write(end_block_request)
         .await
         .unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(
         response.value.unwrap(),
@@ -904,14 +950,14 @@ async fn call_after_commit(request: Request) -> Response {
 
     // Next, tendermint will call `commit`
     let commit_request = request_generator::commit();
-    encode(commit_request, &mut consensus_stream).await.unwrap();
-    let response: Response = decode(&mut consensus_stream).await.unwrap().unwrap();
+    consensus_stream_writer.write(commit_request).await.unwrap();
+    let response: Response = consensus_stream_reader.read().await.unwrap().unwrap();
     assert!(response.value.is_some());
     assert!(matches!(response.value.unwrap(), ResponseValue::Commit(_)));
 
     // Send provided request
-    encode(request, &mut consensus_stream).await.unwrap();
-    decode(&mut consensus_stream).await.unwrap().unwrap()
+    consensus_stream_writer.write(request).await.unwrap();
+    consensus_stream_reader.read().await.unwrap().unwrap()
 }
 
 #[tokio::test]

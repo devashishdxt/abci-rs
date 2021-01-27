@@ -2,6 +2,8 @@ use std::sync::Arc;
 
 #[cfg(feature = "use-async-std")]
 use async_std::sync::Mutex;
+#[cfg(feature = "use-smol")]
+use smol::lock::Mutex;
 use tendermint_proto::abci::{
     request::Value as RequestValue, response::Value as ResponseValue, Response, ResponseException,
 };
@@ -10,7 +12,9 @@ use tokio::sync::Mutex;
 use tracing::{debug, instrument};
 
 use crate::{
-    state::ConsensusStateValidator, types::ResponseEcho, Consensus, Info, Mempool, Snapshot,
+    async_api::{Consensus, Info, Mempool, Snapshot},
+    state::ConsensusStateValidator,
+    types::ResponseEcho,
 };
 
 #[instrument]
@@ -23,15 +27,14 @@ pub fn handle_unknown_request(request_value: RequestValue) -> Response {
         _ => unreachable!("handle_unknown_request cannot handle known requests"),
     };
 
-    let mut response = Response::default();
-    response.value = Some(response_value);
-
-    response
+    Response {
+        value: Some(response_value),
+    }
 }
 
 #[instrument(skip(consensus))]
 pub async fn handle_consensus_request<C: Consensus>(
-    consensus: Arc<C>,
+    consensus: &C,
     validator: Arc<Mutex<ConsensusStateValidator>>,
     request_value: RequestValue,
 ) -> Response {
@@ -78,8 +81,9 @@ pub async fn handle_consensus_request<C: Consensus>(
         }),
     };
 
-    let mut response = Response::default();
-    response.value = Some(response_value);
+    let response = Response {
+        value: Some(response_value),
+    };
 
     debug!(message = "Sending response", ?response);
 
@@ -88,7 +92,7 @@ pub async fn handle_consensus_request<C: Consensus>(
 
 #[instrument(skip(mempool))]
 pub async fn handle_mempool_request<M: Mempool>(
-    mempool: Arc<M>,
+    mempool: &M,
     request_value: RequestValue,
 ) -> Response {
     let response_value = match request_value {
@@ -100,8 +104,9 @@ pub async fn handle_mempool_request<M: Mempool>(
         }),
     };
 
-    let mut response = Response::default();
-    response.value = Some(response_value);
+    let response = Response {
+        value: Some(response_value),
+    };
 
     debug!(message = "Sending response", ?response);
 
@@ -110,7 +115,7 @@ pub async fn handle_mempool_request<M: Mempool>(
 
 #[instrument(skip(info))]
 pub async fn handle_info_request<I: Info>(
-    info: Arc<I>,
+    info: &I,
     validator: Arc<Mutex<ConsensusStateValidator>>,
     request_value: RequestValue,
 ) -> Response {
@@ -131,8 +136,9 @@ pub async fn handle_info_request<I: Info>(
         }),
     };
 
-    let mut response = Response::default();
-    response.value = Some(response_value);
+    let response = Response {
+        value: Some(response_value),
+    };
 
     debug!(message = "Sending response", ?response);
 
@@ -141,7 +147,7 @@ pub async fn handle_info_request<I: Info>(
 
 #[instrument(skip(snapshot))]
 pub async fn handle_snapshot_request<S: Snapshot>(
-    snapshot: Arc<S>,
+    snapshot: &S,
     request_value: RequestValue,
 ) -> Response {
     let response_value = match request_value {
@@ -164,8 +170,9 @@ pub async fn handle_snapshot_request<S: Snapshot>(
         }),
     };
 
-    let mut response = Response::default();
-    response.value = Some(response_value);
+    let response = Response {
+        value: Some(response_value),
+    };
 
     debug!(message = "Sending response", ?response);
 

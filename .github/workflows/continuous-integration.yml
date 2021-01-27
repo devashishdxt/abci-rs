@@ -9,8 +9,8 @@ on:
       - master
 
 jobs:
-  check:
-    name: Check
+  check-tokio:
+    name: Check with tokio
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -22,6 +22,37 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
+          args: --no-default-features --features async-api,sync-api,use-tokio
+  
+  check-async-std:
+    name: Check with async-std
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --no-default-features --features async-api,sync-api,use-async-std
+
+  check-smol:
+    name: Check with smol
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --no-default-features --features async-api,sync-api,use-smol
 
   test:
     name: Test Suite
@@ -53,8 +84,8 @@ jobs:
           command: fmt
           args: --all -- --check
 
-  clippy:
-    name: Clippy
+  clippy-tokio:
+    name: Clippy with tokio
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -67,4 +98,36 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings
+          args: --no-default-features --features async-api,sync-api,use-tokio -- -D warnings
+
+  clippy-async-std:
+    name: Clippy with async-std
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: rustup component add clippy
+      - uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --no-default-features --features async-api,sync-api,use-async-std -- -D warnings
+
+  clippy-smol:
+    name: Clippy with smol
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: rustup component add clippy
+      - uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --no-default-features --features async-api,sync-api,use-smol -- -D warnings

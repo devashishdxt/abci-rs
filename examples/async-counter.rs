@@ -1,6 +1,10 @@
 use std::{net::SocketAddr, sync::Arc, time::Duration};
 
-use abci::{async_trait, types::*, Consensus, Info, Mempool, Server, Snapshot};
+use abci::{
+    async_api::{Consensus, Info, Mempool, Server, Snapshot},
+    async_trait,
+    types::*,
+};
 use tokio::{sync::Mutex, time::sleep};
 use tracing::{subscriber::set_global_default, Level};
 use tracing_subscriber::FmtSubscriber;

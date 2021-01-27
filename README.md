@@ -10,11 +10,11 @@ A Rust crate for creating ABCI applications.
 ## ABCI Overview
 
 ABCI is the interface between Tendermint (a state-machine replication engine) and your application (the actual state
-machine). It consists of a set of methods, where each method has a corresponding `Request` and `Response` message type.
-Tendermint calls the ABCI methods on the ABCI application by sending the `Request` messages and receiving the `Response`
-messages in return.
+machine). It consists of a set of methods, where each method has a corresponding `Request` and `Response` message
+type. Tendermint calls the ABCI methods on the ABCI application by sending the `Request` messages and receiving the
+`Response` messages in return.
 
-ABCI methods are split across four separate ABCI connections:
+ABCI methods are split across 4 separate ABCI connections:
 
 - `Consensus` Connection: `InitChain`, `BeginBlock`, `DeliverTx`, `EndBlock`, `Commit`
 - `Mempool` Connection: `CheckTx`
@@ -38,35 +38,33 @@ abci-rs = "0.11"
 Each ABCI application has to implement four core traits corresponding to all four ABCI connections, `Consensus`,
 `Mempool`, `Info` and `Snapshot`.
 
-> Note: Implementations of these traits are expected to be `Send + Sync` and methods take immutable reference of `self`.
-So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.) constructs.
+> Note: Implementations of these traits are expected to be `Send + Sync` and methods take immutable reference of
+`self`. So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.) constructs.
 
-After implementing all three above mentioned `trait`s, you can create a `Server` object and use `Server::run()` to start
-ABCI application.
+### Synchronous and asynchronous APIs
 
-`Server::run()` is an `async` function and returns a `Future`. So, you'll need an executor to drive `Future` returned
-from `Server::run()`. `async-std` and `tokio` are two popular options. In `counter` example, we use `tokio`'s executor.
+`abci-rs` supports both, synchronous and asynchronous APIs (using `sync-api` and `async-api` cargo features). At
+least one of these features should be enabled. By default, both, `sync-api` and `async-api`, features are enabled.
 
-To know more, go to `examples/` to see a sample ABCI application.
+### Async runtimes
 
-### Documentation
+`abci-rs` also supports multiple async runtimes. These different runtimes can be enabled by using cargo features
+`use-async-std`, `use-smol` or `use-tokio`. Only one runtime can be enabled at a time. Compilation will fail more
+than one runtime is enabled of none of them are enabled. By default, `use-tokio` feature is enabled.
 
-- [`master`](https://devashishdxt.github.io/abci-rs/abci/)
-- [`release`](https://docs.rs/abci-rs/)
+### Examples
 
-### Features
-
-- `use-tokio`: Enables `tokio` backend for running ABCI TCP/UDS server
-  - **Enabled** by default.
-- `use-async-std`: Enables `async-std` backend for running ABCI TCP/UDS server
-  - **Disabled** by default.
-
-> Features `use-tokio` and `use-async-std` are mutually exclusive, i.e., only one of them can be enabled at a time.
-Compilation will fail if either both of them are enabled or none of them are enabled.
+Example ABCI applications can be found in `examples/sync-counter.rs` (using `sync_api`) and `examples/async-counter.rs`
+(using `async_api`).
 
 ## Minimum Supported Versions
 
-- Tendermint: [`rc6/v0.34.0`](https://github.com/tendermint/tendermint/tree/rc6/v0.34.0)
+- Tendermint: [`v0.34.3`](https://github.com/tendermint/tendermint/releases/tag/v0.34.3)
+
+## Documentation
+
+- [`master`](https://devashishdxt.github.io/abci-rs/abci/)
+- [`release`](https://docs.rs/abci-rs/)
 
 ## License
 

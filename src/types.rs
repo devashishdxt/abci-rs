@@ -1,4 +1,3 @@
-#![allow(missing_docs)]
 //! Types used in ABCI
 pub use prost_types::{Duration, Timestamp};
 pub use tendermint_proto::{
@@ -25,51 +24,137 @@ use std::{
     io::{Error, ErrorKind, Result},
 };
 
-#[cfg(feature = "use-async-std")]
-use async_std::{
-    io::{Read, Write},
-    prelude::*,
-};
-#[cfg(feature = "use-tokio")]
-use tokio::io::{AsyncRead as Read, AsyncReadExt, AsyncWrite as Write, AsyncWriteExt};
-
-use integer_encoding::{VarIntAsyncReader, VarIntAsyncWriter};
+use bytes::{Buf, BufMut};
+use integer_encoding::VarInt;
 use prost::Message;
 
-/// Decodes a `Request` from stream
-pub(crate) async fn decode<M: Message + Default, R: Read + Unpin + Send>(
-    mut reader: R,
-) -> Result<Option<M>> {
-    let length: i64 = reader.read_varint_async().await?;
-
-    if length == 0 {
+/// Returns decoded message and number of bytes read from buffer
+pub(crate) fn decode<M, B>(buf: &mut B) -> Result<Option<M>>
+where
+    M: Message + Default,
+    B: Buf,
+{
+    if buf.remaining() == 0 {
+        // Buffer is empty
         return Ok(None);
     }
 
-    let mut bytes = vec![0; length as usize];
-    reader.take(length as u64).read(&mut bytes).await?;
+    let (len, advance) =
+        i64::decode_var(buf.chunk()).ok_or_else(|| Error::from(ErrorKind::InvalidData))?;
 
-    <M>::decode(bytes.as_slice())
-        .map(Some)
-        .map_err(|e| Error::new(ErrorKind::InvalidData, e))
+    assert!(len >= 0, "Length of protobuf message must not be negative");
+
+    if len == 0 {
+        // Received empty request
+        buf.advance(advance);
+        return Ok(None);
+    }
+
+    let len = usize::try_from(len).map_err(|e| Error::new(ErrorKind::InvalidData, e))?;
+
+    if buf.remaining() < (advance + len) {
+        // We haven't received all the data yet
+        return Ok(None);
+    }
+
+    buf.advance(advance);
+    let bytes = buf.copy_to_bytes(len);
+    let message = M::decode(bytes).map_err(|e| Error::new(ErrorKind::InvalidData, e))?;
+
+    Ok(Some(message))
 }
 
-/// Encodes a `Response` to stream
-pub(crate) async fn encode<M: Message, W: Write + Unpin + Send>(
-    message: M,
-    mut writer: W,
-) -> Result<()> {
-    writer
-        .write_varint_async(
-            i64::try_from(message.encoded_len()).expect("Cannot convert from `i64` to `usize`"),
-        )
-        .await?;
+pub(crate) fn encode<M, B>(message: M, buf: &mut B) -> Result<()>
+where
+    M: Message,
+    B: BufMut,
+{
+    let len = i64::try_from(message.encoded_len()).map_err(|e| Error::new(ErrorKind::Other, e))?;
+    let len_bytes = len.encode_var_vec();
 
-    let mut bytes = vec![];
+    buf.put(len_bytes.as_ref());
 
     message
-        .encode(&mut bytes)
+        .encode(buf)
         .map_err(|e| Error::new(ErrorKind::Other, e))?;
 
-    writer.write_all(&bytes).await
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use bytes::{Buf, BytesMut};
+    use tendermint_proto::abci::{request::Value, Request, RequestFlush, RequestInfo};
+
+    use super::{decode, encode};
+
+    #[test]
+    fn check_decoding() {
+        let mut buf = BytesMut::new();
+        buf.extend_from_slice(&[
+            30, 26, 13, 10, 7, 118, 48, 46, 51, 52, 46, 51, 16, 11, 24, 8, 4, 18, 0,
+        ]);
+
+        let request = decode::<Request, _>(&mut buf);
+        assert!(request.is_ok());
+        let request = request.unwrap();
+        assert!(request.is_some());
+        let request = request.unwrap();
+        assert_eq!(
+            request,
+            Request {
+                value: Some(Value::Info(RequestInfo {
+                    version: "v0.34.3".to_string(),
+                    block_version: 11,
+                    p2p_version: 8
+                }))
+            }
+        );
+
+        let request = decode::<Request, _>(&mut buf);
+        assert!(request.is_ok());
+        let request = request.unwrap();
+        assert!(request.is_some());
+        let request = request.unwrap();
+        assert_eq!(
+            request,
+            Request {
+                value: Some(Value::Flush(RequestFlush {}))
+            }
+        );
+
+        let request = decode::<Request, _>(&mut buf);
+        assert!(request.is_ok());
+        let request = request.unwrap();
+        assert!(request.is_none());
+
+        assert_eq!(0, buf.remaining());
+    }
+
+    #[test]
+    fn check_encoding() {
+        let mut buf = BytesMut::new();
+
+        let request = Request {
+            value: Some(Value::Flush(RequestFlush {})),
+        };
+        encode(request, &mut buf).unwrap();
+        assert_eq!([4, 18, 0], buf.chunk());
+
+        buf.clear();
+
+        let request = Request {
+            value: Some(Value::Info(RequestInfo {
+                version: "v0.34.3".to_string(),
+                block_version: 11,
+                p2p_version: 8,
+            })),
+        };
+
+        encode(request, &mut buf).unwrap();
+        assert_eq!(
+            [30, 26, 13, 10, 7, 118, 48, 46, 51, 52, 46, 51, 16, 11, 24, 8],
+            buf.chunk()
+        );
+    }
 }
