@@ -56,7 +56,7 @@ impl StreamSplit for TcpStream {
     }
 }
 
-#[cfg(any(feature = "use-async-std", feature = "use-smol"))]
+#[cfg(all(unix, any(feature = "use-async-std", feature = "use-smol")))]
 impl StreamSplit for UnixStream {
     type Reader = Self;
     type Writer = Self;
