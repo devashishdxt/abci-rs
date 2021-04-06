@@ -30,7 +30,7 @@ integer-encoding = "3.0"
 prost = "0.7"
 prost-types = "0.7"
 smol = { version = "1.2", optional = true }
-tendermint-proto = "0.18"
+tendermint-proto = "0.19"
 tokio = { version = "1.1", features = ["io-util", "net", "rt", "rt-multi-thread", "sync"], optional = true }
 tracing = { version = "0.1", features = ["log"] }
 tracing-futures = "0.2"
