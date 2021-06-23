@@ -57,10 +57,6 @@ than one runtime is enabled or none of them are enabled. By default, `use-tokio`
 Example ABCI applications can be found in `examples/sync-counter.rs` (using `sync_api`) and `examples/async-counter.rs`
 (using `async_api`).
 
-## Minimum Supported Versions
-
-- Tendermint: [`v0.34.3`](https://github.com/tendermint/tendermint/releases/tag/v0.34.3)
-
 ## Documentation
 
 - [`master`](https://devashishdxt.github.io/abci-rs/abci/)

@@ -50,10 +50,6 @@
 //!
 //! Example ABCI applications can be found in `examples/sync-counter.rs` (using `sync_api`) and `examples/async-counter.rs`
 //! (using `async_api`).
-//!
-//! # Minimum Supported Versions
-//!
-//! - Tendermint: [`v0.34.3`](https://github.com/tendermint/tendermint/releases/tag/v0.34.3)
 #![cfg_attr(feature = "doc", feature(doc_cfg))]
 
 #[cfg(not(any(feature = "async-api", feature = "sync-api")))]
