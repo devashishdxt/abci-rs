@@ -22,23 +22,23 @@ features = ["doc"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-async-std = { version = "1.9", features = ["unstable"], optional = true }
-async-trait = "0.1"
-bytes = "1.0"
-cfg-if = "1.0"
-integer-encoding = "3.0"
-prost = "0.7"
-prost-types = "0.7"
-smol = { version = "1.2", optional = true }
-tendermint-proto = "0.20"
-tokio = { version = "1.5", features = ["io-util", "net", "rt", "rt-multi-thread", "sync"], optional = true }
-tracing = { version = "0.1", features = ["log"] }
-tracing-futures = "0.2"
+async-std = { version="1.9.0", features=["unstable"], optional=true }
+async-trait = "0.1.50"
+bytes = "1.0.1"
+cfg-if = "1.0.0"
+integer-encoding = "3.0.2"
+prost = "0.7.0"
+prost-types = "0.7.0"
+smol = { version="1.2.5", optional=true }
+tendermint-proto = "0.20.0"
+tokio = { version="1.7.1", features=["io-util", "net", "rt", "rt-multi-thread", "sync"], optional=true }
+tracing = { version="0.1.26", features=["log"] }
+tracing-futures = "0.2.5"
 
 [dev-dependencies]
-mock-io = { version = "0.3", default-features = false, features = ["async-tokio"] }
-tokio = { version = "1.5", features = ["macros", "time"] }
-tracing-subscriber = { version = "0.2", default-features = false, features = ["fmt", "ansi"] }
+mock-io = { version="0.3.2", default-features=false, features=["async-tokio"] }
+tokio = { version="1.7.1", features=["macros", "time"] }
+tracing-subscriber = { version="0.2.18", default-features=false, features=["fmt", "ansi"] }
 
 [features]
 default = ["async-api", "sync-api", "use-tokio"]
