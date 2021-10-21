@@ -54,13 +54,13 @@ impl Consensus for ConsensusConnection {
         let new_counter = parse_bytes_to_counter(&deliver_tx_request.tx);
 
         if new_counter.is_err() {
-            let mut error = ResponseDeliverTx::default();
-            error.code = 1;
-            error.codespace = "Parsing error".to_owned();
-            error.log = "Transaction should be 8 bytes long".to_owned();
-            error.info = "Transaction is big-endian encoding of 64-bit integer".to_owned();
-
-            return error;
+            return ResponseDeliverTx {
+                code: 1,
+                codespace: "Parsing error".to_owned(),
+                log: "Transaction should be 8 bytes long".to_owned(),
+                info: "Transaction is big-endian encoding of 64-bit integer".to_owned(),
+                ..Default::default()
+            };
         }
 
         let new_counter = new_counter.unwrap();
@@ -69,13 +69,13 @@ impl Consensus for ConsensusConnection {
         let mut current_state = current_state_lock.as_mut().unwrap();
 
         if current_state.counter + 1 != new_counter {
-            let mut error = ResponseDeliverTx::default();
-            error.code = 2;
-            error.codespace = "Validation error".to_owned();
-            error.log = "Only consecutive integers are allowed".to_owned();
-            error.info = "Numbers to counter app should be supplied in increasing order of consecutive integers staring from 1".to_owned();
-
-            return error;
+            return ResponseDeliverTx {
+                code: 2,
+                codespace: "Validation error".to_owned(),
+                log: "Only consecutive integers are allowed".to_owned(),
+                info: "Numbers to counter app should be supplied in increasing order of consecutive integers staring from 1".to_owned(),
+                ..Default::default()
+            };
         }
 
         current_state.counter = new_counter;
@@ -125,9 +125,10 @@ impl Mempool for MempoolConnection {
 
         let new_counter = parse_bytes_to_counter(&check_tx_request.tx).unwrap();
 
-        let mut response = ResponseCheckTx::default();
-        response.data = new_counter.to_be_bytes().to_vec();
-        response
+        ResponseCheckTx {
+            data: new_counter.to_be_bytes().to_vec(),
+            ..Default::default()
+        }
     }
 }
 
@@ -191,8 +192,8 @@ pub fn server() -> Server<ConsensusConnection, MempoolConnection, InfoConnection
     let current_state: Arc<Mutex<Option<CounterState>>> = Default::default();
 
     let consensus = ConsensusConnection::new(committed_state.clone(), current_state.clone());
-    let mempool = MempoolConnection::new(current_state.clone());
-    let info = InfoConnection::new(committed_state.clone());
+    let mempool = MempoolConnection::new(current_state);
+    let info = InfoConnection::new(committed_state);
     let snapshot = SnapshotConnection;
 
     Server::new(consensus, mempool, info, snapshot)
