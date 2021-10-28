@@ -189,7 +189,7 @@
 <span class="kw">use</span> <span class="ident">prost::Message</span>;
 
 <span class="doccomment">/// Returns decoded message and number of bytes read from buffer</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">decode</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">B</span><span class="op">&gt;</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">decode</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">B</span><span class="op">&gt;</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;mut</span> <span class="ident">B</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="ident">Default</span>,
     <span class="ident">B</span>: <span class="ident">Buf</span>,
@@ -224,7 +224,7 @@
     <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">message</span>))
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">encode</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">B</span><span class="op">&gt;</span>(<span class="ident">message</span>: <span class="ident">M</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">B</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">encode</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">B</span><span class="op">&gt;</span>(<span class="ident">message</span>: <span class="ident">M</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;mut</span> <span class="ident">B</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Message</span>,
     <span class="ident">B</span>: <span class="ident">BufMut</span>,
@@ -255,7 +255,7 @@
             <span class="number">30</span>, <span class="number">26</span>, <span class="number">13</span>, <span class="number">10</span>, <span class="number">7</span>, <span class="number">118</span>, <span class="number">48</span>, <span class="number">46</span>, <span class="number">51</span>, <span class="number">52</span>, <span class="number">46</span>, <span class="number">51</span>, <span class="number">16</span>, <span class="number">11</span>, <span class="number">24</span>, <span class="number">8</span>, <span class="number">4</span>, <span class="number">18</span>, <span class="number">0</span>,
         ]);
 
-        <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">Request</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);
+        <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">Request</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buf</span>);
         <span class="macro">assert!</span>(<span class="ident">request</span>.<span class="ident">is_ok</span>());
         <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">request</span>.<span class="ident">unwrap</span>();
         <span class="macro">assert!</span>(<span class="ident">request</span>.<span class="ident">is_some</span>());
@@ -271,7 +271,7 @@
             }
         );
 
-        <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">Request</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);
+        <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">Request</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buf</span>);
         <span class="macro">assert!</span>(<span class="ident">request</span>.<span class="ident">is_ok</span>());
         <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">request</span>.<span class="ident">unwrap</span>();
         <span class="macro">assert!</span>(<span class="ident">request</span>.<span class="ident">is_some</span>());
@@ -283,7 +283,7 @@
             }
         );
 
-        <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">Request</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>);
+        <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">Request</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buf</span>);
         <span class="macro">assert!</span>(<span class="ident">request</span>.<span class="ident">is_ok</span>());
         <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">request</span>.<span class="ident">unwrap</span>();
         <span class="macro">assert!</span>(<span class="ident">request</span>.<span class="ident">is_none</span>());
@@ -298,7 +298,7 @@
         <span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">Request</span> {
             <span class="ident">value</span>: <span class="prelude-val">Some</span>(<span class="ident">Value::Flush</span>(<span class="ident">RequestFlush</span> {})),
         };
-        <span class="ident">encode</span>(<span class="ident">request</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>).<span class="ident">unwrap</span>();
+        <span class="ident">encode</span>(<span class="ident">request</span>, <span class="kw-2">&amp;mut</span> <span class="ident">buf</span>).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq!</span>([<span class="number">4</span>, <span class="number">18</span>, <span class="number">0</span>], <span class="ident">buf</span>.<span class="ident">chunk</span>());
 
         <span class="ident">buf</span>.<span class="ident">clear</span>();
@@ -311,7 +311,7 @@
             })),
         };
 
-        <span class="ident">encode</span>(<span class="ident">request</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>).<span class="ident">unwrap</span>();
+        <span class="ident">encode</span>(<span class="ident">request</span>, <span class="kw-2">&amp;mut</span> <span class="ident">buf</span>).<span class="ident">unwrap</span>();
         <span class="macro">assert_eq!</span>(
             [<span class="number">30</span>, <span class="number">26</span>, <span class="number">13</span>, <span class="number">10</span>, <span class="number">7</span>, <span class="number">118</span>, <span class="number">48</span>, <span class="number">46</span>, <span class="number">51</span>, <span class="number">52</span>, <span class="number">46</span>, <span class="number">51</span>, <span class="number">16</span>, <span class="number">11</span>, <span class="number">24</span>, <span class="number">8</span>],
             <span class="ident">buf</span>.<span class="ident">chunk</span>()

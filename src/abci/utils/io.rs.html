@@ -137,8 +137,8 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="ident">Default</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">current_value</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">buf</span>)<span class="question-mark">?</span>;
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="ident">Default</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">current_value</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">buf</span>)<span class="question-mark">?</span>;
 
         <span class="kw">if</span> <span class="ident">current_value</span>.<span class="ident">is_some</span>() {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">current_value</span>);
@@ -146,13 +146,13 @@
 
         <span class="self">self</span>.<span class="ident">fill_buf</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">buf</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">buf</span>)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="ident">value</span>)
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fill_buf</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">bytes_read</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">stream</span>.<span class="ident">read</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">read_buf</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fill_buf</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">bytes_read</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">stream</span>.<span class="ident">read</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">read_buf</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">if</span> <span class="ident">bytes_read</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>);
@@ -178,9 +178,9 @@
         <span class="self">Self</span> { <span class="ident">stream</span> }
     }
 
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">write</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Message</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">message</span>: <span class="ident">M</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">write</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Message</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">message</span>: <span class="ident">M</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">BytesMut::new</span>();
-        <span class="ident">encode</span>(<span class="ident">message</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>)<span class="question-mark">?</span>;
+        <span class="ident">encode</span>(<span class="ident">message</span>, <span class="kw-2">&amp;mut</span> <span class="ident">buf</span>)<span class="question-mark">?</span>;
 
         <span class="self">self</span>.<span class="ident">stream</span>.<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>).<span class="kw">await</span>.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
     }
