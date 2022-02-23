@@ -26,26 +26,26 @@ async-std = { version = "1.10.0", features = ["unstable"], optional = true }
 async-trait = "0.1.52"
 bytes = "1.1.0"
 cfg-if = "1.0.0"
-integer-encoding = "3.0.2"
+integer-encoding = "3.0.3"
 prost = "0.9.0"
 prost-types = "0.9.0"
 smol = { version = "1.2.5", optional = true }
-tendermint-proto = "0.23.4"
-tokio = { version = "1.15.0", features = [
+tendermint-proto = "0.23.5"
+tokio = { version = "1.17.0", features = [
     "io-util",
     "net",
     "rt",
     "rt-multi-thread",
     "sync",
 ], optional = true }
-tracing = { version = "0.1.29", features = ["log"] }
+tracing = { version = "0.1.31", features = ["log"] }
 
 [dev-dependencies]
 mock-io = { version = "0.3.2", default-features = false, features = [
     "async-tokio",
 ] }
-tokio = { version = "1.15.0", features = ["macros", "time"] }
-tracing-subscriber = { version = "0.3.5", default-features = false, features = [
+tokio = { version = "1.17.0", features = ["macros", "time"] }
+tracing-subscriber = { version = "0.3.9", default-features = false, features = [
     "fmt",
     "ansi",
 ] }
