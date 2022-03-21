@@ -105,15 +105,7 @@ impl Consensus for ConsensusConnection {
 }
 
 #[derive(Debug)]
-pub struct MempoolConnection {
-    state: Arc<Mutex<Option<CounterState>>>,
-}
-
-impl MempoolConnection {
-    pub fn new(state: Arc<Mutex<Option<CounterState>>>) -> Self {
-        Self { state }
-    }
-}
+pub struct MempoolConnection;
 
 #[async_trait]
 impl Mempool for MempoolConnection {
@@ -177,8 +169,8 @@ pub fn server() -> Server<ConsensusConnection, MempoolConnection, InfoConnection
     let committed_state: Arc<Mutex<CounterState>> = Default::default();
     let current_state: Arc<Mutex<Option<CounterState>>> = Default::default();
 
-    let consensus = ConsensusConnection::new(committed_state.clone(), current_state.clone());
-    let mempool = MempoolConnection::new(current_state);
+    let consensus = ConsensusConnection::new(committed_state.clone(), current_state);
+    let mempool = MempoolConnection;
     let info = InfoConnection::new(committed_state);
     let snapshot = SnapshotConnection;
 
@@ -196,8 +188,8 @@ pub fn server_with_state(
     }));
     let current_state: Arc<Mutex<Option<CounterState>>> = Default::default();
 
-    let consensus = ConsensusConnection::new(committed_state.clone(), current_state.clone());
-    let mempool = MempoolConnection::new(current_state);
+    let consensus = ConsensusConnection::new(committed_state.clone(), current_state);
+    let mempool = MempoolConnection;
     let info = InfoConnection::new(committed_state);
     let snapshot = SnapshotConnection;
 
