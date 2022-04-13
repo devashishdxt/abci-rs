@@ -27,7 +27,7 @@ async-trait = "0.1.53"
 bytes = "1.1.0"
 cfg-if = "1.0.0"
 integer-encoding = "3.0.3"
-prost = "0.9.0"
+prost = "0.10.1"
 prost-types = "0.9.0"
 smol = { version = "1.2.5", optional = true }
 tendermint-proto = "0.23.6"
