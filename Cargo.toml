@@ -27,24 +27,24 @@ async-trait = "0.1.53"
 bytes = "1.1.0"
 cfg-if = "1.0.0"
 integer-encoding = "3.0.3"
-prost = "0.9.0"
-prost-types = "0.9.0"
+prost = "0.10.3"
+prost-types = "0.10.1"
 smol = { version = "1.2.5", optional = true }
-tendermint-proto = "0.23.6"
-tokio = { version = "1.17.0", features = [
+tendermint-proto = "0.23.7"
+tokio = { version = "1.18.2", features = [
     "io-util",
     "net",
     "rt",
     "rt-multi-thread",
     "sync",
 ], optional = true }
-tracing = { version = "0.1.33", features = ["log"] }
+tracing = { version = "0.1.34", features = ["log"] }
 
 [dev-dependencies]
 mock-io = { version = "0.3.2", default-features = false, features = [
     "async-tokio",
 ] }
-tokio = { version = "1.17.0", features = ["macros", "time"] }
+tokio = { version = "1.18.2", features = ["macros", "time"] }
 tracing-subscriber = { version = "0.3.11", default-features = false, features = [
     "fmt",
     "ansi",
