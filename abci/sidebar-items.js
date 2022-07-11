@@ -1,1 +1,1 @@
-initSidebarItems({"attr":[["async_trait",""]],"enum":[["Address","Address of ABCI Server"]],"mod":[["async_api","Asynchronous ABCI server API implementation"],["sync_api","Synchronous ABCI server API implementation"],["types","Types used in ABCI"]]});
+window.SIDEBAR_ITEMS = {"attr":[["async_trait",""]],"enum":[["Address","Address of ABCI Server"]],"mod":[["async_api","Asynchronous ABCI server API implementation"],["sync_api","Synchronous ABCI server API implementation"],["types","Types used in ABCI"]]};
