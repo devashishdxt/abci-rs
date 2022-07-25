@@ -30,7 +30,7 @@ integer-encoding = "3.0.4"
 prost = "0.10.4"
 prost-types = "0.10.1"
 smol = { version = "1.2.5", optional = true }
-tendermint-proto = "=0.23.7"
+tendermint-proto = "=0.23.8"
 tokio = { version = "1.19.2", features = [
   "io-util",
   "net",
