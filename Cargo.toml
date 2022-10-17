@@ -30,22 +30,22 @@ integer-encoding = "3.0.4"
 prost = "0.11.0"
 prost-types = "0.11.1"
 smol = { version = "1.2.5", optional = true }
-tendermint-proto = "=0.23.9"
-tokio = { version = "1.20.1", features = [
+tendermint-proto = "0.25.0"
+tokio = { version = "1.21.2", features = [
   "io-util",
   "net",
   "rt",
   "rt-multi-thread",
   "sync",
 ], optional = true }
-tracing = { version = "0.1.36", features = ["log"] }
+tracing = { version = "0.1.37", features = ["log"] }
 
 [dev-dependencies]
 mock-io = { version = "0.3.2", default-features = false, features = [
   "async-tokio",
 ] }
-tokio = { version = "1.20.1", features = ["macros", "time"] }
-tracing-subscriber = { version = "0.3.15", default-features = false, features = [
+tokio = { version = "1.21.2", features = ["macros", "time"] }
+tracing-subscriber = { version = "0.3.16", default-features = false, features = [
   "fmt",
   "ansi",
 ] }
