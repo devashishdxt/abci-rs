@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/utils/io.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>io.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../abci/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/utils/io.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>io.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><a class="sidebar-logo" href="../../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../abci/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -95,102 +95,102 @@
 <span id="95">95</span>
 <span id="96">96</span>
 <span id="97">97</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::io::Result</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::io::Result;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">async_std</span>::{
-    <span class="ident">io</span>::{<span class="ident">Read</span>, <span class="ident">Write</span>},
-    <span class="ident">prelude</span>::<span class="kw-2">*</span>,
+<span class="attribute">#[cfg(feature = <span class="string">&quot;use-async-std&quot;</span>)]
+</span><span class="kw">use </span>async_std::{
+    io::{Read, Write},
+    prelude::<span class="kw-2">*</span>,
 };
-<span class="kw">use</span> <span class="ident">bytes::BytesMut</span>;
-<span class="kw">use</span> <span class="ident">prost::Message</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">smol::io</span>::{<span class="ident">AsyncRead</span> <span class="kw">as</span> <span class="ident">Read</span>, <span class="ident">AsyncReadExt</span>, <span class="ident">AsyncWrite</span> <span class="kw">as</span> <span class="ident">Write</span>, <span class="ident">AsyncWriteExt</span>};
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">tokio::io</span>::{<span class="ident">AsyncRead</span> <span class="kw">as</span> <span class="ident">Read</span>, <span class="ident">AsyncReadExt</span>, <span class="ident">AsyncWrite</span> <span class="kw">as</span> <span class="ident">Write</span>, <span class="ident">AsyncWriteExt</span>};
+<span class="kw">use </span>bytes::BytesMut;
+<span class="kw">use </span>prost::Message;
+<span class="attribute">#[cfg(feature = <span class="string">&quot;use-smol&quot;</span>)]
+</span><span class="kw">use </span>smol::io::{AsyncRead <span class="kw">as </span>Read, AsyncReadExt, AsyncWrite <span class="kw">as </span>Write, AsyncWriteExt};
+<span class="attribute">#[cfg(feature = <span class="string">&quot;use-tokio&quot;</span>)]
+</span><span class="kw">use </span>tokio::io::{AsyncRead <span class="kw">as </span>Read, AsyncReadExt, AsyncWrite <span class="kw">as </span>Write, AsyncWriteExt};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">stream_split::StreamSplit</span>,
-    <span class="ident">types</span>::{<span class="ident">decode</span>, <span class="ident">encode</span>},
+<span class="kw">use crate</span>::{
+    stream_split::StreamSplit,
+    types::{decode, encode},
 };
 
-<span class="kw">const</span> <span class="ident">DEFAULT_BUFFER_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">4096</span>;
+<span class="kw">const </span>DEFAULT_BUFFER_SIZE: usize = <span class="number">4096</span>;
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">S</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+<span class="kw">pub struct </span>StreamReader&lt;S&gt;
+<span class="kw">where
+    </span>S: Read + Unpin,
 {
-    <span class="ident">stream</span>: <span class="ident">S</span>,
-    <span class="ident">read_buf</span>: [<span class="ident">u8</span>; <span class="ident">DEFAULT_BUFFER_SIZE</span>],
-    <span class="ident">buf</span>: <span class="ident">BytesMut</span>,
+    stream: S,
+    read_buf: [u8; DEFAULT_BUFFER_SIZE],
+    buf: BytesMut,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">S</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+<span class="kw">impl</span>&lt;S&gt; StreamReader&lt;S&gt;
+<span class="kw">where
+    </span>S: Read + Unpin,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">stream</span>: <span class="ident">S</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">stream</span>,
-            <span class="ident">read_buf</span>: [<span class="number">0</span>; <span class="ident">DEFAULT_BUFFER_SIZE</span>],
-            <span class="ident">buf</span>: <span class="ident">BytesMut::new</span>(),
+    <span class="kw">pub fn </span>new(stream: S) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            stream,
+            read_buf: [<span class="number">0</span>; DEFAULT_BUFFER_SIZE],
+            buf: BytesMut::new(),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">read</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Message</span> <span class="op">+</span> <span class="ident">Default</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">current_value</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">buf</span>)<span class="question-mark">?</span>;
+    <span class="kw">pub async fn </span>read&lt;M: Message + Default&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;M&gt;&gt; {
+        <span class="kw">let </span>current_value = decode::&lt;M, <span class="kw">_</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>.buf)<span class="question-mark">?</span>;
 
-        <span class="kw">if</span> <span class="ident">current_value</span>.<span class="ident">is_some</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">current_value</span>);
+        <span class="kw">if </span>current_value.is_some() {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(current_value);
         }
 
-        <span class="self">self</span>.<span class="ident">fill_buf</span>().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="self">self</span>.fill_buf().<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">value</span> <span class="op">=</span> <span class="ident">decode</span>::<span class="op">&lt;</span><span class="ident">M</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">buf</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>value = decode::&lt;M, <span class="kw">_</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>.buf)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">value</span>)
+        <span class="prelude-val">Ok</span>(value)
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fill_buf</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">bytes_read</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">stream</span>.<span class="ident">read</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">read_buf</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">async fn </span>fill_buf(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
+        <span class="kw">let </span>bytes_read = <span class="self">self</span>.stream.read(<span class="kw-2">&amp;mut </span><span class="self">self</span>.read_buf).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">if</span> <span class="ident">bytes_read</span> <span class="op">==</span> <span class="number">0</span> {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>);
+        <span class="kw">if </span>bytes_read == <span class="number">0 </span>{
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="number">0</span>);
         }
 
-        <span class="self">self</span>.<span class="ident">buf</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">read_buf</span>[<span class="number">0</span>..<span class="ident">bytes_read</span>]);
-        <span class="prelude-val">Ok</span>(<span class="ident">bytes_read</span>)
+        <span class="self">self</span>.buf.extend_from_slice(<span class="kw-2">&amp;</span><span class="self">self</span>.read_buf[<span class="number">0</span>..bytes_read]);
+        <span class="prelude-val">Ok</span>(bytes_read)
     }
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">S</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+<span class="kw">pub struct </span>StreamWriter&lt;S&gt;
+<span class="kw">where
+    </span>S: Write + Unpin,
 {
-    <span class="ident">stream</span>: <span class="ident">S</span>,
+    stream: S,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">S</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span>,
+<span class="kw">impl</span>&lt;S&gt; StreamWriter&lt;S&gt;
+<span class="kw">where
+    </span>S: Write + Unpin,
 {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">stream</span>: <span class="ident">S</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">stream</span> }
+    <span class="kw">fn </span>new(stream: S) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ stream }
     }
 
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">write</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Message</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">message</span>: <span class="ident">M</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">BytesMut::new</span>();
-        <span class="ident">encode</span>(<span class="ident">message</span>, <span class="kw-2">&amp;mut</span> <span class="ident">buf</span>)<span class="question-mark">?</span>;
+    <span class="kw">pub async fn </span>write&lt;M: Message&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, message: M) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>buf = BytesMut::new();
+        encode(message, <span class="kw-2">&amp;mut </span>buf)<span class="question-mark">?</span>;
 
-        <span class="self">self</span>.<span class="ident">stream</span>.<span class="ident">write</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>).<span class="kw">await</span>.<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())
+        <span class="self">self</span>.stream.write(<span class="kw-2">&amp;</span>buf).<span class="kw">await</span>.map(|<span class="kw">_</span>| ())
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_stream_pair</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">StreamSplit</span><span class="op">&gt;</span>(
-    <span class="ident">stream</span>: <span class="ident">S</span>,
-) -&gt; (<span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">S::Reader</span><span class="op">&gt;</span>, <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">S::Writer</span><span class="op">&gt;</span>) {
-    <span class="kw">let</span> (<span class="ident">reader</span>, <span class="ident">writer</span>) <span class="op">=</span> <span class="ident">stream</span>.<span class="ident">split_stream</span>();
-    (<span class="ident">StreamReader::new</span>(<span class="ident">reader</span>), <span class="ident">StreamWriter::new</span>(<span class="ident">writer</span>))
+<span class="kw">pub fn </span>get_stream_pair&lt;S: StreamSplit&gt;(
+    stream: S,
+) -&gt; (StreamReader&lt;S::Reader&gt;, StreamWriter&lt;S::Writer&gt;) {
+    <span class="kw">let </span>(reader, writer) = stream.split_stream();
+    (StreamReader::new(reader), StreamWriter::new(writer))
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="abci" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="abci" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (b8b5caee0 2022-10-16)" ></div></body></html>

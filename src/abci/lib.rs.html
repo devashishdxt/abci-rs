@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../abci/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><a class="sidebar-logo" href="../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../abci/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -91,98 +91,98 @@
 <span id="91">91</span>
 <span id="92">92</span>
 <span id="93">93</span>
-</pre><pre class="rust"><code><span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>, <span class="ident">unsafe_code</span>)]</span>
-<span class="doccomment">//! A Rust crate for creating ABCI applications.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! # ABCI Overview</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ABCI is the interface between Tendermint (a state-machine replication engine) and your application (the actual state</span>
-<span class="doccomment">//! machine). It consists of a set of methods, where each method has a corresponding `Request` and `Response` message</span>
-<span class="doccomment">//! type. Tendermint calls the ABCI methods on the ABCI application by sending the `Request` messages and receiving the</span>
-<span class="doccomment">//! `Response` messages in return.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ABCI methods are split across 4 separate ABCI connections:</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! - `Consensus` Connection: `InitChain`, `BeginBlock`, `DeliverTx`, `EndBlock`, `Commit`</span>
-<span class="doccomment">//! - `Mempool` Connection: `CheckTx`</span>
-<span class="doccomment">//! - `Info` Connection: `Info`, `SetOption`, `Query`</span>
-<span class="doccomment">//! - `Snapshot` Connection: `ListSnapshots`, `LoadSnapshotChunk`, `OfferSnapshot`, `ApplySnapshotChunk`</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! Additionally, there is a `Flush` method that is called on every connection, and an `Echo` method that is just for</span>
-<span class="doccomment">//! debugging.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! To know more about ABCI protocol specifications, go to official ABCI [documentation](https://tendermint.com/docs/spec/abci/).</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! # Usage</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! Add `abci-rs` in your `Cargo.toml`&#39;s `dependencies` section:</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ```toml</span>
-<span class="doccomment">//! [dependencies]</span>
-<span class="doccomment">//! abci-rs = &quot;0.11&quot;</span>
-<span class="doccomment">//! ```</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! Each ABCI application has to implement four core traits corresponding to all four ABCI connections, `Consensus`,</span>
-<span class="doccomment">//! `Mempool`, `Info` and `Snapshot`.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! &gt; Note: Implementations of these traits are expected to be `Send + Sync` and methods take immutable reference of</span>
-<span class="doccomment">//! `self`. So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.) constructs.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ## Synchronous and asynchronous APIs</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! `abci-rs` supports both, synchronous and asynchronous APIs (using `sync-api` and `async-api` cargo features). At</span>
-<span class="doccomment">//! least one of these features should be enabled. By default, both, `sync-api` and `async-api`, features are enabled.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ## Async runtimes</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! `abci-rs` also supports multiple async runtimes. These different runtimes can be enabled by using cargo features</span>
-<span class="doccomment">//! `use-async-std`, `use-smol` or `use-tokio`. Only one runtime can be enabled at a time. Compilation will fail if more</span>
-<span class="doccomment">//! than one runtime is enabled or none of them are enabled. By default, `use-tokio` feature is enabled.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! ## Examples</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! Example ABCI applications can be found in `examples/sync-counter.rs` (using `sync_api`) and `examples/async-counter.rs`</span>
-<span class="doccomment">//! (using `async_api`).</span>
-<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;doc&quot;</span>, <span class="ident">feature</span>(<span class="ident">doc_cfg</span>))]</span>
+</pre><pre class="rust"><code><span class="attribute">#![deny(missing_docs, unsafe_code)]
+</span><span class="doccomment">//! A Rust crate for creating ABCI applications.
+//!
+//! # ABCI Overview
+//!
+//! ABCI is the interface between Tendermint (a state-machine replication engine) and your application (the actual state
+//! machine). It consists of a set of methods, where each method has a corresponding `Request` and `Response` message
+//! type. Tendermint calls the ABCI methods on the ABCI application by sending the `Request` messages and receiving the
+//! `Response` messages in return.
+//!
+//! ABCI methods are split across 4 separate ABCI connections:
+//!
+//! - `Consensus` Connection: `InitChain`, `BeginBlock`, `DeliverTx`, `EndBlock`, `Commit`
+//! - `Mempool` Connection: `CheckTx`
+//! - `Info` Connection: `Info`, `SetOption`, `Query`
+//! - `Snapshot` Connection: `ListSnapshots`, `LoadSnapshotChunk`, `OfferSnapshot`, `ApplySnapshotChunk`
+//!
+//! Additionally, there is a `Flush` method that is called on every connection, and an `Echo` method that is just for
+//! debugging.
+//!
+//! To know more about ABCI protocol specifications, go to official ABCI [documentation](https://tendermint.com/docs/spec/abci/).
+//!
+//! # Usage
+//!
+//! Add `abci-rs` in your `Cargo.toml`&#39;s `dependencies` section:
+//!
+//! ```toml
+//! [dependencies]
+//! abci-rs = &quot;0.11&quot;
+//! ```
+//!
+//! Each ABCI application has to implement four core traits corresponding to all four ABCI connections, `Consensus`,
+//! `Mempool`, `Info` and `Snapshot`.
+//!
+//! &gt; Note: Implementations of these traits are expected to be `Send + Sync` and methods take immutable reference of
+//! `self`. So, internal mutability must be handled using thread safe (`Arc`, `Mutex`, etc.) constructs.
+//!
+//! ## Synchronous and asynchronous APIs
+//!
+//! `abci-rs` supports both, synchronous and asynchronous APIs (using `sync-api` and `async-api` cargo features). At
+//! least one of these features should be enabled. By default, both, `sync-api` and `async-api`, features are enabled.
+//!
+//! ## Async runtimes
+//!
+//! `abci-rs` also supports multiple async runtimes. These different runtimes can be enabled by using cargo features
+//! `use-async-std`, `use-smol` or `use-tokio`. Only one runtime can be enabled at a time. Compilation will fail if more
+//! than one runtime is enabled or none of them are enabled. By default, `use-tokio` feature is enabled.
+//!
+//! ## Examples
+//!
+//! Example ABCI applications can be found in `examples/sync-counter.rs` (using `sync_api`) and `examples/async-counter.rs`
+//! (using `async_api`).
+</span><span class="attribute">#![cfg_attr(feature = <span class="string">&quot;doc&quot;</span>, feature(doc_cfg))]
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async-api&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;sync-api&quot;</span>)))]</span>
-<span class="macro">compile_error!</span>(<span class="string">&quot;Either feature `async-api` or `sync-api` must be enabled for this crate&quot;</span>);
+#[cfg(not(any(feature = <span class="string">&quot;async-api&quot;</span>, feature = <span class="string">&quot;sync-api&quot;</span>)))]
+</span><span class="macro">compile_error!</span>(<span class="string">&quot;Either feature `async-api` or `sync-api` must be enabled for this crate&quot;</span>);
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>,)))]</span>
-<span class="macro">compile_error!</span>(<span class="string">&quot;One runtime should be enabled: `use-async-std`, `use-smol` or `use-tokio`&quot;</span>);
+<span class="attribute">#[cfg(not(any(feature = <span class="string">&quot;use-async-std&quot;</span>, feature = <span class="string">&quot;use-smol&quot;</span>, feature = <span class="string">&quot;use-tokio&quot;</span>,)))]
+</span><span class="macro">compile_error!</span>(<span class="string">&quot;One runtime should be enabled: `use-async-std`, `use-smol` or `use-tokio`&quot;</span>);
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>))]</span>
-<span class="macro">compile_error!</span>(<span class="string">&quot;Only one runtime should be enabled: `use-async-std`, `use-smol` or `use-tokio`&quot;</span>);
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>))]</span>
-<span class="macro">compile_error!</span>(<span class="string">&quot;Only one runtime should be enabled: `use-async-std`, `use-smol` or `use-tokio`&quot;</span>);
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>))]</span>
-<span class="macro">compile_error!</span>(<span class="string">&quot;Only one runtime should be enabled: `use-async-std`, `use-smol` or `use-tokio`&quot;</span>);
+<span class="attribute">#[cfg(all(feature = <span class="string">&quot;use-async-std&quot;</span>, feature = <span class="string">&quot;use-smol&quot;</span>))]
+</span><span class="macro">compile_error!</span>(<span class="string">&quot;Only one runtime should be enabled: `use-async-std`, `use-smol` or `use-tokio`&quot;</span>);
+<span class="attribute">#[cfg(all(feature = <span class="string">&quot;use-async-std&quot;</span>, feature = <span class="string">&quot;use-tokio&quot;</span>))]
+</span><span class="macro">compile_error!</span>(<span class="string">&quot;Only one runtime should be enabled: `use-async-std`, `use-smol` or `use-tokio`&quot;</span>);
+<span class="attribute">#[cfg(all(feature = <span class="string">&quot;use-tokio&quot;</span>, feature = <span class="string">&quot;use-smol&quot;</span>))]
+</span><span class="macro">compile_error!</span>(<span class="string">&quot;Only one runtime should be enabled: `use-async-std`, `use-smol` or `use-tokio`&quot;</span>);
 
-<span class="kw">mod</span> <span class="ident">address</span>;
-<span class="macro">cfg_if::cfg_if!</span> {
-    <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async-api&quot;</span>)]</span> {
-        <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;doc&quot;</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async-api&quot;</span>)))]</span>
-        <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">async_api</span>;
-    } <span class="kw">else</span> {
-        <span class="kw">mod</span> <span class="ident">async_api</span>;
+<span class="kw">mod </span>address;
+<span class="macro">cfg_if::cfg_if! </span>{
+    <span class="kw">if </span><span class="attribute">#[cfg(feature = <span class="string">&quot;async-api&quot;</span>)] </span>{
+        <span class="attribute">#[cfg_attr(feature = <span class="string">&quot;doc&quot;</span>, doc(cfg(feature = <span class="string">&quot;async-api&quot;</span>)))]
+        </span><span class="kw">pub mod </span>async_api;
+    } <span class="kw">else </span>{
+        <span class="kw">mod </span>async_api;
     }
 }
-<span class="kw">mod</span> <span class="ident">handler</span>;
-<span class="kw">mod</span> <span class="ident">state</span>;
-<span class="kw">mod</span> <span class="ident">stream_split</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;sync-api&quot;</span>)]</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;doc&quot;</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;sync-api&quot;</span>)))]</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">sync_api</span>;
-<span class="kw">mod</span> <span class="ident">tasks</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">types</span>;
-<span class="kw">mod</span> <span class="ident">utils</span>;
+<span class="kw">mod </span>handler;
+<span class="kw">mod </span>state;
+<span class="kw">mod </span>stream_split;
+<span class="attribute">#[cfg(feature = <span class="string">&quot;sync-api&quot;</span>)]
+#[cfg_attr(feature = <span class="string">&quot;doc&quot;</span>, doc(cfg(feature = <span class="string">&quot;sync-api&quot;</span>)))]
+</span><span class="kw">pub mod </span>sync_api;
+<span class="kw">mod </span>tasks;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests;
+<span class="kw">pub mod </span>types;
+<span class="kw">mod </span>utils;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async-api&quot;</span>)]</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;doc&quot;</span>, <span class="ident">doc</span>(<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;async-api&quot;</span>)))]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
+<span class="attribute">#[cfg(feature = <span class="string">&quot;async-api&quot;</span>)]
+#[cfg_attr(feature = <span class="string">&quot;doc&quot;</span>, doc(cfg(feature = <span class="string">&quot;async-api&quot;</span>)))]
+</span><span class="kw">pub use </span>async_trait::async_trait;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::address::Address</span>;
+<span class="kw">pub use </span><span class="self">self</span>::address::Address;
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="abci" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="abci" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (b8b5caee0 2022-10-16)" ></div></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/state.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>state.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../abci/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/state.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>state.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><a class="sidebar-logo" href="../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../abci/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -206,213 +206,213 @@
 <span id="206">206</span>
 <span id="207">207</span>
 <span id="208">208</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::types</span>::<span class="kw-2">*</span>;
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::types::<span class="kw-2">*</span>;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConsensusStateValidator</span> {
-    <span class="ident">state</span>: <span class="ident">ConsensusState</span>,
+<span class="attribute">#[derive(Debug, Default)]
+</span><span class="kw">pub struct </span>ConsensusStateValidator {
+    state: ConsensusState,
 }
 
-<span class="kw">impl</span> <span class="ident">ConsensusStateValidator</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_info_response</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">info_response</span>: <span class="kw-2">&amp;</span><span class="ident">ResponseInfo</span>) {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">state</span> <span class="op">==</span> <span class="ident">ConsensusState::NoInfo</span> {
-            <span class="kw">let</span> <span class="ident">block_height</span> <span class="op">=</span> <span class="ident">info_response</span>.<span class="ident">last_block_height</span>;
+<span class="kw">impl </span>ConsensusStateValidator {
+    <span class="kw">pub fn </span>on_info_response(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info_response: <span class="kw-2">&amp;</span>ResponseInfo) {
+        <span class="kw">if </span><span class="self">self</span>.state == ConsensusState::NoInfo {
+            <span class="kw">let </span>block_height = info_response.last_block_height;
 
-            <span class="kw">if</span> <span class="ident">block_height</span> <span class="op">==</span> <span class="number">0</span> {
-                <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">ConsensusState::NotInitialized</span>;
-            } <span class="kw">else</span> {
-                <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">ConsensusState::WaitingForBlock</span> {
-                    <span class="ident">block_height</span>: <span class="ident">block_height</span> <span class="op">+</span> <span class="number">1</span>,
-                    <span class="ident">app_hash</span>: <span class="ident">info_response</span>.<span class="ident">last_block_app_hash</span>.<span class="ident">clone</span>(),
+            <span class="kw">if </span>block_height == <span class="number">0 </span>{
+                <span class="self">self</span>.state = ConsensusState::NotInitialized;
+            } <span class="kw">else </span>{
+                <span class="self">self</span>.state = ConsensusState::WaitingForBlock {
+                    block_height: block_height + <span class="number">1</span>,
+                    app_hash: info_response.last_block_app_hash.clone(),
                 };
             }
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_init_chain_request</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">state</span> <span class="op">!</span><span class="op">=</span> <span class="ident">ConsensusState::NotInitialized</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Received `InitChain` call when chain is already initialized&quot;</span>.<span class="ident">to_string</span>());
+    <span class="kw">pub fn </span>on_init_chain_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
+        <span class="kw">if </span><span class="self">self</span>.state != ConsensusState::NotInitialized {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;Received `InitChain` call when chain is already initialized&quot;</span>.to_string());
         }
 
-        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">ConsensusState::InitChain</span>;
+        <span class="self">self</span>.state = ConsensusState::InitChain;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_begin_block_request</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">begin_block_request</span>: <span class="kw-2">&amp;</span><span class="ident">RequestBeginBlock</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">new_state</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
-            <span class="ident">ConsensusState::InitChain</span> =&gt; {
-                <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">begin_block_request</span>
-                    .<span class="ident">header</span>
-                    .<span class="ident">as_ref</span>()
-                    .<span class="ident">ok_or</span>(<span class="string">&quot;`BeginBlock` request does not contain a header&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">pub fn </span>on_begin_block_request(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        begin_block_request: <span class="kw-2">&amp;</span>RequestBeginBlock,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
+        <span class="kw">let </span>new_state = <span class="kw">match </span><span class="self">self</span>.state {
+            ConsensusState::InitChain =&gt; {
+                <span class="kw">let </span>header = begin_block_request
+                    .header
+                    .as_ref()
+                    .ok_or(<span class="string">&quot;`BeginBlock` request does not contain a header&quot;</span>)<span class="question-mark">?</span>;
 
-                <span class="ident">ConsensusState::ExecutingBlock</span> {
-                    <span class="ident">block_height</span>: <span class="ident">header</span>.<span class="ident">height</span>,
-                    <span class="ident">execution_state</span>: <span class="ident">BlockExecutionState::BeginBlock</span>,
+                ConsensusState::ExecutingBlock {
+                    block_height: header.height,
+                    execution_state: BlockExecutionState::BeginBlock,
                 }
             }
-            <span class="ident">ConsensusState::WaitingForBlock</span> {
-                <span class="kw-2">ref</span> <span class="ident">block_height</span>,
-                <span class="kw-2">ref</span> <span class="ident">app_hash</span>,
+            ConsensusState::WaitingForBlock {
+                <span class="kw-2">ref </span>block_height,
+                <span class="kw-2">ref </span>app_hash,
             } =&gt; {
-                <span class="kw">let</span> <span class="ident">block_height</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">block_height</span>;
+                <span class="kw">let </span>block_height = <span class="kw-2">*</span>block_height;
 
-                <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">begin_block_request</span>
-                    .<span class="ident">header</span>
-                    .<span class="ident">as_ref</span>()
-                    .<span class="ident">ok_or</span>(<span class="string">&quot;`BeginBlock` request does not contain a header&quot;</span>)<span class="question-mark">?</span>;
+                <span class="kw">let </span>header = begin_block_request
+                    .header
+                    .as_ref()
+                    .ok_or(<span class="string">&quot;`BeginBlock` request does not contain a header&quot;</span>)<span class="question-mark">?</span>;
 
-                <span class="kw">if</span> <span class="ident">header</span>.<span class="ident">height</span> <span class="op">!</span><span class="op">=</span> <span class="ident">block_height</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format!</span>(
+                <span class="kw">if </span>header.height != block_height {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">format!</span>(
                         <span class="string">&quot;Expected height {} in `BeginBlock` request. Got {}&quot;</span>,
-                        <span class="ident">block_height</span>, <span class="ident">header</span>.<span class="ident">height</span>
+                        block_height, header.height
                     ));
                 }
 
-                <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="ident">header</span>.<span class="ident">app_hash</span> <span class="op">!</span><span class="op">=</span> <span class="ident">app_hash</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format!</span>(
+                <span class="kw">if </span><span class="kw-2">&amp;</span>header.app_hash != app_hash {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">format!</span>(
                         <span class="string">&quot;Expected app hash {:?} in `BeginBlock`. Got {:?}&quot;</span>,
-                        <span class="ident">app_hash</span>, <span class="ident">header</span>.<span class="ident">app_hash</span>
+                        app_hash, header.app_hash
                     ));
                 }
 
-                <span class="ident">ConsensusState::ExecutingBlock</span> {
-                    <span class="ident">block_height</span>,
-                    <span class="ident">execution_state</span>: <span class="ident">BlockExecutionState::BeginBlock</span>,
+                ConsensusState::ExecutingBlock {
+                    block_height,
+                    execution_state: BlockExecutionState::BeginBlock,
                 }
             }
-            <span class="kw">_</span> =&gt; {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format!</span>(
+            <span class="kw">_ </span>=&gt; {
+                <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">format!</span>(
                     <span class="string">&quot;`BeginBlock` cannot be called after {:?}&quot;</span>,
-                    <span class="self">self</span>.<span class="ident">state</span>
+                    <span class="self">self</span>.state
                 ))
             }
         };
 
-        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">new_state</span>;
+        <span class="self">self</span>.state = new_state;
 
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_deliver_tx_request</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
-            <span class="ident">ConsensusState::ExecutingBlock</span> {
-                <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">execution_state</span>,
+    <span class="kw">pub fn </span>on_deliver_tx_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
+        <span class="kw">match </span><span class="self">self</span>.state {
+            ConsensusState::ExecutingBlock {
+                <span class="kw-2">ref mut </span>execution_state,
                 ..
-            } =&gt; <span class="ident">execution_state</span>.<span class="ident">validate</span>(<span class="ident">BlockExecutionState::DeliverTx</span>),
-            <span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(
+            } =&gt; execution_state.validate(BlockExecutionState::DeliverTx),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(
                 <span class="string">&quot;`DeliverTx` cannot be called after {:?}&quot;</span>,
-                <span class="self">self</span>.<span class="ident">state</span>
+                <span class="self">self</span>.state
             )),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_end_block_request</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">end_block_request</span>: <span class="kw-2">&amp;</span><span class="ident">RequestEndBlock</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
-            <span class="ident">ConsensusState::ExecutingBlock</span> {
-                <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">execution_state</span>,
-                <span class="kw-2">ref</span> <span class="ident">block_height</span>,
+    <span class="kw">pub fn </span>on_end_block_request(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        end_block_request: <span class="kw-2">&amp;</span>RequestEndBlock,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
+        <span class="kw">match </span><span class="self">self</span>.state {
+            ConsensusState::ExecutingBlock {
+                <span class="kw-2">ref mut </span>execution_state,
+                <span class="kw-2">ref </span>block_height,
             } =&gt; {
-                <span class="kw">let</span> <span class="ident">block_height</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">block_height</span>;
+                <span class="kw">let </span>block_height = <span class="kw-2">*</span>block_height;
 
-                <span class="kw">if</span> <span class="ident">block_height</span> <span class="op">!</span><span class="op">=</span> <span class="ident">end_block_request</span>.<span class="ident">height</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format!</span>(
+                <span class="kw">if </span>block_height != end_block_request.height {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">format!</span>(
                         <span class="string">&quot;Expected `EndBlock` for height {}. But received for {}&quot;</span>,
-                        <span class="ident">block_height</span>, <span class="ident">end_block_request</span>.<span class="ident">height</span>
+                        block_height, end_block_request.height
                     ));
                 }
 
-                <span class="ident">execution_state</span>.<span class="ident">validate</span>(<span class="ident">BlockExecutionState::EndBlock</span>)
+                execution_state.validate(BlockExecutionState::EndBlock)
             }
-            <span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(
                 <span class="string">&quot;`EndBlock` cannot be called after {:?}&quot;</span>,
-                <span class="self">self</span>.<span class="ident">state</span>
+                <span class="self">self</span>.state
             )),
         }
     }
 
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_commit_request</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
-            <span class="ident">ConsensusState::ExecutingBlock</span> {
-                <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">execution_state</span>,
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>on_commit_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
+        <span class="kw">match </span><span class="self">self</span>.state {
+            ConsensusState::ExecutingBlock {
+                <span class="kw-2">ref mut </span>execution_state,
                 ..
-            } =&gt; <span class="ident">execution_state</span>.<span class="ident">validate</span>(<span class="ident">BlockExecutionState::Commit</span>),
-            <span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;`Commit` cannot be called after {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">state</span>)),
+            } =&gt; execution_state.validate(BlockExecutionState::Commit),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;`Commit` cannot be called after {:?}&quot;</span>, <span class="self">self</span>.state)),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_commit_response</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">commit_response</span>: <span class="kw-2">&amp;</span><span class="ident">ResponseCommit</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">new_state</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">state</span> {
-            <span class="ident">ConsensusState::ExecutingBlock</span> {
-                <span class="ident">execution_state</span>: <span class="ident">BlockExecutionState::Commit</span>,
-                <span class="ident">block_height</span>,
-            } =&gt; <span class="ident">ConsensusState::WaitingForBlock</span> {
-                <span class="ident">block_height</span>: <span class="ident">block_height</span> <span class="op">+</span> <span class="number">1</span>,
-                <span class="ident">app_hash</span>: <span class="ident">commit_response</span>.<span class="ident">data</span>.<span class="ident">clone</span>(),
+    <span class="kw">pub fn </span>on_commit_response(<span class="kw-2">&amp;mut </span><span class="self">self</span>, commit_response: <span class="kw-2">&amp;</span>ResponseCommit) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
+        <span class="kw">let </span>new_state = <span class="kw">match </span><span class="self">self</span>.state {
+            ConsensusState::ExecutingBlock {
+                execution_state: BlockExecutionState::Commit,
+                block_height,
+            } =&gt; ConsensusState::WaitingForBlock {
+                block_height: block_height + <span class="number">1</span>,
+                app_hash: commit_response.data.clone(),
             },
-            <span class="kw">_</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;Received `CommitResponse` after {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">state</span>)),
+            <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;Received `CommitResponse` after {:?}&quot;</span>, <span class="self">self</span>.state)),
         };
 
-        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">new_state</span>;
+        <span class="self">self</span>.state = new_state;
 
         <span class="prelude-val">Ok</span>(())
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ConsensusState</span> {
-    <span class="ident">NoInfo</span>,
-    <span class="ident">NotInitialized</span>,
-    <span class="ident">InitChain</span>,
-    <span class="ident">WaitingForBlock</span> {
-        <span class="ident">block_height</span>: <span class="ident">i64</span>,
-        <span class="ident">app_hash</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Debug, Clone, PartialEq, Eq)]
+</span><span class="kw">pub enum </span>ConsensusState {
+    NoInfo,
+    NotInitialized,
+    InitChain,
+    WaitingForBlock {
+        block_height: i64,
+        app_hash: Vec&lt;u8&gt;,
     },
-    <span class="ident">ExecutingBlock</span> {
-        <span class="ident">block_height</span>: <span class="ident">i64</span>,
-        <span class="ident">execution_state</span>: <span class="ident">BlockExecutionState</span>,
+    ExecutingBlock {
+        block_height: i64,
+        execution_state: BlockExecutionState,
     },
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">ConsensusState</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::NoInfo</span>
+<span class="kw">impl </span>Default <span class="kw">for </span>ConsensusState {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::NoInfo
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BlockExecutionState</span> {
-    <span class="ident">BeginBlock</span>,
-    <span class="ident">DeliverTx</span>,
-    <span class="ident">EndBlock</span>,
-    <span class="ident">Commit</span>,
+<span class="attribute">#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+</span><span class="kw">pub enum </span>BlockExecutionState {
+    BeginBlock,
+    DeliverTx,
+    EndBlock,
+    Commit,
 }
 
-<span class="kw">impl</span> <span class="ident">BlockExecutionState</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">validate</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">next</span>: <span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">is_valid</span> <span class="op">=</span> <span class="macro">matches!</span>(
-            (<span class="kw-2">*</span><span class="self">self</span>, <span class="ident">next</span>),
-            (<span class="ident"><span class="self">Self</span>::BeginBlock</span>, <span class="ident"><span class="self">Self</span>::DeliverTx</span>)
-                <span class="op">|</span> (<span class="ident"><span class="self">Self</span>::BeginBlock</span>, <span class="ident"><span class="self">Self</span>::EndBlock</span>)
-                <span class="op">|</span> (<span class="ident"><span class="self">Self</span>::DeliverTx</span>, <span class="ident"><span class="self">Self</span>::DeliverTx</span>)
-                <span class="op">|</span> (<span class="ident"><span class="self">Self</span>::DeliverTx</span>, <span class="ident"><span class="self">Self</span>::EndBlock</span>)
-                <span class="op">|</span> (<span class="ident"><span class="self">Self</span>::EndBlock</span>, <span class="ident"><span class="self">Self</span>::Commit</span>)
+<span class="kw">impl </span>BlockExecutionState {
+    <span class="kw">pub fn </span>validate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, next: <span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
+        <span class="kw">let </span>is_valid = <span class="macro">matches!</span>(
+            (<span class="kw-2">*</span><span class="self">self</span>, next),
+            (<span class="self">Self</span>::BeginBlock, <span class="self">Self</span>::DeliverTx)
+                | (<span class="self">Self</span>::BeginBlock, <span class="self">Self</span>::EndBlock)
+                | (<span class="self">Self</span>::DeliverTx, <span class="self">Self</span>::DeliverTx)
+                | (<span class="self">Self</span>::DeliverTx, <span class="self">Self</span>::EndBlock)
+                | (<span class="self">Self</span>::EndBlock, <span class="self">Self</span>::Commit)
         );
 
-        <span class="kw">if</span> <span class="ident">is_valid</span> {
-            <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span> <span class="ident">next</span>;
+        <span class="kw">if </span>is_valid {
+            <span class="kw-2">*</span><span class="self">self </span>= next;
             <span class="prelude-val">Ok</span>(())
-        } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?} cannot be called after {:?}&quot;</span>, <span class="ident">next</span>, <span class="self">self</span>))
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?} cannot be called after {:?}&quot;</span>, next, <span class="self">self</span>))
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="abci" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="abci" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (b8b5caee0 2022-10-16)" ></div></body></html>

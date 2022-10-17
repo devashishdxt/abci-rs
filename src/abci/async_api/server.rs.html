@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/async_api/server.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>server.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../abci/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/async_api/server.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>server.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><a class="sidebar-logo" href="../../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../abci/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -314,135 +314,135 @@
 <span id="314">314</span>
 <span id="315">315</span>
 <span id="316">316</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">io::Result</span>, <span class="ident">sync::Arc</span>};
+</pre><pre class="rust"><code><span class="kw">use </span>std::{io::Result, sync::Arc};
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">unix</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>))]</span>
-<span class="kw">use</span> <span class="ident">async_std::os::unix::net::UnixListener</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">async_std</span>::{
-    <span class="ident">io</span>::{<span class="ident">Read</span>, <span class="ident">Write</span>},
-    <span class="ident">net::TcpListener</span>,
-    <span class="ident">sync::Mutex</span>,
-    <span class="ident">task::spawn</span>,
+<span class="attribute">#[cfg(all(unix, feature = <span class="string">&quot;use-async-std&quot;</span>))]
+</span><span class="kw">use </span>async_std::os::unix::net::UnixListener;
+<span class="attribute">#[cfg(feature = <span class="string">&quot;use-async-std&quot;</span>)]
+</span><span class="kw">use </span>async_std::{
+    io::{Read, Write},
+    net::TcpListener,
+    sync::Mutex,
+    task::spawn,
 };
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">unix</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>))]</span>
-<span class="kw">use</span> <span class="ident">smol::net::unix::UnixListener</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">smol</span>::{
-    <span class="ident">io</span>::{<span class="ident">AsyncRead</span> <span class="kw">as</span> <span class="ident">Read</span>, <span class="ident">AsyncWrite</span> <span class="kw">as</span> <span class="ident">Write</span>},
-    <span class="ident">lock::Mutex</span>,
-    <span class="ident">net::TcpListener</span>,
-    <span class="ident">spawn</span>,
+<span class="attribute">#[cfg(all(unix, feature = <span class="string">&quot;use-smol&quot;</span>))]
+</span><span class="kw">use </span>smol::net::unix::UnixListener;
+<span class="attribute">#[cfg(feature = <span class="string">&quot;use-smol&quot;</span>)]
+</span><span class="kw">use </span>smol::{
+    io::{AsyncRead <span class="kw">as </span>Read, AsyncWrite <span class="kw">as </span>Write},
+    lock::Mutex,
+    net::TcpListener,
+    spawn,
 };
-<span class="kw">use</span> <span class="ident">tendermint_proto::abci</span>::{<span class="ident">Request</span>, <span class="ident">Response</span>};
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">unix</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>))]</span>
-<span class="kw">use</span> <span class="ident">tokio::net::UnixListener</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">tokio</span>::{
-    <span class="ident">io</span>::{<span class="ident">AsyncRead</span> <span class="kw">as</span> <span class="ident">Read</span>, <span class="ident">AsyncWrite</span> <span class="kw">as</span> <span class="ident">Write</span>},
-    <span class="ident">net::TcpListener</span>,
-    <span class="ident">spawn</span>,
-    <span class="ident">sync::Mutex</span>,
+<span class="kw">use </span>tendermint_proto::abci::{Request, Response};
+<span class="attribute">#[cfg(all(unix, feature = <span class="string">&quot;use-tokio&quot;</span>))]
+</span><span class="kw">use </span>tokio::net::UnixListener;
+<span class="attribute">#[cfg(feature = <span class="string">&quot;use-tokio&quot;</span>)]
+</span><span class="kw">use </span>tokio::{
+    io::{AsyncRead <span class="kw">as </span>Read, AsyncWrite <span class="kw">as </span>Write},
+    net::TcpListener,
+    spawn,
+    sync::Mutex,
 };
-<span class="kw">use</span> <span class="ident">tracing</span>::{<span class="ident">debug</span>, <span class="ident">error</span>, <span class="ident">info</span>, <span class="ident">instrument</span>};
+<span class="kw">use </span>tracing::{debug, error, info, instrument};
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">address::Address</span>,
-    <span class="ident">async_api</span>::{<span class="ident">Consensus</span>, <span class="ident">Info</span>, <span class="ident">Mempool</span>, <span class="ident">Snapshot</span>},
-    <span class="ident">handler</span>::<span class="kw-2">*</span>,
-    <span class="ident">state::ConsensusStateValidator</span>,
-    <span class="ident">stream_split::StreamSplit</span>,
-    <span class="ident">tasks</span>::<span class="kw-2">*</span>,
-    <span class="ident">utils</span>::{<span class="ident">get_stream_pair</span>, <span class="ident">ConnectionType</span>, <span class="ident">StreamReader</span>, <span class="ident">StreamWriter</span>},
+<span class="kw">use crate</span>::{
+    address::Address,
+    async_api::{Consensus, Info, Mempool, Snapshot},
+    handler::<span class="kw-2">*</span>,
+    state::ConsensusStateValidator,
+    stream_split::StreamSplit,
+    tasks::<span class="kw-2">*</span>,
+    utils::{get_stream_pair, ConnectionType, StreamReader, StreamWriter},
 };
 
-<span class="macro">macro_rules!</span> <span class="ident">spawn</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>: <span class="ident">expr</span>) =&gt; {
-        <span class="macro">cfg_if::cfg_if!</span> {
-            <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>))]</span> {
-                <span class="ident">spawn</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>)
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>)]</span> {
-                <span class="ident">spawn</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>)
-                    .<span class="ident">detach</span>()
-            } <span class="kw">else</span> {
+<span class="macro">macro_rules! </span>spawn {
+    (<span class="macro-nonterminal">$expr</span>: expr) =&gt; {
+        <span class="macro">cfg_if::cfg_if! </span>{
+            <span class="kw">if </span><span class="attribute">#[cfg(any(feature = <span class="string">&quot;use-async-std&quot;</span>, feature = <span class="string">&quot;use-tokio&quot;</span>))] </span>{
+                spawn(<span class="macro-nonterminal">$expr</span>)
+            } <span class="kw">else if </span><span class="attribute">#[cfg(feature = <span class="string">&quot;use-smol&quot;</span>)] </span>{
+                spawn(<span class="macro-nonterminal">$expr</span>)
+                    .detach()
+            } <span class="kw">else </span>{
                 <span class="macro">unreachable!</span>()
             }
         }
     };
 }
 
-<span class="doccomment">/// ABCI Server</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Server</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">M</span>, <span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">C</span>: <span class="ident">Consensus</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">M</span>: <span class="ident">Mempool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">I</span>: <span class="ident">Info</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">S</span>: <span class="ident">Snapshot</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="doccomment">/// ABCI Server
+</span><span class="kw">pub struct </span>Server&lt;C, M, I, S&gt;
+<span class="kw">where
+    </span>C: Consensus + <span class="lifetime">&#39;static</span>,
+    M: Mempool + <span class="lifetime">&#39;static</span>,
+    I: Info + <span class="lifetime">&#39;static</span>,
+    S: Snapshot + <span class="lifetime">&#39;static</span>,
 {
-    <span class="doccomment">/// Wrapping inner type in `Arc` so that it becomes clonable and can be shared between multiple</span>
-    <span class="doccomment">/// async tasks</span>
-    <span class="ident">inner</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Inner</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">M</span>, <span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Wrapping inner type in `Arc` so that it becomes clonable and can be shared between multiple
+    /// async tasks
+    </span>inner: Arc&lt;Inner&lt;C, M, I, S&gt;&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">M</span>, <span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span> <span class="ident">Server</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">M</span>, <span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">C</span>: <span class="ident">Consensus</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">M</span>: <span class="ident">Mempool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">I</span>: <span class="ident">Info</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">S</span>: <span class="ident">Snapshot</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="kw">impl</span>&lt;C, M, I, S&gt; Server&lt;C, M, I, S&gt;
+<span class="kw">where
+    </span>C: Consensus + <span class="lifetime">&#39;static</span>,
+    M: Mempool + <span class="lifetime">&#39;static</span>,
+    I: Info + <span class="lifetime">&#39;static</span>,
+    S: Snapshot + <span class="lifetime">&#39;static</span>,
 {
-    <span class="doccomment">/// Creates a new instance of [`Server`](self::Server)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">consensus</span>: <span class="ident">C</span>, <span class="ident">mempool</span>: <span class="ident">M</span>, <span class="ident">info</span>: <span class="ident">I</span>, <span class="ident">snapshot</span>: <span class="ident">S</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">inner</span>: <span class="ident">Arc::new</span>(<span class="ident">Inner::new</span>(<span class="ident">consensus</span>, <span class="ident">mempool</span>, <span class="ident">info</span>, <span class="ident">snapshot</span>)),
+    <span class="doccomment">/// Creates a new instance of [`Server`](self::Server)
+    </span><span class="kw">pub fn </span>new(consensus: C, mempool: M, info: I, snapshot: S) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            inner: Arc::new(Inner::new(consensus, mempool, info, snapshot)),
         }
     }
 
-    <span class="doccomment">/// Starts ABCI server</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Note</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is an `async` function and returns a `Future`. So, you&#39;ll need an executor to drive the `Future` returned</span>
-    <span class="doccomment">/// from this function. `async-std` and `tokio` are two popular options.</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">T</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Address</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Starts ABCI server
+    ///
+    /// # Note
+    ///
+    /// This is an `async` function and returns a `Future`. So, you&#39;ll need an executor to drive the `Future` returned
+    /// from this function. `async-std` and `tokio` are two popular options.
+    </span><span class="kw">pub async fn </span>run&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, addr: T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="kw">where
+        </span>T: Into&lt;Address&gt;,
     {
-        <span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">addr</span>.<span class="ident">into</span>();
+        <span class="kw">let </span>addr = addr.into();
 
-        <span class="kw">match</span> <span class="ident">addr</span> {
-            <span class="ident">Address::Tcp</span>(<span class="ident">addr</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">listener</span> <span class="op">=</span> <span class="ident">TcpListener::bind</span>(<span class="ident">addr</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="macro">info!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Started ABCI server at&quot;</span>, <span class="op">%</span><span class="ident">addr</span>);
+        <span class="kw">match </span>addr {
+            Address::Tcp(addr) =&gt; {
+                <span class="kw">let </span>listener = TcpListener::bind(addr).<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="macro">info!</span>(message = <span class="string">&quot;Started ABCI server at&quot;</span>, %addr);
 
-                <span class="kw">loop</span> {
-                    <span class="kw">let</span> (<span class="ident">stream</span>, <span class="ident">peer_addr</span>) <span class="op">=</span> <span class="ident">listener</span>.<span class="ident">accept</span>().<span class="kw">await</span><span class="question-mark">?</span>;
-                    <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="ident">peer_addr</span>.<span class="ident">to_string</span>());
+                <span class="kw">loop </span>{
+                    <span class="kw">let </span>(stream, peer_addr) = listener.accept().<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="self">self</span>.handle_connection(stream, peer_addr.to_string());
                 }
             }
-            <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">unix</span>)]</span>
-            <span class="ident">Address::Uds</span>(<span class="ident">path</span>) =&gt; {
-                <span class="macro">cfg_if::cfg_if!</span> {
-                    <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>)]</span> {
-                        <span class="kw">let</span> <span class="ident">listener</span> <span class="op">=</span> <span class="ident">UnixListener::bind</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-                    } <span class="kw">else</span> <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>))]</span> {
-                        <span class="kw">let</span> <span class="ident">listener</span> <span class="op">=</span> <span class="ident">UnixListener::bind</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>)<span class="question-mark">?</span>;
-                    } <span class="kw">else</span> {
+            <span class="attribute">#[cfg(unix)]
+            </span>Address::Uds(path) =&gt; {
+                <span class="macro">cfg_if::cfg_if! </span>{
+                    <span class="kw">if </span><span class="attribute">#[cfg(feature = <span class="string">&quot;use-async-std&quot;</span>)] </span>{
+                        <span class="kw">let </span>listener = UnixListener::bind(<span class="kw-2">&amp;</span>path).<span class="kw">await</span><span class="question-mark">?</span>;
+                    } <span class="kw">else if </span><span class="attribute">#[cfg(any(feature = <span class="string">&quot;use-smol&quot;</span>, feature = <span class="string">&quot;use-tokio&quot;</span>))] </span>{
+                        <span class="kw">let </span>listener = UnixListener::bind(<span class="kw-2">&amp;</span>path)<span class="question-mark">?</span>;
+                    } <span class="kw">else </span>{
                         <span class="macro">unreachable!</span>()
                     }
                 }
 
-                <span class="macro">info!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Started ABCI server at&quot;</span>, <span class="ident">path</span> <span class="op">=</span> <span class="op">%</span><span class="ident">path</span>.<span class="ident">display</span>());
+                <span class="macro">info!</span>(message = <span class="string">&quot;Started ABCI server at&quot;</span>, path = %path.display());
 
-                <span class="kw">loop</span> {
-                    <span class="kw">let</span> (<span class="ident">stream</span>, <span class="ident">peer_addr</span>) <span class="op">=</span> <span class="ident">listener</span>.<span class="ident">accept</span>().<span class="kw">await</span><span class="question-mark">?</span>;
-                    <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">peer_addr</span>));
+                <span class="kw">loop </span>{
+                    <span class="kw">let </span>(stream, peer_addr) = listener.accept().<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="self">self</span>.handle_connection(stream, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, peer_addr));
                 }
             }
-            <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-            <span class="ident">Address::Mock</span>(<span class="kw-2">mut</span> <span class="ident">listener</span>) =&gt; {
-                <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">stream</span>) <span class="op">=</span> <span class="ident">listener</span>.<span class="ident">accept</span>().<span class="kw">await</span> {
-                    <span class="self">self</span>.<span class="ident">handle_connection</span>(<span class="ident">stream</span>, <span class="string">&quot;test_peer&quot;</span>.<span class="ident">to_string</span>());
+            <span class="attribute">#[cfg(test)]
+            </span>Address::Mock(<span class="kw-2">mut </span>listener) =&gt; {
+                <span class="kw">while let </span><span class="prelude-val">Ok</span>(stream) = listener.accept().<span class="kw">await </span>{
+                    <span class="self">self</span>.handle_connection(stream, <span class="string">&quot;test_peer&quot;</span>.to_string());
                 }
 
                 <span class="prelude-val">Ok</span>(())
@@ -450,185 +450,185 @@
         }
     }
 
-    <span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">stream</span>))]</span>
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">handle_connection</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">stream</span>: <span class="ident">D</span>, <span class="ident">peer_addr</span>: <span class="ident">String</span>)
-    <span class="kw">where</span>
-        <span class="ident">D</span>: <span class="ident">StreamSplit</span>,
+    <span class="attribute">#[instrument(skip(<span class="self">self</span>, stream))]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>handle_connection&lt;D&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, stream: D, peer_addr: String)
+    <span class="kw">where
+        </span>D: StreamSplit,
     {
         <span class="macro">info!</span>(<span class="string">&quot;New peer connection&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="kw">let</span> (<span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>) <span class="op">=</span> <span class="ident">get_stream_pair</span>(<span class="ident">stream</span>);
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="kw">let </span>(stream_reader, stream_writer) = get_stream_pair(stream);
 
-        <span class="macro">spawn!</span>(<span class="kw">async</span> <span class="kw">move</span> {
-            <span class="ident">inner</span>
-                .<span class="ident">handle_connection</span>(<span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>, <span class="ident">peer_addr</span>)
-                .<span class="kw">await</span>
-        });
+        <span class="macro">spawn!</span>(<span class="kw">async move </span>{
+            inner
+                .handle_connection(stream_reader, stream_writer, peer_addr)
+                .<span class="kw">await
+        </span>});
     }
 }
 
-<span class="doccomment">/// Inner type that contains all the trait implementations</span>
-<span class="kw">struct</span> <span class="ident">Inner</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">M</span>, <span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">C</span>: <span class="ident">Consensus</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">M</span>: <span class="ident">Mempool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">I</span>: <span class="ident">Info</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">S</span>: <span class="ident">Snapshot</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="doccomment">/// Inner type that contains all the trait implementations
+</span><span class="kw">struct </span>Inner&lt;C, M, I, S&gt;
+<span class="kw">where
+    </span>C: Consensus + <span class="lifetime">&#39;static</span>,
+    M: Mempool + <span class="lifetime">&#39;static</span>,
+    I: Info + <span class="lifetime">&#39;static</span>,
+    S: Snapshot + <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">consensus</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
-    <span class="ident">mempool</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
-    <span class="ident">info</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>,
-    <span class="ident">snapshot</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
-    <span class="ident">validator</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">ConsensusStateValidator</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    consensus: Arc&lt;C&gt;,
+    mempool: Arc&lt;M&gt;,
+    info: Arc&lt;I&gt;,
+    snapshot: Arc&lt;S&gt;,
+    validator: Arc&lt;Mutex&lt;ConsensusStateValidator&gt;&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">M</span>, <span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span> <span class="ident">Inner</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">M</span>, <span class="ident">I</span>, <span class="ident">S</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">C</span>: <span class="ident">Consensus</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">M</span>: <span class="ident">Mempool</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">I</span>: <span class="ident">Info</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-    <span class="ident">S</span>: <span class="ident">Snapshot</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="kw">impl</span>&lt;C, M, I, S&gt; Inner&lt;C, M, I, S&gt;
+<span class="kw">where
+    </span>C: Consensus + <span class="lifetime">&#39;static</span>,
+    M: Mempool + <span class="lifetime">&#39;static</span>,
+    I: Info + <span class="lifetime">&#39;static</span>,
+    S: Snapshot + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">consensus</span>: <span class="ident">C</span>, <span class="ident">mempool</span>: <span class="ident">M</span>, <span class="ident">info</span>: <span class="ident">I</span>, <span class="ident">snapshot</span>: <span class="ident">S</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">consensus</span>: <span class="ident">Arc::new</span>(<span class="ident">consensus</span>),
-            <span class="ident">mempool</span>: <span class="ident">Arc::new</span>(<span class="ident">mempool</span>),
-            <span class="ident">info</span>: <span class="ident">Arc::new</span>(<span class="ident">info</span>),
-            <span class="ident">snapshot</span>: <span class="ident">Arc::new</span>(<span class="ident">snapshot</span>),
-            <span class="ident">validator</span>: <span class="ident">Default::default</span>(),
+    <span class="kw">pub fn </span>new(consensus: C, mempool: M, info: I, snapshot: S) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            consensus: Arc::new(consensus),
+            mempool: Arc::new(mempool),
+            info: Arc::new(info),
+            snapshot: Arc::new(snapshot),
+            validator: Default::default(),
         }
     }
 
-    <span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>))]</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_connection</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">W</span><span class="op">&gt;</span>(
-        <span class="self">self</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
-        <span class="kw-2">mut</span> <span class="ident">stream_reader</span>: <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
-        <span class="kw-2">mut</span> <span class="ident">stream_writer</span>: <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
-        <span class="ident">peer_addr</span>: <span class="ident">String</span>,
-    ) <span class="kw">where</span>
-        <span class="ident">R</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">W</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+    <span class="attribute">#[instrument(skip(<span class="self">self</span>, stream_reader, stream_writer))]
+    </span><span class="kw">async fn </span>handle_connection&lt;R, W&gt;(
+        <span class="self">self</span>: Arc&lt;<span class="self">Self</span>&gt;,
+        <span class="kw-2">mut </span>stream_reader: StreamReader&lt;R&gt;,
+        <span class="kw-2">mut </span>stream_writer: StreamWriter&lt;W&gt;,
+        peer_addr: String,
+    ) <span class="kw">where
+        </span>R: Read + Unpin + Send + <span class="lifetime">&#39;static</span>,
+        W: Write + Unpin + Send + <span class="lifetime">&#39;static</span>,
     {
-        <span class="macro">info!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;In handle_connection&quot;</span>);
+        <span class="macro">info!</span>(message = <span class="string">&quot;In handle_connection&quot;</span>);
 
-        <span class="kw">loop</span> {
-            <span class="kw">match</span> <span class="ident">stream_reader</span>.<span class="ident">read</span>().<span class="kw">await</span> {
-                <span class="prelude-val">Ok</span>(<span class="ident">request</span>) =&gt; <span class="kw">match</span> <span class="ident">request</span> {
-                    <span class="prelude-val">Some</span>(<span class="ident">request</span>) =&gt; {
-                        <span class="kw">let</span> (<span class="ident">response</span>, <span class="ident">connection_type</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">process</span>(<span class="ident">request</span>).<span class="kw">await</span>;
+        <span class="kw">loop </span>{
+            <span class="kw">match </span>stream_reader.read().<span class="kw">await </span>{
+                <span class="prelude-val">Ok</span>(request) =&gt; <span class="kw">match </span>request {
+                    <span class="prelude-val">Some</span>(request) =&gt; {
+                        <span class="kw">let </span>(response, connection_type) = <span class="self">self</span>.process(request).<span class="kw">await</span>;
 
-                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">stream_writer</span>.<span class="ident">write</span>(<span class="ident">response</span>).<span class="kw">await</span> {
-                            <span class="macro">error!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while writing to stream&quot;</span>, <span class="op">%</span><span class="ident">err</span>);
+                        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = stream_writer.write(response).<span class="kw">await </span>{
+                            <span class="macro">error!</span>(message = <span class="string">&quot;Error while writing to stream&quot;</span>, %err);
                         }
 
-                        <span class="kw">if</span> <span class="op">!</span><span class="macro">matches!</span>(<span class="ident">connection_type</span>, <span class="ident">ConnectionType::Unknown</span>) {
-                            <span class="self">self</span>.<span class="ident">spawn_connection</span>(
-                                <span class="ident">stream_reader</span>,
-                                <span class="ident">stream_writer</span>,
-                                <span class="ident">peer_addr</span>,
-                                <span class="ident">connection_type</span>,
+                        <span class="kw">if </span>!<span class="macro">matches!</span>(connection_type, ConnectionType::Unknown) {
+                            <span class="self">self</span>.spawn_connection(
+                                stream_reader,
+                                stream_writer,
+                                peer_addr,
+                                connection_type,
                             );
                             <span class="kw">break</span>;
                         }
                     }
-                    <span class="prelude-val">None</span> =&gt; <span class="macro">debug!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty request&quot;</span>),
+                    <span class="prelude-val">None </span>=&gt; <span class="macro">debug!</span>(message = <span class="string">&quot;Received empty request&quot;</span>),
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
-                    <span class="macro">error!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Error while receiving ABCI request from socket&quot;</span>, <span class="op">%</span><span class="ident">err</span>);
+                <span class="prelude-val">Err</span>(err) =&gt; {
+                    <span class="macro">error!</span>(message = <span class="string">&quot;Error while receiving ABCI request from socket&quot;</span>, %err);
                     <span class="kw">break</span>;
                 }
             }
         }
     }
 
-    <span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="self">self</span>, <span class="ident">stream_reader</span>, <span class="ident">stream_writer</span>))]</span>
-    <span class="kw">fn</span> <span class="ident">spawn_connection</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">W</span><span class="op">&gt;</span>(
+    <span class="attribute">#[instrument(skip(<span class="self">self</span>, stream_reader, stream_writer))]
+    </span><span class="kw">fn </span>spawn_connection&lt;R, W&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">stream_reader</span>: <span class="ident">StreamReader</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>,
-        <span class="ident">stream_writer</span>: <span class="ident">StreamWriter</span><span class="op">&lt;</span><span class="ident">W</span><span class="op">&gt;</span>,
-        <span class="ident">peer_addr</span>: <span class="ident">String</span>,
-        <span class="ident">connection_type</span>: <span class="ident">ConnectionType</span>,
-    ) <span class="kw">where</span>
-        <span class="ident">R</span>: <span class="ident">Read</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">W</span>: <span class="ident">Write</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        stream_reader: StreamReader&lt;R&gt;,
+        stream_writer: StreamWriter&lt;W&gt;,
+        peer_addr: String,
+        connection_type: ConnectionType,
+    ) <span class="kw">where
+        </span>R: Read + Unpin + Send + <span class="lifetime">&#39;static</span>,
+        W: Write + Unpin + Send + <span class="lifetime">&#39;static</span>,
     {
         <span class="macro">debug!</span>(<span class="string">&quot;Spawning a new connection task&quot;</span>);
 
-        <span class="kw">match</span> <span class="ident">connection_type</span> {
-            <span class="ident">ConnectionType::Unknown</span> =&gt; <span class="macro">unreachable!</span>(
-                <span class="string">&quot;Connection type cannot be unknown when spawning a task for a connection type&quot;</span>
+        <span class="kw">match </span>connection_type {
+            ConnectionType::Unknown =&gt; <span class="macro">unreachable!</span>(
+                <span class="string">&quot;Connection type cannot be unknown when spawning a task for a connection type&quot;
+            </span>),
+            ConnectionType::Consensus =&gt; spawn_consensus_task(
+                stream_reader,
+                stream_writer,
+                peer_addr,
+                <span class="self">self</span>.consensus.clone(),
+                <span class="self">self</span>.validator.clone(),
             ),
-            <span class="ident">ConnectionType::Consensus</span> =&gt; <span class="ident">spawn_consensus_task</span>(
-                <span class="ident">stream_reader</span>,
-                <span class="ident">stream_writer</span>,
-                <span class="ident">peer_addr</span>,
-                <span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">clone</span>(),
-                <span class="self">self</span>.<span class="ident">validator</span>.<span class="ident">clone</span>(),
+            ConnectionType::Mempool =&gt; spawn_mempool_task(
+                stream_reader,
+                stream_writer,
+                peer_addr,
+                <span class="self">self</span>.mempool.clone(),
             ),
-            <span class="ident">ConnectionType::Mempool</span> =&gt; <span class="ident">spawn_mempool_task</span>(
-                <span class="ident">stream_reader</span>,
-                <span class="ident">stream_writer</span>,
-                <span class="ident">peer_addr</span>,
-                <span class="self">self</span>.<span class="ident">mempool</span>.<span class="ident">clone</span>(),
+            ConnectionType::Info =&gt; spawn_info_task(
+                stream_reader,
+                stream_writer,
+                peer_addr,
+                <span class="self">self</span>.info.clone(),
+                <span class="self">self</span>.validator.clone(),
             ),
-            <span class="ident">ConnectionType::Info</span> =&gt; <span class="ident">spawn_info_task</span>(
-                <span class="ident">stream_reader</span>,
-                <span class="ident">stream_writer</span>,
-                <span class="ident">peer_addr</span>,
-                <span class="self">self</span>.<span class="ident">info</span>.<span class="ident">clone</span>(),
-                <span class="self">self</span>.<span class="ident">validator</span>.<span class="ident">clone</span>(),
-            ),
-            <span class="ident">ConnectionType::Snapshot</span> =&gt; <span class="ident">spawn_snapshot_task</span>(
-                <span class="ident">stream_reader</span>,
-                <span class="ident">stream_writer</span>,
-                <span class="ident">peer_addr</span>,
-                <span class="self">self</span>.<span class="ident">snapshot</span>.<span class="ident">clone</span>(),
+            ConnectionType::Snapshot =&gt; spawn_snapshot_task(
+                stream_reader,
+                stream_writer,
+                peer_addr,
+                <span class="self">self</span>.snapshot.clone(),
             ),
         }
     }
 
-    <span class="attribute">#[<span class="ident">instrument</span>(<span class="ident">skip</span>(<span class="self">self</span>))]</span>
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="ident">Request</span>) -&gt; (<span class="ident">Response</span>, <span class="ident">ConnectionType</span>) {
-        <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">value</span> {
-            <span class="prelude-val">None</span> =&gt; {
-                <span class="macro">debug!</span>(<span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Received empty value in request&quot;</span>, <span class="question-mark">?</span><span class="ident">request</span>);
+    <span class="attribute">#[instrument(skip(<span class="self">self</span>))]
+    </span><span class="kw">async fn </span>process(<span class="kw-2">&amp;</span><span class="self">self</span>, request: Request) -&gt; (Response, ConnectionType) {
+        <span class="kw">match </span>request.value {
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="macro">debug!</span>(message = <span class="string">&quot;Received empty value in request&quot;</span>, <span class="question-mark">?</span>request);
 
-                (<span class="ident">Response::default</span>(), <span class="ident">ConnectionType::default</span>())
+                (Response::default(), ConnectionType::default())
             }
-            <span class="prelude-val">Some</span>(<span class="ident">request_value</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">connection_type</span> <span class="op">=</span> <span class="ident">ConnectionType::from</span>(<span class="kw-2">&amp;</span><span class="ident">request_value</span>);
+            <span class="prelude-val">Some</span>(request_value) =&gt; {
+                <span class="kw">let </span>connection_type = ConnectionType::from(<span class="kw-2">&amp;</span>request_value);
 
-                <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">connection_type</span> {
-                    <span class="ident">ConnectionType::Unknown</span> =&gt; <span class="ident">handle_unknown_request</span>(<span class="ident">request_value</span>),
-                    <span class="ident">ConnectionType::Consensus</span> =&gt; {
-                        <span class="ident">handle_consensus_request</span>(
-                            <span class="self">self</span>.<span class="ident">consensus</span>.<span class="ident">as_ref</span>(),
-                            <span class="self">self</span>.<span class="ident">validator</span>.<span class="ident">clone</span>(),
-                            <span class="ident">request_value</span>,
+                <span class="kw">let </span>response = <span class="kw">match </span>connection_type {
+                    ConnectionType::Unknown =&gt; handle_unknown_request(request_value),
+                    ConnectionType::Consensus =&gt; {
+                        handle_consensus_request(
+                            <span class="self">self</span>.consensus.as_ref(),
+                            <span class="self">self</span>.validator.clone(),
+                            request_value,
                         )
-                        .<span class="kw">await</span>
-                    }
-                    <span class="ident">ConnectionType::Mempool</span> =&gt; {
-                        <span class="ident">handle_mempool_request</span>(<span class="self">self</span>.<span class="ident">mempool</span>.<span class="ident">as_ref</span>(), <span class="ident">request_value</span>).<span class="kw">await</span>
-                    }
-                    <span class="ident">ConnectionType::Info</span> =&gt; {
-                        <span class="ident">handle_info_request</span>(
-                            <span class="self">self</span>.<span class="ident">info</span>.<span class="ident">as_ref</span>(),
-                            <span class="self">self</span>.<span class="ident">validator</span>.<span class="ident">clone</span>(),
-                            <span class="ident">request_value</span>,
+                        .<span class="kw">await
+                    </span>}
+                    ConnectionType::Mempool =&gt; {
+                        handle_mempool_request(<span class="self">self</span>.mempool.as_ref(), request_value).<span class="kw">await
+                    </span>}
+                    ConnectionType::Info =&gt; {
+                        handle_info_request(
+                            <span class="self">self</span>.info.as_ref(),
+                            <span class="self">self</span>.validator.clone(),
+                            request_value,
                         )
-                        .<span class="kw">await</span>
-                    }
-                    <span class="ident">ConnectionType::Snapshot</span> =&gt; {
-                        <span class="ident">handle_snapshot_request</span>(<span class="self">self</span>.<span class="ident">snapshot</span>.<span class="ident">as_ref</span>(), <span class="ident">request_value</span>).<span class="kw">await</span>
-                    }
+                        .<span class="kw">await
+                    </span>}
+                    ConnectionType::Snapshot =&gt; {
+                        handle_snapshot_request(<span class="self">self</span>.snapshot.as_ref(), request_value).<span class="kw">await
+                    </span>}
                 };
 
-                (<span class="ident">response</span>, <span class="ident">connection_type</span>)
+                (response, connection_type)
             }
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="abci" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="abci" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (b8b5caee0 2022-10-16)" ></div></body></html>

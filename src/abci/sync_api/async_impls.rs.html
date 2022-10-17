@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sync_api/async_impls.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>async_impls.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../abci/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/sync_api/async_impls.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>async_impls.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><a class="sidebar-logo" href="../../../abci/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../abci/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -241,248 +241,248 @@
 <span id="241">241</span>
 <span id="242">242</span>
 <span id="243">243</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::sync::Arc;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">async_std::task::spawn_blocking</span>;
-<span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">smol::unblock</span> <span class="kw">as</span> <span class="ident">spawn_blocking</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>)]</span>
-<span class="kw">use</span> <span class="ident">tokio::task::spawn_blocking</span>;
+<span class="attribute">#[cfg(feature = <span class="string">&quot;use-async-std&quot;</span>)]
+</span><span class="kw">use </span>async_std::task::spawn_blocking;
+<span class="kw">use </span>async_trait::async_trait;
+<span class="attribute">#[cfg(feature = <span class="string">&quot;use-smol&quot;</span>)]
+</span><span class="kw">use </span>smol::unblock <span class="kw">as </span>spawn_blocking;
+<span class="attribute">#[cfg(feature = <span class="string">&quot;use-tokio&quot;</span>)]
+</span><span class="kw">use </span>tokio::task::spawn_blocking;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">async_api</span>::{
-        <span class="ident">Consensus</span> <span class="kw">as</span> <span class="ident">AsyncConsensus</span>, <span class="ident">Info</span> <span class="kw">as</span> <span class="ident">AsyncInfo</span>, <span class="ident">Mempool</span> <span class="kw">as</span> <span class="ident">AsyncMempool</span>,
-        <span class="ident">Snapshot</span> <span class="kw">as</span> <span class="ident">AsyncSnapshot</span>,
+<span class="kw">use crate</span>::{
+    async_api::{
+        Consensus <span class="kw">as </span>AsyncConsensus, Info <span class="kw">as </span>AsyncInfo, Mempool <span class="kw">as </span>AsyncMempool,
+        Snapshot <span class="kw">as </span>AsyncSnapshot,
     },
-    <span class="ident">sync_api</span>::{<span class="ident">Consensus</span>, <span class="ident">Info</span>, <span class="ident">Mempool</span>, <span class="ident">Snapshot</span>},
-    <span class="ident">types</span>::<span class="kw-2">*</span>,
+    sync_api::{Consensus, Info, Mempool, Snapshot},
+    types::<span class="kw-2">*</span>,
 };
 
-<span class="macro">macro_rules!</span> <span class="ident">spawn_blocking</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>: <span class="ident">expr</span>) =&gt; {{
-        <span class="macro">cfg_if::cfg_if!</span> {
-            <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-async-std&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-smol&quot;</span>))]</span> {
-                <span class="ident">spawn_blocking</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>).<span class="kw">await</span>
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;use-tokio&quot;</span>)]</span> {
-                <span class="ident">spawn_blocking</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>).<span class="kw">await</span>.<span class="ident">expect</span>(<span class="string">&quot;Failed to execute blocking task&quot;</span>)
+<span class="macro">macro_rules! </span>spawn_blocking {
+    (<span class="macro-nonterminal">$expr</span>: expr) =&gt; {{
+        <span class="macro">cfg_if::cfg_if! </span>{
+            <span class="kw">if </span><span class="attribute">#[cfg(any(feature = <span class="string">&quot;use-async-std&quot;</span>, feature = <span class="string">&quot;use-smol&quot;</span>))] </span>{
+                spawn_blocking(<span class="macro-nonterminal">$expr</span>).<span class="kw">await
+            </span>} <span class="kw">else if </span><span class="attribute">#[cfg(feature = <span class="string">&quot;use-tokio&quot;</span>)] </span>{
+                spawn_blocking(<span class="macro-nonterminal">$expr</span>).<span class="kw">await</span>.expect(<span class="string">&quot;Failed to execute blocking task&quot;</span>)
             }
         }
     }};
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AsyncConsensusImpl</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">C</span>: <span class="ident">Consensus</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="kw">pub struct </span>AsyncConsensusImpl&lt;C&gt;
+<span class="kw">where
+    </span>C: Consensus + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">inner</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>,
+    inner: Arc&lt;C&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span> <span class="ident">AsyncConsensusImpl</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">C</span>: <span class="ident">Consensus</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
+<span class="kw">impl</span>&lt;C&gt; AsyncConsensusImpl&lt;C&gt;
+<span class="kw">where
+    </span>C: Consensus + Send + Sync,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">inner</span>: <span class="ident">C</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">inner</span>: <span class="ident">Arc::new</span>(<span class="ident">inner</span>),
+    <span class="kw">pub fn </span>new(inner: C) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            inner: Arc::new(inner),
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">async_trait</span>]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span> <span class="ident">AsyncConsensus</span> <span class="kw">for</span> <span class="ident">AsyncConsensusImpl</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">C</span>: <span class="ident">Consensus</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="attribute">#[async_trait]
+</span><span class="kw">impl</span>&lt;C&gt; AsyncConsensus <span class="kw">for </span>AsyncConsensusImpl&lt;C&gt;
+<span class="kw">where
+    </span>C: Consensus + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">echo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">echo_request</span>: <span class="ident">RequestEcho</span>) -&gt; <span class="ident">ResponseEcho</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">echo</span>(<span class="ident">echo_request</span>))
+    <span class="kw">async fn </span>echo(<span class="kw-2">&amp;</span><span class="self">self</span>, echo_request: RequestEcho) -&gt; ResponseEcho {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.echo(echo_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">init_chain</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">init_chain_request</span>: <span class="ident">RequestInitChain</span>) -&gt; <span class="ident">ResponseInitChain</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">init_chain</span>(<span class="ident">init_chain_request</span>))
+    <span class="kw">async fn </span>init_chain(<span class="kw-2">&amp;</span><span class="self">self</span>, init_chain_request: RequestInitChain) -&gt; ResponseInitChain {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.init_chain(init_chain_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">begin_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">begin_block_request</span>: <span class="ident">RequestBeginBlock</span>) -&gt; <span class="ident">ResponseBeginBlock</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">begin_block</span>(<span class="ident">begin_block_request</span>))
+    <span class="kw">async fn </span>begin_block(<span class="kw-2">&amp;</span><span class="self">self</span>, begin_block_request: RequestBeginBlock) -&gt; ResponseBeginBlock {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.begin_block(begin_block_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">deliver_tx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">deliver_tx_request</span>: <span class="ident">RequestDeliverTx</span>) -&gt; <span class="ident">ResponseDeliverTx</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">deliver_tx</span>(<span class="ident">deliver_tx_request</span>))
+    <span class="kw">async fn </span>deliver_tx(<span class="kw-2">&amp;</span><span class="self">self</span>, deliver_tx_request: RequestDeliverTx) -&gt; ResponseDeliverTx {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.deliver_tx(deliver_tx_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">end_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">end_block_request</span>: <span class="ident">RequestEndBlock</span>) -&gt; <span class="ident">ResponseEndBlock</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">end_block</span>(<span class="ident">end_block_request</span>))
+    <span class="kw">async fn </span>end_block(<span class="kw-2">&amp;</span><span class="self">self</span>, end_block_request: RequestEndBlock) -&gt; ResponseEndBlock {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.end_block(end_block_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">commit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">commit_request</span>: <span class="ident">RequestCommit</span>) -&gt; <span class="ident">ResponseCommit</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">commit</span>(<span class="ident">commit_request</span>))
+    <span class="kw">async fn </span>commit(<span class="kw-2">&amp;</span><span class="self">self</span>, commit_request: RequestCommit) -&gt; ResponseCommit {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.commit(commit_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">flush_request</span>: <span class="ident">RequestFlush</span>) -&gt; <span class="ident">ResponseFlush</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">flush</span>(<span class="ident">flush_request</span>))
+    <span class="kw">async fn </span>flush(<span class="kw-2">&amp;</span><span class="self">self</span>, flush_request: RequestFlush) -&gt; ResponseFlush {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.flush(flush_request))
     }
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AsyncInfoImpl</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">I</span>: <span class="ident">Info</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="kw">pub struct </span>AsyncInfoImpl&lt;I&gt;
+<span class="kw">where
+    </span>I: Info + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">inner</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>,
+    inner: Arc&lt;I&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> <span class="ident">AsyncInfoImpl</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">I</span>: <span class="ident">Info</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
+<span class="kw">impl</span>&lt;I&gt; AsyncInfoImpl&lt;I&gt;
+<span class="kw">where
+    </span>I: Info + Send + Sync,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">inner</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">inner</span>: <span class="ident">Arc::new</span>(<span class="ident">inner</span>),
+    <span class="kw">pub fn </span>new(inner: I) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            inner: Arc::new(inner),
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">async_trait</span>]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> <span class="ident">AsyncInfo</span> <span class="kw">for</span> <span class="ident">AsyncInfoImpl</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">I</span>: <span class="ident">Info</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="attribute">#[async_trait]
+</span><span class="kw">impl</span>&lt;I&gt; AsyncInfo <span class="kw">for </span>AsyncInfoImpl&lt;I&gt;
+<span class="kw">where
+    </span>I: Info + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">echo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">echo_request</span>: <span class="ident">RequestEcho</span>) -&gt; <span class="ident">ResponseEcho</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">echo</span>(<span class="ident">echo_request</span>))
+    <span class="kw">async fn </span>echo(<span class="kw-2">&amp;</span><span class="self">self</span>, echo_request: RequestEcho) -&gt; ResponseEcho {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.echo(echo_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">info_request</span>: <span class="ident">RequestInfo</span>) -&gt; <span class="ident">ResponseInfo</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">info</span>(<span class="ident">info_request</span>))
+    <span class="kw">async fn </span>info(<span class="kw-2">&amp;</span><span class="self">self</span>, info_request: RequestInfo) -&gt; ResponseInfo {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.info(info_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">set_option</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">set_option_request</span>: <span class="ident">RequestSetOption</span>) -&gt; <span class="ident">ResponseSetOption</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">set_option</span>(<span class="ident">set_option_request</span>))
+    <span class="kw">async fn </span>set_option(<span class="kw-2">&amp;</span><span class="self">self</span>, set_option_request: RequestSetOption) -&gt; ResponseSetOption {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.set_option(set_option_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">query_request</span>: <span class="ident">RequestQuery</span>) -&gt; <span class="ident">ResponseQuery</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">query</span>(<span class="ident">query_request</span>))
+    <span class="kw">async fn </span>query(<span class="kw-2">&amp;</span><span class="self">self</span>, query_request: RequestQuery) -&gt; ResponseQuery {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.query(query_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">flush_request</span>: <span class="ident">RequestFlush</span>) -&gt; <span class="ident">ResponseFlush</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">flush</span>(<span class="ident">flush_request</span>))
+    <span class="kw">async fn </span>flush(<span class="kw-2">&amp;</span><span class="self">self</span>, flush_request: RequestFlush) -&gt; ResponseFlush {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.flush(flush_request))
     }
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AsyncMempoolImpl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">Mempool</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="kw">pub struct </span>AsyncMempoolImpl&lt;M&gt;
+<span class="kw">where
+    </span>M: Mempool + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">inner</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
+    inner: Arc&lt;M&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">AsyncMempoolImpl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">Mempool</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
+<span class="kw">impl</span>&lt;M&gt; AsyncMempoolImpl&lt;M&gt;
+<span class="kw">where
+    </span>M: Mempool + Send + Sync,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">inner</span>: <span class="ident">M</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">inner</span>: <span class="ident">Arc::new</span>(<span class="ident">inner</span>),
+    <span class="kw">pub fn </span>new(inner: M) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            inner: Arc::new(inner),
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">async_trait</span>]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">AsyncMempool</span> <span class="kw">for</span> <span class="ident">AsyncMempoolImpl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">Mempool</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="attribute">#[async_trait]
+</span><span class="kw">impl</span>&lt;M&gt; AsyncMempool <span class="kw">for </span>AsyncMempoolImpl&lt;M&gt;
+<span class="kw">where
+    </span>M: Mempool + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">echo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">echo_request</span>: <span class="ident">RequestEcho</span>) -&gt; <span class="ident">ResponseEcho</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">echo</span>(<span class="ident">echo_request</span>))
+    <span class="kw">async fn </span>echo(<span class="kw-2">&amp;</span><span class="self">self</span>, echo_request: RequestEcho) -&gt; ResponseEcho {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.echo(echo_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">check_tx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">check_tx_request</span>: <span class="ident">RequestCheckTx</span>) -&gt; <span class="ident">ResponseCheckTx</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">check_tx</span>(<span class="ident">check_tx_request</span>))
+    <span class="kw">async fn </span>check_tx(<span class="kw-2">&amp;</span><span class="self">self</span>, check_tx_request: RequestCheckTx) -&gt; ResponseCheckTx {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.check_tx(check_tx_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">flush_request</span>: <span class="ident">RequestFlush</span>) -&gt; <span class="ident">ResponseFlush</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">flush</span>(<span class="ident">flush_request</span>))
+    <span class="kw">async fn </span>flush(<span class="kw-2">&amp;</span><span class="self">self</span>, flush_request: RequestFlush) -&gt; ResponseFlush {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.flush(flush_request))
     }
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AsyncSnapshotImpl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">S</span>: <span class="ident">Snapshot</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="kw">pub struct </span>AsyncSnapshotImpl&lt;S&gt;
+<span class="kw">where
+    </span>S: Snapshot + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="ident">inner</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
+    inner: Arc&lt;S&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="ident">AsyncSnapshotImpl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">S</span>: <span class="ident">Snapshot</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
+<span class="kw">impl</span>&lt;S&gt; AsyncSnapshotImpl&lt;S&gt;
+<span class="kw">where
+    </span>S: Snapshot + Send + Sync,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">inner</span>: <span class="ident">S</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">inner</span>: <span class="ident">Arc::new</span>(<span class="ident">inner</span>),
+    <span class="kw">pub fn </span>new(inner: S) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            inner: Arc::new(inner),
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">async_trait</span>]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span> <span class="ident">AsyncSnapshot</span> <span class="kw">for</span> <span class="ident">AsyncSnapshotImpl</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">S</span>: <span class="ident">Snapshot</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+<span class="attribute">#[async_trait]
+</span><span class="kw">impl</span>&lt;S&gt; AsyncSnapshot <span class="kw">for </span>AsyncSnapshotImpl&lt;S&gt;
+<span class="kw">where
+    </span>S: Snapshot + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">echo</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">echo_request</span>: <span class="ident">RequestEcho</span>) -&gt; <span class="ident">ResponseEcho</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">echo</span>(<span class="ident">echo_request</span>))
+    <span class="kw">async fn </span>echo(<span class="kw-2">&amp;</span><span class="self">self</span>, echo_request: RequestEcho) -&gt; ResponseEcho {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.echo(echo_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">list_snapshots</span>(
+    <span class="kw">async fn </span>list_snapshots(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">list_snapshots_request</span>: <span class="ident">RequestListSnapshots</span>,
-    ) -&gt; <span class="ident">ResponseListSnapshots</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">list_snapshots</span>(<span class="ident">list_snapshots_request</span>))
+        list_snapshots_request: RequestListSnapshots,
+    ) -&gt; ResponseListSnapshots {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.list_snapshots(list_snapshots_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">offer_snapshot</span>(
+    <span class="kw">async fn </span>offer_snapshot(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">offer_snapshot_request</span>: <span class="ident">RequestOfferSnapshot</span>,
-    ) -&gt; <span class="ident">ResponseOfferSnapshot</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">offer_snapshot</span>(<span class="ident">offer_snapshot_request</span>))
+        offer_snapshot_request: RequestOfferSnapshot,
+    ) -&gt; ResponseOfferSnapshot {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.offer_snapshot(offer_snapshot_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_snapshot_chunk</span>(
+    <span class="kw">async fn </span>load_snapshot_chunk(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">load_snapshot_chunk_request</span>: <span class="ident">RequestLoadSnapshotChunk</span>,
-    ) -&gt; <span class="ident">ResponseLoadSnapshotChunk</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">load_snapshot_chunk</span>(<span class="ident">load_snapshot_chunk_request</span>))
+        load_snapshot_chunk_request: RequestLoadSnapshotChunk,
+    ) -&gt; ResponseLoadSnapshotChunk {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.load_snapshot_chunk(load_snapshot_chunk_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">apply_snapshot_chunk</span>(
+    <span class="kw">async fn </span>apply_snapshot_chunk(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">apply_snapshot_chunk_request</span>: <span class="ident">RequestApplySnapshotChunk</span>,
-    ) -&gt; <span class="ident">ResponseApplySnapshotChunk</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">apply_snapshot_chunk</span>(<span class="ident">apply_snapshot_chunk_request</span>))
+        apply_snapshot_chunk_request: RequestApplySnapshotChunk,
+    ) -&gt; ResponseApplySnapshotChunk {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.apply_snapshot_chunk(apply_snapshot_chunk_request))
     }
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">flush</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">flush_request</span>: <span class="ident">RequestFlush</span>) -&gt; <span class="ident">ResponseFlush</span> {
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">clone</span>();
-        <span class="macro">spawn_blocking!</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">flush</span>(<span class="ident">flush_request</span>))
+    <span class="kw">async fn </span>flush(<span class="kw-2">&amp;</span><span class="self">self</span>, flush_request: RequestFlush) -&gt; ResponseFlush {
+        <span class="kw">let </span>inner = <span class="self">self</span>.inner.clone();
+        <span class="macro">spawn_blocking!</span>(<span class="kw">move </span>|| inner.flush(flush_request))
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="abci" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="abci" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (b8b5caee0 2022-10-16)" ></div></body></html>
